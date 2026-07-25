@@ -1,0 +1,313 @@
+<?php
+session_start();
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require 'config.php';
+require __DIR__ . '/includes/restrict-customer.php';
+
+$message = "";
+$messageType = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // Clean Inputs
+    $first_name = trim($_POST['first_name']);
+    $last_name = trim($_POST['last_name']);
+    $email = trim($_POST['email']);
+    $phone = trim($_POST['phone']);
+    $address = trim($_POST['address']);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+    $accept_terms = isset($_POST['accept_terms']) ? true : false;
+
+    // Empty fields
+    if (
+        empty($first_name) ||
+        empty($last_name) ||
+        empty($email) ||
+        empty($phone) ||
+        empty($address) ||
+        empty($password) ||
+        empty($confirm_password)
+    ) {
+        $message = "Please fill in all required fields.";
+        $messageType = "error";
+    } elseif (!$accept_terms) {
+        $message = "You must agree to the Terms of Service and Privacy Policy to create an account.";
+        $messageType = "error";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = "Please enter a valid email address.";
+        $messageType = "error";
+    } elseif (!preg_match('/^\d{11}$/', $phone)) {
+        $message = "Please enter a valid 11-digit phone number using numbers only.";
+        $messageType = "error";
+    } elseif ($password !== $confirm_password) {
+        $message = "Passwords do not match.";
+        $messageType = "error";
+    } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/', $password)) {
+        $message = "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.";
+        $messageType = "error";
+    } else {
+        try {
+            $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
+            $check->execute([$email]);
+
+            if ($check->rowCount() > 0) {
+                $message = "An account with this email already exists. Please sign in or use another email.";
+                $messageType = "error";
+            } else {
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+                $insert = $conn->prepare("
+                    INSERT INTO users
+                    (first_name, last_name, email, phone, address, password)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ");
+
+                $success = $insert->execute([
+                    $first_name,
+                    $last_name,
+                    $email,
+                    $phone,
+                    $address,
+                    $hashedPassword
+                ]);
+
+                if ($success) {
+                    header("Location: login.php?registered=1");
+                    exit();
+                } else {
+                    $message = "Registration failed. Please try again.";
+                    $messageType = "error";
+                }
+            }
+        } catch (PDOException $e) {
+            error_log("Registration error: " . $e->getMessage());
+            $message = "Registration failed. Please try again.";
+            $messageType = "error";
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register | WoodCraft Care</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-serif { font-family: 'Fraunces', serif; }
+  </style>
+</head>
+<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <?php include __DIR__ . '/includes/header.php'; ?>
+
+  <!-- Register Form -->
+  <main class="flex-1 flex items-center justify-center px-6 py-16">
+    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-sm border border-gray-100 p-9">
+      <span class="inline-block text-[11px] font-semibold tracking-wide text-gray-500 bg-gray-100 rounded-full px-3 py-1 mb-5">REGISTER</span>
+      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-2">Create your account</h1>
+      <p class="text-gray-500 text-sm mb-8">Join WoodCraft Care to track your support requests and manage your furniture.</p>
+
+      <?php if (!empty($message)): ?>
+        <div id="alertMessage" class="mb-6 flex items-start gap-3 rounded-2xl border px-5 py-4 shadow-sm transition-all duration-500 <?= $messageType == 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'; ?>">
+          <div class="mt-0.5">
+            <?php if($messageType == 'error'): ?>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
+              </svg>
+            <?php else: ?>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            <?php endif; ?>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-semibold"><?= $messageType == 'error' ? 'Registration Failed' : 'Success'; ?></h3>
+            <p class="text-sm mt-1"><?= htmlspecialchars($message); ?></p>
+          </div>
+          <button type="button" onclick="closeAlert()" class="text-gray-400 hover:text-gray-700 transition">✕</button>
+        </div>
+        <script>
+          function closeAlert(){
+            const alert = document.getElementById("alertMessage");
+            if(alert){
+              alert.classList.add("opacity-0","translate-y-2");
+              setTimeout(()=>{ alert.remove(); },400);
+            }
+          }
+          setTimeout(closeAlert,5000);
+        </script>
+      <?php endif; ?>
+
+      <form class="space-y-5" method="POST">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label for="first_name" class="block text-sm font-medium text-gray-800 mb-2">First Name</label>
+            <input type="text" id="first_name" name="first_name" placeholder="First Name" required value="<?= htmlspecialchars($_POST['first_name'] ?? '') ?>"
+                   class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+          </div>
+          <div>
+            <label for="last_name" class="block text-sm font-medium text-gray-800 mb-2">Last Name</label>
+            <input type="text" id="last_name" name="last_name" placeholder="Last Name" required value="<?= htmlspecialchars($_POST['last_name'] ?? '') ?>"
+                   class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+          </div>
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-800 mb-2">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="your@email.com" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
+                 class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+        </div>
+
+        <div>
+          <label for="phone" class="block text-sm font-medium text-gray-800 mb-2">Phone Number</label>
+          <input type="text" id="phone" name="phone" placeholder="09123456789" required minlength="11" maxlength="11" inputmode="numeric" pattern="[0-9]*" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>"
+                 oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)"
+                 class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+        </div>
+
+        <div>
+          <label for="address" class="block text-sm font-medium text-gray-800 mb-2">Address</label>
+          <textarea id="address" name="address" rows="3" placeholder="Street, City, State, ZIP Code" required
+                    class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors resize-y"><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
+        </div>
+        
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-800 mb-2">Password</label>
+          <div class="relative">
+            <input type="password" id="password" name="password" placeholder="••••••••••••" required minlength="8"
+                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$"
+                   title="Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character."
+                   class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+            <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="password" aria-label="Show password">
+              <svg class="w-4 h-4 icon-eye" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              <svg class="w-4 h-4 icon-eye-off hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 012.132-3.532m3.32-2.454A9.958 9.958 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.132 5.411M14.121 14.121A3 3 0 019.88 9.88M9.879 9.879l4.242 4.242M9.879 9.879L3 3m6.879 6.879L21 21"/></svg>
+            </button>
+          </div>
+          <ul id="passwordRequirements" class="mt-3 hidden space-y-1 text-xs text-gray-500">
+            <li id="rule-length" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 8 characters</li>
+            <li id="rule-uppercase" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 uppercase letter</li>
+            <li id="rule-lowercase" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 lowercase letter</li>
+            <li id="rule-number" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 number</li>
+            <li id="rule-special" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 special character</li>
+          </ul>
+        </div>
+
+        <div>
+          <label for="confirm_password" class="block text-sm font-medium text-gray-800 mb-2">Confirm Password</label>
+          <div class="relative">
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••••••" required
+                   class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+            <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="confirm_password" aria-label="Show password">
+              <svg class="w-4 h-4 icon-eye" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              <svg class="w-4 h-4 icon-eye-off hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 012.132-3.532m3.32-2.454A9.958 9.958 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.132 5.411M14.121 14.121A3 3 0 019.88 9.88M9.879 9.879l4.242 4.242M9.879 9.879L3 3m6.879 6.879L21 21"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Terms Acceptance -->
+        <div class="flex items-start gap-3 pt-1">
+          <input type="checkbox" id="accept_terms" name="accept_terms" value="1" required
+                 class="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#6B4226] focus:ring-2 focus:ring-[#6B4226]/40 focus:ring-offset-0 cursor-pointer" />
+          <label for="accept_terms" class="text-sm text-gray-600 cursor-pointer leading-relaxed">
+            By creating an account, you agree to WoodCraft's
+            <a href="terms.php" target="_blank" class="text-[#6B4226] font-medium hover:underline">Terms of Service</a> 
+            and 
+            <a href="privacy.php" target="_blank" class="text-[#6B4226] font-medium hover:underline">Privacy Policy</a>.
+            <span class="text-red-500">*</span>
+          </label>
+        </div>
+
+        <button type="submit" class="w-full rounded-full bg-[#6B4226] text-white text-sm font-medium py-3.5 hover:bg-[#59341C] transition-colors">Create Account</button>
+
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-sm text-gray-500">Already have an account?</span>
+          <a href="login.php" class="text-sm text-[#6B4226] hover:text-[#59341C] transition-colors">Sign in →</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    // Show/hide toggle for password fields
+    document.querySelectorAll('.password-toggle-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        const eyeIcon = btn.querySelector('.icon-eye');
+        const eyeOffIcon = btn.querySelector('.icon-eye-off');
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        eyeIcon.classList.toggle('hidden', isHidden);
+        eyeOffIcon.classList.toggle('hidden', !isHidden);
+        btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      });
+    });
+
+    const passwordInput = document.getElementById('password');
+    const passwordRequirements = document.getElementById('passwordRequirements');
+
+    const passwordRules = {
+      length: {
+        element: document.getElementById('rule-length'),
+        test: (value) => value.length >= 8
+      },
+      uppercase: {
+        element: document.getElementById('rule-uppercase'),
+        test: (value) => /[A-Z]/.test(value)
+      },
+      lowercase: {
+        element: document.getElementById('rule-lowercase'),
+        test: (value) => /[a-z]/.test(value)
+      },
+      number: {
+        element: document.getElementById('rule-number'),
+        test: (value) => /\d/.test(value)
+      },
+      special: {
+        element: document.getElementById('rule-special'),
+        test: (value) => /[^A-Za-z\d]/.test(value)
+      }
+    };
+
+    function updatePasswordChecklist() {
+      const value = passwordInput.value;
+
+      Object.values(passwordRules).forEach(({ element, test }) => {
+        const isMet = test(value);
+        const bullet = element.querySelector('span');
+
+        element.classList.toggle('text-green-600', isMet);
+        element.classList.toggle('text-gray-500', !isMet);
+        bullet.classList.toggle('text-green-600', isMet);
+        bullet.classList.toggle('text-gray-400', !isMet);
+        bullet.textContent = isMet ? '✓' : '•';
+      });
+    }
+
+    if (passwordInput && passwordRequirements) {
+      passwordInput.addEventListener('focus', () => {
+        passwordRequirements.classList.remove('hidden');
+        updatePasswordChecklist();
+      });
+
+      passwordInput.addEventListener('blur', () => {
+        passwordRequirements.classList.add('hidden');
+      });
+
+      passwordInput.addEventListener('input', updatePasswordChecklist);
+      updatePasswordChecklist();
+    }
+  </script>
+
+</body>
+</html>
