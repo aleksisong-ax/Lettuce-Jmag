@@ -139,7 +139,8 @@ try {
             address VARCHAR(255) NOT NULL,
             password VARCHAR(255) NOT NULL,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE KEY uq_users_email (email)
+            UNIQUE KEY uq_users_email (email),
+            UNIQUE KEY uq_users_phone (phone)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ");
     addColumnIfMissing($conn, $dbname, 'users', 'reset_token', "reset_token VARCHAR(64) NULL AFTER password");
@@ -525,7 +526,7 @@ try {
             id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT NOT NULL,
             order_number VARCHAR(20) NOT NULL UNIQUE,
-            status ENUM('pending','payment_confirmed','harvest_queue','harvesting','quality_check','packing','ready_pickup','out_delivery','delivered','completed','cancelled','refund_requested','replacement_requested') NOT NULL DEFAULT 'pending',
+            status ENUM('preparing','ready','delivered','completed','cancelled','refund_requested','replacement_requested') NOT NULL DEFAULT 'preparing',
             subtotal DECIMAL(10,2) NOT NULL,
             delivery_fee DECIMAL(10,2) NOT NULL DEFAULT 0.00,
             discount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
@@ -554,6 +555,18 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ");
     $report[] = "Table `orders` is ready.";
+
+    // Migrate old order status ENUM to new 4-step flow
+    try {
+        $oldEnum = $conn->query("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = '$dbname' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'status'")->fetchColumn();
+        if ($oldEnum && strpos($oldEnum, 'pending') !== false) {
+            $conn->exec("ALTER TABLE orders MODIFY status ENUM('preparing','ready','delivered','completed','cancelled','refund_requested','replacement_requested') NOT NULL DEFAULT 'preparing'");
+            // Migrate old status values
+            $conn->exec("UPDATE orders SET status = 'preparing' WHERE status IN ('pending','payment_confirmed','harvest_queue','harvesting','quality_check','packing')");
+            $conn->exec("UPDATE orders SET status = 'ready' WHERE status IN ('ready_pickup','out_delivery')");
+            $report[] = "Orders status ENUM migrated to 4-step flow: preparing → ready → delivered → completed.";
+        }
+    } catch (Exception $e) { /* non-critical */ }
 
     // 17. TABLE: order_items
     $conn->exec("
@@ -594,6 +607,7 @@ try {
             product_id INT NOT NULL,
             order_id INT NULL,
             rating TINYINT UNSIGNED NOT NULL,
+# REMOVED FRESHNESS ENTRY
             freshness_rating TINYINT UNSIGNED NULL,
             packaging_rating TINYINT UNSIGNED NULL,
             delivery_rating TINYINT UNSIGNED NULL,
@@ -664,6 +678,38 @@ try {
     ");
     $report[] = "Table `customer_addresses` is ready.";
 
+    // 21c. TABLE: claimed_coupons
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS claimed_coupons (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            promotion_id INT NOT NULL,
+            claimed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uq_claimed (user_id, promotion_id),
+            KEY idx_claimed_user (user_id),
+            CONSTRAINT fk_claimed_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+            CONSTRAINT fk_claimed_promo FOREIGN KEY (promotion_id) REFERENCES promotions(id) ON DELETE CASCADE ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `claimed_coupons` is ready.";
+
+    // 21d. TABLE: cart_items — persistent cart for logged-in users
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS cart_items (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            product_id INT NOT NULL,
+            quantity INT NOT NULL DEFAULT 1,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uq_cart_user_product (user_id, product_id),
+            KEY idx_cart_user (user_id),
+            CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+            CONSTRAINT fk_cart_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `cart_items` is ready.";
+
     // Add new notification types: add related_link column
     addColumnIfMissing($conn, $dbname, 'notifications', 'related_link', "related_link VARCHAR(255) NULL AFTER message");
 
@@ -673,6 +719,14 @@ try {
 
     // Live chat: add image_path for image uploads
     addColumnIfMissing($conn, $dbname, 'live_chat_messages', 'image_path', "image_path VARCHAR(500) NULL AFTER message");
+
+    // Orders: add cancellation fields
+    addColumnIfMissing($conn, $dbname, 'orders', 'cancellation_reason', "cancellation_reason VARCHAR(100) NULL AFTER status");
+    addColumnIfMissing($conn, $dbname, 'orders', 'cancellation_notes', "cancellation_notes TEXT NULL AFTER cancellation_reason");
+    addColumnIfMissing($conn, $dbname, 'orders', 'cancelled_at', "cancelled_at TIMESTAMP NULL DEFAULT NULL AFTER updated_at");
+
+    // Reviews: add review_title
+    addColumnIfMissing($conn, $dbname, 'reviews', 'review_title', "review_title VARCHAR(200) NULL AFTER rating");
 
     // -----------------------------------------------------------
     // SEED: Categories
@@ -737,6 +791,7 @@ try {
     if ($kbCount === 0) {
         $seedKb = $conn->prepare("INSERT INTO knowledge_base (title, slug, content, category) VALUES (?,?,?,?)");
         $seedKb->execute(['How to Order', 'how-to-order', "## How to Order Fresh Hydroponic Lettuce\n\n1. **Browse** our Products page to see available lettuce varieties, bundles, and wholesale options.\n2. **Add to Cart** the items you want — choose quantities for each.\n3. **Review Your Cart** to confirm items, quantities, and see delivery fee estimates.\n4. **Checkout** — enter your delivery address or choose Pick-Up. We automatically detect if you're within our free delivery area (Nostalji Subdivision).\n5. **Choose Payment** — Cash on Delivery, GCash, Maya, or Bank Transfer.\n6. **Place Order** — once confirmed, we add your order to the harvest queue.\n\nYou'll receive order status updates as we harvest, quality-check, pack, and deliver your lettuce — all on the same day!", 'Ordering']);
+# REMOVED FRESHNESS ENTRY
         $seedKb->execute(['Harvest-on-Demand Guide', 'harvest-on-demand-guide', "## What is Harvest-on-Demand?\n\nUnlike supermarkets where lettuce sits on shelves for days, our harvest-on-demand model means:\n\n- **Lettuce stays growing** in our hydroponic system until you order\n- **Harvested only after order confirmation** — usually within 1-3 hours\n- **Same-day delivery or pick-up** — maximum freshness\n- **Zero food waste** — nothing is pre-harvested and left unsold\n- **Better nutrition** — nutrients peak when freshly harvested\n\nThis is why our lettuce lasts 5-7 days in your refrigerator — it starts fresher than anything you'll find at the grocery store.", 'Harvest']);
         $seedKb->execute(['Delivery Guide', 'delivery-guide', "## Delivery Information\n\n### Free Delivery\nFREE delivery within **Nostalji Subdivision, Paliparan I, Dasmariñas, Cavite** — no minimum order required.\n\n### Paid Delivery\nDelivery to areas outside the subdivision incurs a fee automatically calculated based on your address.\n\n### Same-Day Delivery\nOrders placed before 2 PM are delivered the same day. Orders after 2 PM are delivered the following morning.\n\n### Same-Day Pick-Up\nOrder online and pick up at the farm. Ready within 1-3 hours after order confirmation. No delivery fee.\n\n### Delivery Hours\nMonday – Sunday, 8:00 AM – 6:00 PM", 'Delivery']);
         $seedKb->execute(['Storage Guide', 'storage-guide', "## How to Store Your Lettuce\n\n### Whole Heads\n- **Refrigerate immediately** at 2-4°C\n- **Do not wash** until ready to use\n- **Keep in a sealed container** or wrap in paper towel\n- **Store in crisper drawer** away from ethylene-producing fruits\n- **Shelf life:** 5-7 days refrigerated\n\n### Cut Leaves / Salad Mix\n- **Refrigerate immediately**\n- **Best consumed within 24 hours**\n- Room temperature: less than 24 hours\n\n### Pro Tips\n- Revive slightly wilted lettuce by soaking in cold water for 10-15 minutes\n- Pat dry with paper towels before using\n- Keep away from apples, bananas, and avocados (they release ethylene)", 'Storage']);
@@ -756,9 +811,11 @@ try {
         
         // NEW: Technical Support & Account FAQs
         $seedFaq->execute(["How do I submit a support ticket?", "To submit a support ticket:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to the Submit a Ticket page\n3. Fill in the Subject, Category, and a clear description\n4. Add your Order Number (if applicable)\n5. Attach any relevant photos or files\n6. Click Submit\n\nYou can track your ticket's status in My Support Tickets.", "Technical Support"]);
+# REMOVED FRESHNESS ENTRY
         $seedFaq->execute(["How do I submit a freshness guarantee request?", "To submit a freshness guarantee request:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to Freshness Guarantee Request\n3. Provide:\n   • Product Name\n   • Order Number\n   • Delivery Date\n   • Quality Issue (category)\n   • Description of the issue\n   • Photos of the product (required)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Freshness"]);
         $seedFaq->execute(["How do I request a return or refund?", "To request a return or refund:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to Return Request\n3. Provide:\n   • Order Number\n   • Product Name\n   • Delivery Date\n   • Reason for Return\n   • Detailed Explanation\n   • Product Condition\n   • Photos (required)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Returns"]);
         $seedFaq->execute(["How do I create an account?", "Creating an account is quick:\n\n1. Go to the Register page\n2. Enter your full name, email address, phone number, and a password\n3. Confirm your password and submit the form\n4. You'll be logged in automatically\n\nOnce that's done, you can browse products, place orders, and track deliveries right away.", "Account"]);
+# REMOVED FRESHNESS ENTRY
         $seedFaq->execute(["What does the freshness guarantee cover?", "Our freshness guarantee covers:\n\n• Wilted or damaged lettuce upon delivery\n• Wrong variety delivered\n• Missing items from your order\n• Quality below our standards\n\nSimply submit a Freshness Guarantee Request with photos within 24 hours of delivery. We'll approve a replacement or refund at no cost to you.", "Freshness"]);
         $seedFaq->execute(["How does delivery work in my area?", "Delivery is FREE within Nostalji Subdivision, Paliparan I, Dasmariñas, Cavite.\n\nFor locations outside the subdivision, a delivery fee is automatically calculated based on your address.\n\nSame-day delivery is available for orders placed before 2 PM. Same-day pick-up is always available — your lettuce is ready 1-3 hours after order confirmation.", "Delivery"]);
         
@@ -767,9 +824,11 @@ try {
         // Check if new FAQs exist, if not add them
         $newFaqs = [
             ["How do I submit a support ticket?", "To submit a support ticket:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to the Submit a Ticket page\n3. Fill in the Subject, Category, and a clear description\n4. Add your Order Number (if applicable)\n5. Attach any relevant photos or files\n6. Click Submit\n\nYou can track your ticket's status in My Support Tickets.", "Technical Support"],
+# REMOVED FRESHNESS ENTRY
             ["How do I submit a freshness guarantee request?", "To submit a freshness guarantee request:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to Freshness Guarantee Request\n3. Provide:\n   • Product Name\n   • Order Number\n   • Delivery Date\n   • Quality Issue (category)\n   • Description of the issue\n   • Photos of the product (required)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Freshness"],
             ["How do I request a return or refund?", "To request a return or refund:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to Return Request\n3. Provide:\n   • Order Number\n   • Product Name\n   • Delivery Date\n   • Reason for Return\n   • Detailed Explanation\n   • Photos (required)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Returns"],
             ["How do I create an account?", "Creating an account is quick:\n\n1. Go to the Register page\n2. Enter your full name, email address, phone, and a password\n3. Confirm your password and submit the form\n\nOnce done, you can browse products, place orders, and track deliveries.", "Account"],
+# REMOVED FRESHNESS ENTRY
             ["What does the freshness guarantee cover?", "Our freshness guarantee covers wilted or damaged lettuce, wrong varieties, missing items, and quality below our standards. Submit a request with photos within 24 hours of delivery for a free replacement or refund.", "Freshness"],
             ["How does delivery work in my area?", "FREE delivery within Nostalji Subdivision. For outside areas, a delivery fee is automatically calculated. Same-day delivery for orders before 2 PM. Same-day pick-up always available — ready 1-3 hours after confirmation.", "Delivery"],
         ];

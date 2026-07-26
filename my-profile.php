@@ -13,7 +13,7 @@ $uid = $_SESSION['user_id'];
 $section = $_GET['section'] ?? 'overview';
 
 $orderStats = [];
-foreach (['pending','payment_confirmed','harvest_queue','harvesting','quality_check','packing','ready_pickup','out_delivery','delivered','completed','cancelled'] as $s) {
+foreach (['preparing','ready','delivered','completed','cancelled'] as $s) {
     $st = $conn->prepare("SELECT COUNT(*) FROM orders WHERE user_id = ? AND status = ?");
     $st->execute([$uid, $s]); $orderStats[$s] = (int)$st->fetchColumn();
 }
@@ -66,13 +66,13 @@ if (isset($_GET['setdefault']) && ($sdid = (int)$_GET['setdefault'])) {
     header("Location: my-profile.php?section=addresses"); exit();
 }
 
-$coupons = $conn->query("SELECT * FROM promotions WHERE is_active = 1")->fetchAll(PDO::FETCH_ASSOC);
+$coupons = $conn->prepare("SELECT p.*, cc.claimed_at FROM promotions p INNER JOIN claimed_coupons cc ON p.id = cc.promotion_id WHERE cc.user_id = ? AND p.is_active = 1 ORDER BY cc.claimed_at DESC");
+$coupons->execute([$uid]); 
+$coupons = $coupons->fetchAll(PDO::FETCH_ASSOC);
 
 $statusLabels = [
-    'pending'=>'Order Received','payment_confirmed'=>'Payment Confirmed','harvest_queue'=>'Harvest Queue',
-    'harvesting'=>'Harvesting','quality_check'=>'Quality Check','packing'=>'Packing',
-    'ready_pickup'=>'Ready for Pick-Up','out_delivery'=>'Out for Delivery',
-    'delivered'=>'Delivered','completed'=>'Completed','cancelled'=>'Cancelled'
+    'preparing'=>'🌱 Preparing Order','ready'=>'Ready',
+    'delivered'=>'Delivered/Picked Up','completed'=>'🎉 Completed','cancelled'=>'❌ Cancelled'
 ];
 ?>
 <!DOCTYPE html>
@@ -99,7 +99,7 @@ $statusLabels = [
 
   <?php if ($section === 'overview'): ?>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
-      <?php foreach ([['Total Orders',$totalOrders,'text-[#17611f]'],['Pending',$orderStats['pending']+$orderStats['payment_confirmed'],'text-amber-600'],['Harvesting',$orderStats['harvest_queue']+$orderStats['harvesting'],'text-[#17611f]'],['Packing',$orderStats['packing']+$orderStats['quality_check'],'text-blue-600'],['Out for Delivery',$orderStats['out_delivery'],'text-green-600'],['Completed',$orderStats['completed']+$orderStats['delivered'],'text-[#17611f]']] as $c):?>
+      <?php foreach ([['Total Orders',$totalOrders,'text-[#17611f]'],['Preparing',$orderStats['preparing'],'text-amber-600'],['Ready',$orderStats['ready'],'text-[#17611f]'],['Delivered',$orderStats['delivered'],'text-green-600'],['Completed',$orderStats['completed'],'text-[#17611f]'],['Cancelled',$orderStats['cancelled'],'text-red-600']] as $c):?>
         <div class="bg-white rounded-xl border p-4"><p class="text-2xl font-black <?=$c[2]?>"><?=$c[1]?></p><p class="text-xs text-[#5a7a5c] font-bold mt-1"><?=$c[0]?></p></div>
       <?php endforeach;?>
     </div>
@@ -122,7 +122,7 @@ $statusLabels = [
 
   <?php elseif ($section === 'orders'): ?>
     <div class="flex flex-wrap gap-1.5 mb-4">
-      <?php foreach (['active'=>'Active','pending'=>'To Pay','out_delivery'=>'Out for Delivery','completed'=>'Completed','ready_pickup'=>'Pick-Up'] as $k=>$l):?>
+      <?php foreach (['active'=>'Active','preparing'=>'Preparing','ready'=>'Ready','completed'=>'Completed'] as $k=>$l):?>
         <a href="?section=orders&otab=<?=$k?>" class="px-3 py-1.5 rounded-full text-xs font-bold <?=$orderTab===$k?'bg-[#17611f] text-white':'bg-white border text-[#5a7a5c]'?>"><?=$l?></a>
       <?php endforeach;?>
     </div>
@@ -158,10 +158,10 @@ $statusLabels = [
     </div>
 
   <?php elseif ($section === 'coupons'): ?>
-    <h2 class="font-black text-lg mb-4">Available Coupons</h2>
-    <?php if(empty($coupons)):?><p class="text-[#5a7a5c] text-sm">No coupons available right now.</p><?php else:?>
+    <h2 class="font-black text-lg mb-4">My Claimed Coupons</h2>
+    <?php if(empty($coupons)):?><p class="text-[#5a7a5c] text-sm">No coupons claimed yet. Visit the <a href="index.php" class="text-[#17611f] font-bold hover:underline">homepage</a> to claim available coupons.</p><?php else:?>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"><?php foreach($coupons as $c):?>
-      <div class="bg-white rounded-xl border p-5"><p class="font-black text-lg text-[#17611f]"><?=htmlspecialchars($c['code'])?></p><p class="text-sm text-[#5a7a5c] mt-1"><?=htmlspecialchars($c['description'])?></p><p class="text-xs text-[#9e9e9e] mt-2"><?=$c['discount_type']==='percentage'?$c['discount_value'].'% off':'P'.number_format($c['discount_value'],2).' off'?><?=$c['is_free_delivery']?' + Free Delivery':''?><?=$c['min_order']>0?' (min P'.number_format($c['min_order'],2).')':''?></p></div>
+      <div class="bg-white rounded-xl border p-5"><p class="font-black text-lg text-[#17611f]"><?=htmlspecialchars($c['code'])?></p><p class="text-sm text-[#5a7a5c] mt-1"><?=htmlspecialchars($c['description'])?></p><p class="text-xs text-[#9e9e9e] mt-2"><?=$c['discount_type']==='percentage'?$c['discount_value'].'% off':'P'.number_format($c['discount_value'],2).' off'?><?=$c['is_free_delivery']?' + Free Delivery':''?><?=$c['min_order']>0?' (min P'.number_format($c['min_order'],2).')':''?></p><p class="text-[10px] text-[#9e9e9e] mt-2">Claimed: <?=date('M j, Y',strtotime($c['claimed_at']))?></p></div>
     <?php endforeach;?></div><?php endif;?>
 
   <?php elseif ($section === 'support'): ?>
@@ -212,6 +212,5 @@ $statusLabels = [
     </div>
   <?php endif; ?>
 </main>
-<?php include __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

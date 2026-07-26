@@ -146,7 +146,7 @@ function faqCategoryClass(string $category, array $categoryColors): string
             <div class="max-w-xs">
               <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Category</label>
               <select name="category" class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors">
-                <?php foreach (['General', 'Warranty', 'Returns', 'Care', 'Shipping', 'Damaged', 'Billing'] as $cat): ?>
+                <?php foreach (['General', 'Products', 'Orders', 'Delivery', 'Returns', 'Care', 'Freshness', 'Account'] as $cat): ?>
                   <option value="<?= $cat ?>" <?= (($editingFaq['category'] ?? 'General') === $cat) ? 'selected' : '' ?>><?= $cat ?></option>
                 <?php endforeach; ?>
               </select>

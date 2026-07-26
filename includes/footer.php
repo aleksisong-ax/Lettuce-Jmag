@@ -34,8 +34,6 @@ if (!isset($baseUrl)) { $baseUrl = ''; }
         <p>📞 0998-572-1327</p>
         <a href="https://maps.app.goo.gl/mZ2NZzbCeGwh2M27A" target="_blank" rel="noopener noreferrer" class="block hover:text-white">📍 Nostalji Subd., Paliparan I, Dasmarinas, Cavite</a>
         <p>🕐 Open Everyday</p>
-        <p class="pt-2">🚚 Same-Day Delivery Available</p>
-        <p>🛍️ Same-Day Pick-Up Available</p>
       </div>
     </div>
   </div>

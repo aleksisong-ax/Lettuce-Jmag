@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = "Please fill in the order number, product name, purchase date, reason, explanation, and product condition.";
             $messageType = "error";
         } elseif (!isValidOrderNumber($order_number)) {
-            $message = "Format: LH-YYYYMMDD-XXXXXX (e.g. LH-20260726-A1B2C3)";
+            $message = "Format: LH-0000 (e.g. LH-0001)";
             $messageType = "error";
         } elseif (!in_array($reason_category, $reasons, true)) {
             $message = "Please choose a valid reason for return.";
@@ -386,13 +386,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <form class="space-y-5 mt-6" method="POST" enctype="multipart/form-data" novalidate id="returnForm">
           <div>
             <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Order Number</label>
-            <input type="text" name="order_number" required maxlength="20" pattern="LH-[A-Z0-9-]+" value="<?= htmlspecialchars($formData['order_number']) ?>" placeholder="LH-YYYYMMDD-XXXXXX" class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
-            <p class="mt-1.5 text-[12px] text-[#9e9e9e]">Format: LH-YYYYMMDD-XXXXXX (e.g. LH-20260726-A1B2C3)</p>
+            <input type="text" name="order_number" required maxlength="7" pattern="LH-[A-Z0-9-]+" value="<?= htmlspecialchars($formData['order_number']) ?>" placeholder="LH-0000" class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+            <p class="mt-1.5 text-[12px] text-[#9e9e9e]">Format: LH-0000 (e.g. LH-0001)</p>
           </div>
           
           <div>
             <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Product Name</label>
-            <input type="text" name="product_name" required value="<?= htmlspecialchars($formData['product_name']) ?>" placeholder="Oak Dining Table" class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+            <input type="text" name="product_name" required value="<?= htmlspecialchars($formData['product_name']) ?>" placeholder="e.g. Romaine Lettuce" class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
           </div>
           
           <div>

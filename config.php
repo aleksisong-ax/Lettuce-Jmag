@@ -16,4 +16,7 @@
 
 require_once __DIR__ . '/database/db.php';
 
+// Cart persistence helpers (sync session ↔ DB for logged-in users)
+require_once __DIR__ . '/includes/cart-helpers.php';
+
 // $conn (PDO) is now available to any file that does require 'config.php';

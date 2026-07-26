@@ -3,6 +3,9 @@ session_start();
 require 'config.php';
 $isLoggedIn = isset($_SESSION['user_id']);
 
+// If logged in and session cart is empty, try loading from DB
+if ($isLoggedIn && empty($_SESSION['cart'])) loadCartFromDb($conn);
+
 if (isset($_GET['clear']) && $_GET['clear'] === '1') {
     $_SESSION['cart'] = []; unset($_SESSION['selected_cart']);
     $_SESSION['cart_message'] = 'Cart cleared.';
@@ -47,6 +50,14 @@ if ($isFreeDeliveryZone) $deliveryFee = 0;
 if ($selectedCount === 0) $deliveryFee = 0;
 $total = max(0, $selectedSubtotal + $deliveryFee - $discount);
 $message = $_SESSION['cart_message'] ?? ''; unset($_SESSION['cart_message']);
+
+// Get claimed coupons for this customer
+$claimedCoupons = [];
+if ($isLoggedIn) {
+    $cc = $conn->prepare("SELECT p.* FROM promotions p INNER JOIN claimed_coupons cc ON p.id = cc.promotion_id WHERE cc.user_id = ? AND p.is_active = 1 AND (p.expires_at IS NULL OR p.expires_at >= CURDATE())");
+    $cc->execute([$_SESSION['user_id']]);
+    $claimedCoupons = $cc->fetchAll(PDO::FETCH_ASSOC);
+}
 ?><!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -74,22 +85,23 @@ $message = $_SESSION['cart_message'] ?? ''; unset($_SESSION['cart_message']);
     <label for="selectAll" class="font-bold text-sm cursor-pointer select-none">Select All (<?=count($cartItems)?> items)</label>
   </div>
   <?php foreach ($cartItems as $ci): ?>
-  <div class="bg-white rounded-xl border p-4 flex gap-4 items-start">
+  <div class="bg-white rounded-xl border p-4 flex gap-4 items-start" id="cart-item-<?=$ci['id']?>">
     <input type="checkbox" name="sel[]" value="<?=$ci['id']?>" <?=$ci['selected']?'checked':''?> onchange="recalc()" class="mt-1 w-4 h-4 accent-[#17611f] item-cb">
     <img src="<?=htmlspecialchars($ci['image']?:'images/lettuce/hero-farm.png')?>" class="w-20 h-20 rounded-lg object-cover" alt="">
     <div class="flex-1">
       <a href="product.php?slug=<?=urlencode($ci['slug'])?>" class="font-bold text-sm hover:text-[#17611f]"><?=htmlspecialchars($ci['name'])?></a>
       <p class="text-xs text-[#5a7a5c]">Harvest time: <?=htmlspecialchars($ci['harvest_time']?:'1-3 hours')?></p>
       <p class="font-black text-[#17611f] text-sm mt-1">P<?=number_format($ci['price'],2)?> each</p>
-      <div class="flex items-center gap-3 mt-2">
-        <form action="cart-actions.php" method="POST" class="inline-flex items-center gap-1" onsubmit="setTimeout(()=>location.reload(),200)">
-          <input type="hidden" name="action" value="update"><input type="hidden" name="id" value="<?=$ci['id']?>"><input type="hidden" name="redirect" value="cart">
-          <input type="number" name="qty" value="<?=$ci['qty']?>" min="1" max="<?=$ci['plants_available']?>" class="w-14 text-center text-sm font-bold border rounded-lg py-1 outline-none" onchange="this.form.submit()">
-        </form>
-        <a href="cart-actions.php?action=remove&id=<?=$ci['id']?>&redirect=cart" class="px-3 py-1 rounded-lg border border-red-200 text-xs font-bold text-red-500 hover:bg-red-50 transition-colors">Remove</a>
+      <div class="flex items-center gap-3 mt-2 flex-wrap">
+        <span class="inline-flex items-center border border-[rgba(27,94,32,0.12)] rounded-lg overflow-hidden">
+          <button type="button" class="px-3 py-1.5 font-black text-sm hover:bg-[#e8f5e9] text-[#5a7a5c] transition-colors" onclick="updateQty(<?=$ci['id']?>,-1)" <?=$ci['qty']<=1?'disabled':''?>>−</button>
+          <span class="px-3 py-1.5 text-sm font-bold" id="qty-<?=$ci['id']?>"><?=$ci['qty']?></span>
+          <button type="button" class="px-3 py-1.5 font-black text-sm hover:bg-[#e8f5e9] text-[#5a7a5c] transition-colors" onclick="updateQty(<?=$ci['id']?>,1)">+</button>
+        </span>
+        <button type="button" onclick="removeItem(<?=$ci['id']?>)" class="px-3 py-1 rounded-lg border border-red-200 text-xs font-bold text-red-500 hover:bg-red-50 transition-colors">Remove</button>
       </div>
     </div>
-    <p class="font-black text-[#17611f]">P<?=number_format($ci['line_total'],2)?></p>
+    <p class="font-black text-[#17611f]" id="line-<?=$ci['id']?>">P<?=number_format($ci['line_total'],2)?></p>
   </div>
   <?php endforeach; ?>
   <a href="?clear=1" onclick="return confirm('Clear all items?')" class="inline-flex items-center gap-1 px-4 py-2 rounded-xl border border-red-200 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors">Clear Cart</a>
@@ -102,16 +114,29 @@ $message = $_SESSION['cart_message'] ?? ''; unset($_SESSION['cart_message']);
     <div class="flex justify-between"><span class="text-[#5a7a5c]">Subtotal</span><span class="font-bold" id="subtotalDisplay">P<?=number_format($selectedSubtotal,2)?></span></div>
     <div class="flex justify-between"><span class="text-[#5a7a5c]">Delivery Fee</span><span class="font-bold <?=$deliveryFee==0?'text-green-600':''?>" id="delFeeDisplay"><?=$deliveryFee==0?'FREE':'P'.number_format($deliveryFee,2)?></span></div>
     <?php if($isFreeDeliveryZone && $deliveryFee==0):?><p class="text-xs text-green-600">Free delivery - Nostalji Subdivision</p><?php endif;?>
-    <?php if($discount>0):?><div class="flex justify-between"><span class="text-[#5a7a5c]">Discount</span><span class="font-bold text-red-500">-P<?=number_format($discount,2)?></span></div><?php endif;?>
+    <div class="flex justify-between" id="discRow" <?=$promo?'':'style="display:none"'?>><span class="text-[#5a7a5c]">Discount</span><span class="font-bold text-red-500" id="discDisplay"><?=$promo?'-P'.number_format($discount,2):''?></span></div>
   </div>
   <div class="flex justify-between font-black text-lg border-t pt-3 mb-4"><span>Total</span><span class="text-[#17611f]" id="totalDisplay">P<?=number_format($total,2)?></span></div>
-  <details class="mb-4"><summary class="text-sm font-bold text-[#17611f] cursor-pointer hover:underline">Add Promo Code</summary>
-    <form action="cart-actions.php" method="POST" class="flex gap-2 mt-2">
-      <input type="hidden" name="action" value="apply_promo"><input type="hidden" name="redirect" value="cart">
-      <input type="text" name="promo_code" placeholder="Enter code" class="flex-1 border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40">
-      <button class="px-4 py-2 rounded-xl bg-[#17611f] text-white text-sm font-bold hover:bg-[#14521a]">Apply</button>
-    </form>
-    <?php if($promo):?><p class="text-xs text-green-600 mt-1"><?=htmlspecialchars($promo['code'])?> applied</p><?php endif;?>
+
+  <!-- Coupons: claimed + manual -->
+  <details class="mb-4"><summary class="text-sm font-bold text-[#17611f] cursor-pointer hover:underline">Apply Coupon</summary>
+    <?php if (!empty($claimedCoupons)): ?>
+      <p class="text-xs text-[#9e9e9e] mt-2 mb-1">Your claimed coupons:</p>
+      <div class="space-y-1 mb-2">
+        <?php foreach ($claimedCoupons as $cc):
+          $label = $cc['discount_type']==='percentage' ? $cc['discount_value'].'% Off' : 'P'.$cc['discount_value'].' Off';
+          if ($cc['is_free_delivery']) $label .= ' + Free Delivery';
+          $active = $promo && $promo['code'] === $cc['code'];
+        ?>
+          <button type="button" onclick="applyCoupon('<?=htmlspecialchars($cc['code'])?>')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold border <?=$active?'bg-[#e8f5e9] border-[#17611f] text-[#17611f]':'border-[rgba(27,94,32,0.12)] hover:bg-[#e8f5e9] text-[#5a7a5c]'?>">
+            <span><?=htmlspecialchars($cc['code'])?> — <?=$label?></span>
+            <?php if ($active): ?><span class="text-[#17611f]">✓</span><?php endif; ?>
+          </button>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+    <?php if (empty($claimedCoupons)): ?><p class="text-xs text-[#9e9e9e] mt-2">No claimed coupons available.</p><?php endif; ?>
+    <?php if($promo):?><p class="text-xs text-green-600 mt-1" id="promoLabel"><?=htmlspecialchars($promo['code'])?> applied</p><?php endif;?>
   </details>
   <?php if ($isLoggedIn): ?><button type="submit" class="w-full py-3 rounded-xl bg-[#17611f] text-white font-bold hover:bg-[#14521a]">Proceed to Checkout</button>
   <?php else: ?><a href="login.php" class="block text-center w-full py-3 rounded-xl bg-[#17611f] text-white font-bold hover:bg-[#14521a]">Login to Checkout</a><p class="text-xs text-center mt-2 text-[#9e9e9e]">You need an account to complete your order</p><?php endif; ?>
@@ -126,12 +151,16 @@ $message = $_SESSION['cart_message'] ?? ''; unset($_SESSION['cart_message']);
 const items = <?=json_encode(array_map(function($c){return['id'=>(int)$c['id'],'price'=>(float)$c['price'],'qty'=>(int)$c['qty']];},$cartItems))?>;
 const cbs = document.querySelectorAll('.item-cb');
 const selectAllCb = document.getElementById('selectAll');
+let currentPromo = <?= $promo ? json_encode(['code'=>$promo['code'],'discount_type'=>$promo['discount_type'],'discount_value'=>(float)$promo['discount_value'],'is_free_delivery'=>(bool)$promo['is_free_delivery']]) : 'null' ?>;
+let currentDiscount = <?= $discount ?>;
 
 function recalc(){
   let st=0, cnt=0;
   cbs.forEach(cb=>{if(cb.checked){let id=parseInt(cb.value);let it=items.find(i=>i.id===id);if(it){st+=it.price*it.qty;cnt++;}}});
-  let df=<?=$isFreeDeliveryZone?1:0?>?0:(cnt===0?0:<?=$deliveryFee?>);
-  let d=<?=$promo?$discount:0?>;
+  let df=<?=$isFreeDeliveryZone?1:0?>?0:(cnt===0?0:50);
+  if(currentPromo && currentPromo.is_free_delivery) df=0;
+  let d=0;
+  if(currentPromo){d=currentPromo.discount_type==='percentage'?st*(currentPromo.discount_value/100):currentPromo.discount_value;}
   if(cnt===0) df=0;
   let tot=Math.max(0,st+df-d);
   document.getElementById('selCount').textContent=cnt;
@@ -139,14 +168,58 @@ function recalc(){
   document.getElementById('delFeeDisplay').textContent=df===0?'FREE':'P'+df.toFixed(2);
   document.getElementById('delFeeDisplay').className='font-bold '+(df===0?'text-green-600':'');
   document.getElementById('totalDisplay').textContent='P'+tot.toFixed(2);
-  // Sync selectAll
+  let dr=document.getElementById('discRow'), dd=document.getElementById('discDisplay');
+  if(currentPromo){dr.style.display='';dd.textContent='-P'+d.toFixed(2);}else{dr.style.display='none';}
   if(selectAllCb) selectAllCb.checked = cnt === cbs.length && cbs.length > 0;
 }
-function toggleAll(el){
-  cbs.forEach(cb=>cb.checked=el.checked);
-  recalc();
+function toggleAll(el){cbs.forEach(cb=>cb.checked=el.checked);recalc();}
+
+// AJAX quantity update
+async function updateQty(id,delta){
+  let it=items.find(i=>i.id===id);if(!it)return;
+  let newQty=it.qty+delta;if(newQty<1)return;
+  try{
+    let r=await fetch('cart-actions-ajax.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update',id:id,qty:newQty})});
+    let d=await r.json();
+    if(d.success){it.qty=d.qty;document.getElementById('qty-'+id).textContent=d.qty;document.getElementById('line-'+id).textContent='P'+d.line_total;recalc();}
+  }catch(e){}
 }
-// Initial state
+
+// AJAX remove item
+async function removeItem(id){
+  if(!confirm('Remove this item?'))return;
+  try{
+    let r=await fetch('cart-actions-ajax.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'remove',id:id})});
+    let d=await r.json();
+    if(d.success){document.getElementById('cart-item-'+id).remove();items=items.filter(i=>i.id!==id);recalc();if(items.length===0)location.reload();}
+  }catch(e){}
+}
+
+// Select claimed coupon — toggle on/off, no page reload
+async function applyCoupon(code){
+  try{
+    // If already applied, remove it
+    if(currentPromo && currentPromo.code === code){
+      let r=await fetch('cart-actions-ajax.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'remove_promo'})});
+      let d=await r.json();
+      if(d.success){currentPromo=null;recalc();document.getElementById('promoLabel').style.display='none';
+        document.querySelectorAll('details button[onclick^="applyCoupon"]').forEach(b=>{b.classList.remove('bg-[#e8f5e9]','border-[#17611f]','text-[#17611f]');b.classList.add('border-[rgba(27,94,32,0.12)]','text-[#5a7a5c]');});
+      }
+      return;
+    }
+    let r=await fetch('cart-actions-ajax.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'select_promo',promo_code:code})});
+    let d=await r.json();
+    if(d.success){
+      currentPromo=d.promo;
+      recalc();
+      document.getElementById('promoLabel').textContent=d.promo.code+' applied';
+      document.getElementById('promoLabel').style.display='';
+      document.querySelectorAll('details button[onclick^="applyCoupon"]').forEach(b=>{b.classList.remove('bg-[#e8f5e9]','border-[#17611f]','text-[#17611f]');b.classList.add('border-[rgba(27,94,32,0.12)]','text-[#5a7a5c]');});
+    } else { alert(d.message||'Could not apply coupon'); }
+  }catch(e){}
+}
+
+// Initial
 if(selectAllCb) selectAllCb.checked = <?=$allSelected?'true':'false'?>;
 </script>
 

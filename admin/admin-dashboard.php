@@ -10,11 +10,11 @@ $totalCust = $conn->query("SELECT COUNT(*) FROM users")->fetchColumn();
 $newCustToday = $conn->query("SELECT COUNT(*) FROM users WHERE DATE(created_at)=CURDATE()")->fetchColumn();
 $openTickets = $conn->query("SELECT COUNT(*) FROM tickets WHERE status='open'")->fetchColumn();
 $pendingReturns = $conn->query("SELECT COUNT(*) FROM return_requests WHERE status='pending'")->fetchColumn();
-$harvestQueue = $conn->query("SELECT COUNT(*) FROM orders WHERE status IN ('harvest_queue','harvesting')")->fetchColumn();
-$pendingOrders = $conn->query("SELECT COUNT(*) FROM orders WHERE status IN ('pending','payment_confirmed')")->fetchColumn();
-$packingOrders = $conn->query("SELECT COUNT(*) FROM orders WHERE status IN ('quality_check','packing')")->fetchColumn();
-$outDelivery = $conn->query("SELECT COUNT(*) FROM orders WHERE status = 'out_delivery'")->fetchColumn();
-$readyPickup = $conn->query("SELECT COUNT(*) FROM orders WHERE status = 'ready_pickup'")->fetchColumn();
+$preparingCount = $conn->query("SELECT COUNT(*) FROM orders WHERE status = 'preparing'")->fetchColumn();
+$readyCount = $conn->query("SELECT COUNT(*) FROM orders WHERE status = 'ready'")->fetchColumn();
+$deliveredCount = $conn->query("SELECT COUNT(*) FROM orders WHERE status = 'delivered'")->fetchColumn();
+$completedCount = $conn->query("SELECT COUNT(*) FROM orders WHERE status = 'completed'")->fetchColumn();
+$cancelledCount = $conn->query("SELECT COUNT(*) FROM orders WHERE status = 'cancelled'")->fetchColumn();
 $deliveryCount = $conn->query("SELECT COUNT(*) FROM orders WHERE delivery_method='delivery' AND status NOT IN ('cancelled')")->fetchColumn();
 $pickupCount = $conn->query("SELECT COUNT(*) FROM orders WHERE delivery_method='pickup' AND status NOT IN ('cancelled')")->fetchColumn();
 $freeDeliveryCount = $conn->query("SELECT COUNT(*) FROM orders WHERE is_free_delivery=1 AND delivery_method='delivery' AND status NOT IN ('cancelled')")->fetchColumn();
@@ -50,11 +50,11 @@ $freeDeliveryCount = $conn->query("SELECT COUNT(*) FROM orders WHERE is_free_del
     <div class="bg-white rounded-xl border border-[rgba(27,94,32,0.08)] p-5">
       <h2 class="font-black text-sm mb-3">Operations</h2>
       <div class="space-y-2">
-        <div class="flex justify-between text-sm"><span>Pending Orders</span><span class="font-bold text-amber-600"><?=$pendingOrders?></span></div>
-        <div class="flex justify-between text-sm"><span>Harvest Queue</span><span class="font-bold text-[#17611f]"><?=$harvestQueue?></span></div>
-        <div class="flex justify-between text-sm"><span>Packing</span><span class="font-bold text-blue-600"><?=$packingOrders?></span></div>
-        <div class="flex justify-between text-sm"><span>Out for Delivery</span><span class="font-bold text-green-600"><?=$outDelivery?></span></div>
-        <div class="flex justify-between text-sm"><span>Ready Pick-Up</span><span class="font-bold text-purple-600"><?=$readyPickup?></span></div>
+        <div class="flex justify-between text-sm"><span>Preparing</span><span class="font-bold text-amber-600"><?=$preparingCount?></span></div>
+        <div class="flex justify-between text-sm"><span>Ready</span><span class="font-bold text-[#17611f]"><?=$readyCount?></span></div>
+        <div class="flex justify-between text-sm"><span>Delivered</span><span class="font-bold text-green-600"><?=$deliveredCount?></span></div>
+        <div class="flex justify-between text-sm"><span>Completed</span><span class="font-bold text-blue-600"><?=$completedCount?></span></div>
+        <div class="flex justify-between text-sm"><span>Cancelled</span><span class="font-bold text-red-600"><?=$cancelledCount?></span></div>
       </div>
     </div>
 

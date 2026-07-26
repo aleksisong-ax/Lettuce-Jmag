@@ -24,7 +24,7 @@ return [
         'delivery'=>'delivery_info','payment'=>'payment_info','pickup'=>'pickup_info',
         'account'=>'account_overview','password'=>'forgot_password','login'=>'login_help',
         'register'=>'create_account','profile'=>'edit_profile',
-        'fresh'=>'freshness_info','storage'=>'storage_info','shelf life'=>'shelf_life_info',
+
     ],
     'referential_pronouns' => ['it','this','that','they','them','those','these'],
     'greetings' => ['hi','hello','hey','good morning','good afternoon','greetings','sup','yo'],
@@ -39,7 +39,7 @@ return [
     'contextual_word_aliases' => [
         'return' => ['processing time'=>'return_processing','how long'=>'return_processing','replacement'=>'replacement_info'],
         'delivery' => ['delivery time'=>'delivery_time','fees'=>'delivery_fee','track order'=>'track_delivery'],
-        'freshness' => ['storage'=>'storage_info','shelf life'=>'shelf_life_info','refrigerator'=>'storage_info'],
+
     ],
     'fallback_responses' => [
         "I'm not sure I understand. Could you rephrase? You can ask about products, orders, delivery, storage, or account help.",
@@ -60,9 +60,9 @@ return [
             'action'=>"To submit: Log into your account, go to Customer Dashboard > Returns & Refunds. Provide your order number, product name, description, and photos.",
             'link'=>'returns-refund.php',
         ],
-        'freshness' => [
-            'label'=>'Freshness Guarantee','domain'=>'freshness',
-            'keywords'=>['freshness','quality','wilted','not fresh','quality issue','how fresh'],
+
+
+
             'explain'=>"We guarantee your lettuce arrives fresh and crisp. If there's a quality issue, we'll replace it free within 24 hours of delivery.",
             'action'=>"Contact us with your order number and photos of the issue. We'll review and resolve within 1-2 business days.",
             'link'=>'contact-support.php',
@@ -101,9 +101,9 @@ return [
         ['id'=>'mixed_info','group'=>'category','display'=>'Mixed Greens','keywords'=>['mixed greens','salad mix','garden salad','tell me about mixed'],'answer'=>"Mixed Greens Cup (P60) combines Butterhead, Lollo Rossa, and Romaine. Garden Salad Mix (P65) combines Batavia, Estrosa, and Red Leaf. Both harvested on demand."],
         ['id'=>'wholesale_info','group'=>'category','display'=>'Wholesale','keywords'=>['wholesale','bulk','restaurant','large order','reseller'],'answer'=>"We offer wholesale: Restaurant Pack (10 cups, P380), Wholesale Tray (20 cups, P700), and Wholesale Box (50 cups, P1650). Perfect for restaurants, canteens, and events."],
         ['id'=>'bundle_info','group'=>'category','display'=>'Bundles','keywords'=>['bundle','family bundle','weekend bundle','starter bundle','caesar bundle','bundle options'],'answer'=>"Bundles: Family Bundle (4 cups + dressing, P180), Weekend Bundle (6 cups + dressing + wrap kit, P260), Healthy Starter Bundle (P160), Caesar Salad Bundle (P170). All harvested on demand."],
-        ['id'=>'freshness_info','domain'=>'freshness','keywords'=>['how fresh','freshness guarantee','quality','is the lettuce fresh','freshness'],'answer'=>"Our lettuce is harvested only after you order — it stays growing until your order is confirmed. We cut, quality-check, and deliver same day. This gives you 5-7 days of freshness refrigerated, far longer than supermarket lettuce that was cut days ago."],
-        ['id'=>'storage_info','domain'=>'freshness','keywords'=>['storage','how to store','keep fresh','refrigerate','store lettuce'],'answer'=>"Refrigerate immediately at 2-4C. Do not wash until ready to use. Keep in sealed container in crisper drawer. Store away from apples and bananas (ethylene). Whole heads last 5-7 days; cut leaves best consumed immediately."],
-        ['id'=>'shelf_life_info','domain'=>'freshness','keywords'=>['shelf life','how long does it last','expire'],'answer'=>"Whole heads: 5-7 days refrigerated, 1-2 days room temp. Cut leaves/salad mix: best consumed immediately, less than 24 hours room temp."],
+
+
+
         ['id'=>'delivery_info','domain'=>'delivery','keywords'=>['delivery','delivery fee','how much delivery','shipping','shipping and delivery','delivery options'],'answer'=>"FREE delivery within Nostalji Subdivision. P50 delivery fee for outside areas (automatically calculated). Same-day delivery for orders before 2 PM. Same-day pick-up always available — ready 1-3 hours after order confirmation."],
         ['id'=>'delivery_time','domain'=>'delivery','keywords'=>['delivery time','when will it arrive','shipping time','how long does shipping take'],'answer'=>"Same-day delivery for orders before 2 PM. Orders after 2 PM delivered next morning. Pick-up ready within 1-3 hours after confirmation. Delivery hours: 6:00 AM-8:00 PM daily."],
         ['id'=>'pickup_info','keywords'=>['pick up','pickup','pick-up','collect'],'answer'=>"Same-day pick-up is free and available everyday. Your order is ready 1-3 hours after confirmation. Pick up at Nostalji Subd., Paliparan I, Dasmarinas, Cavite."],
@@ -126,7 +126,7 @@ return [
         ['keywords'=>['best seller','popular','customer favorite'],'answer'=>"Best sellers: Weekend Bundle (P260), Romaine Lettuce (P45), Batavia Lettuce (P40), Bianca Lettuce (P45), Garden Salad Mix (P65), Romaine Family Pack (P160)."],
         ['keywords'=>['faq','common questions','general question','i have a question'],'answer'=>"Common questions: How fresh is the lettuce? What varieties do you have? How do I place an order? How does delivery work? What is harvest-on-demand? How should I store my lettuce?"],
         ['keywords'=>['hydroponic','how is it grown','growing method','farming','how is the lettuce grown'],'answer'=>"Hydroponics means growing in nutrient-rich water without soil. Benefits: 90% less water, no pesticides, year-round growing, cleaner produce. Our lettuce is chemical-free and harvested on demand."],
-        ['keywords'=>['harvest on demand','harvest-on-demand','what is harvest on demand','how does harvest-on-demand work'],'answer'=>"Harvest-on-demand means lettuce stays growing in our hydroponic system until you order. We only harvest after your order confirmation — usually 1-3 hours before delivery. This gives maximum freshness and zero food waste."],
+
         ['keywords'=>['availability','what is available','what lettuce is available','in stock'],'answer'=>"All our varieties are available while supplies last. Each product page shows current plant availability. Check the Products page for live availability. Popular items: Romaine (150 plants), Batavia (110), Bianca (80)."],
         ['keywords'=>['contact support','how do i contact','contact you','phone','email address'],'answer'=>"Contact us at 0998-572-1327 (Mon-Sat, 8AM-6PM) or support@luntianghapag.com. Visit our farm at Nostalji Subd., Paliparan I, Dasmarinas, Cavite. Open everyday!"],
         ['keywords'=>['submit a ticket','how do i submit a ticket','ticket','support ticket'],'answer'=>"To submit a support ticket: Log in, go to Dashboard > Support > Submit Ticket. Provide a subject, category, description, and order number if applicable. Our team will respond within 1-2 business days."],

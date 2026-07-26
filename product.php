@@ -36,6 +36,14 @@ $availLabel = $available > 50 ? 'In Stock' : ($available > 20 ? 'In Stock' : ($a
 $availColor = $available > 20 ? 'text-green-600' : ($available > 0 ? 'text-amber-600' : 'text-red-600');
 
 $isLoggedIn = isset($_SESSION['user_id']);
+
+// Check if user has at least one completed/delivered order to be eligible to review
+$canReview = false;
+if ($isLoggedIn) {
+    $orderCheck = $conn->prepare("SELECT COUNT(*) FROM orders WHERE user_id = ? AND status IN ('completed','delivered','preparing','ready')");
+    $orderCheck->execute([$_SESSION['user_id']]);
+    $canReview = $orderCheck->fetchColumn() > 0;
+}
 ?>
 
 <!DOCTYPE html>
@@ -111,22 +119,19 @@ $isLoggedIn = isset($_SESSION['user_id']);
       <!-- Action Buttons -->
       <div class="flex items-center gap-3 mb-5">
         <?php if ($isLoggedIn && $available > 0): ?>
-          <form action="cart-actions.php" method="POST" class="flex items-center gap-3 flex-1">
-            <input type="hidden" name="action" value="add">
-            <input type="hidden" name="id" value="<?= $product['id'] ?>">
-            <input type="hidden" name="redirect" value="">
+          <div class="flex items-center gap-3 flex-1">
             <div class="flex items-center border border-[rgba(27,94,32,0.12)] rounded-xl overflow-hidden">
-              <button type="button" onclick="this.nextElementSibling.stepDown()" class="px-3 py-2.5 font-black hover:bg-[#e8f5e9]">−</button>
-              <input type="number" name="qty" value="1" min="1" max="<?= $available ?>" class="w-14 text-center font-bold text-sm border-x border-[rgba(27,94,32,0.12)] py-2.5 outline-none" />
-              <button type="button" onclick="this.previousElementSibling.stepUp()" class="px-3 py-2.5 font-black hover:bg-[#e8f5e9]">+</button>
+              <button type="button" onclick="let n=this.nextElementSibling;n.value=Math.max(1,parseInt(n.value)-1)" class="px-3 py-2.5 font-black hover:bg-[#e8f5e9]">−</button>
+              <input type="number" id="productQty" value="1" min="1" max="<?= $available ?>" class="w-14 text-center font-bold text-sm border-x border-[rgba(27,94,32,0.12)] py-2.5 outline-none" readonly onkeydown="return false" />
+              <button type="button" onclick="let n=this.previousElementSibling;n.value=Math.min(<?=$available?>,parseInt(n.value)+1)" class="px-3 py-2.5 font-black hover:bg-[#e8f5e9]">+</button>
             </div>
-            <button type="submit" class="btn-green btn-primary flex-1">🛒 Add to Cart</button>
-          </form>
+            <button type="button" onclick="addToCart(<?= $product['id'] ?>, parseInt(document.getElementById('productQty').value))" class="btn-green btn-primary flex-1">🛒 Add to Cart</button>
+          </div>
           <a href="cart-actions.php?action=buy_now&id=<?= $product['id'] ?>" class="btn-green btn-buy px-6">⚡ Buy Now</a>
         <?php elseif ($available < 1): ?>
           <button disabled class="btn-green w-full opacity-50 cursor-not-allowed">Temporarily Unavailable</button>
         <?php else: ?>
-          <a href="cart-actions.php?action=add&id=<?= $product['id'] ?>" class="btn-green btn-primary flex-1">🛒 Add to Cart</a>
+          <a href="javascript:void(0)" onclick="addToCart(<?= $product['id'] ?>,parseInt(document.getElementById('productQty').value||1))" class="btn-green btn-primary flex-1">🛒 Add to Cart</a>
           <a href="login.php" class="btn-green btn-buy">⚡ Buy Now</a>
         <?php endif; ?>
       </div>
@@ -200,13 +205,13 @@ $isLoggedIn = isset($_SESSION['user_id']);
           </div>
         <?php endif; ?>
       </div>
-      <?php if ($isLoggedIn): ?>
+      <?php if ($canReview): ?>
         <button onclick="document.getElementById('reviewForm').classList.toggle('hidden')" class="btn-green btn-outline text-sm">✍️ Write a Review</button>
       <?php endif; ?>
     </div>
 
     <!-- Review Form -->
-    <?php if ($isLoggedIn): ?>
+    <?php if ($canReview): ?>
     <div id="reviewForm" class="hidden bg-white rounded-xl border border-[rgba(27,94,32,0.08)] p-5 mb-4">
       <form method="POST" action="review-actions.php" enctype="multipart/form-data" class="space-y-3">
         <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
@@ -309,6 +314,12 @@ $isLoggedIn = isset($_SESSION['user_id']);
 
 <script>
 document.querySelectorAll('.star-btn').forEach(b=>{b.addEventListener('click',()=>{const v=parseInt(b.dataset.star);document.getElementById('ratingInput').value=v;document.querySelectorAll('.star-btn').forEach((s,i)=>{s.classList.toggle('text-amber-400',i<v);s.classList.toggle('text-gray-300',i>=v);});});});
+
+// AJAX Add to Cart
+var _cartToast=document.createElement('div');_cartToast.id='cartToast';_cartToast.className='fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-lg text-sm font-bold transition-all duration-300 translate-x-[120%] opacity-0 pointer-events-none';document.body.appendChild(_cartToast);
+function showToast(msg,ok){_cartToast.textContent=msg;_cartToast.className='fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-lg text-sm font-bold transition-all duration-300 '+(ok?'bg-[#e8f5e9] text-[#17611f] border border-[#c8e6c9]':'bg-red-50 text-red-700 border border-red-100');_cartToast.classList.remove('translate-x-[120%]','opacity-0');_cartToast.classList.add('translate-x-0','opacity-100');clearTimeout(_cartToast._t);_cartToast._t=setTimeout(function(){_cartToast.classList.add('translate-x-[120%]','opacity-0');},3000);}
+function updateCartCount(count){var b=document.querySelector('a[href$="cart.php"] span');if(count>0){if(b){b.textContent=count}else{var a=document.querySelector('a[href$="cart.php"]');if(a){var s=document.createElement('span');s.className='absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#17611f] text-white text-[10px] font-bold flex items-center justify-center';s.textContent=count;a.appendChild(s)}}}else{if(b)b.remove()}}
+async function addToCart(id,qty){qty=qty||1;try{var r=await fetch('cart-actions-ajax.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',id:id,qty:qty})});var d=await r.json();showToast(d.message,d.success);if(d.success)updateCartCount(d.count)}catch(e){showToast('Network error',false)}}
 </script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

@@ -16,10 +16,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $last_name = trim($_POST['last_name']);
     $email = trim($_POST['email']);
     $phone = trim($_POST['phone']);
-    $address = trim($_POST['address']);
+    $street = trim($_POST['street']);
+    $city = trim($_POST['city']);
+    $province = trim($_POST['province']);
+    $zip = trim($_POST['zip']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $accept_terms = isset($_POST['accept_terms']) ? true : false;
+
+    // Combine address for backward compatibility
+    $address = $street . ', ' . $city . ', ' . $province . ' ' . $zip;
 
     // Empty fields
     if (
@@ -27,7 +33,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         empty($last_name) ||
         empty($email) ||
         empty($phone) ||
-        empty($address) ||
+        empty($street) ||
+        empty($city) ||
+        empty($province) ||
+        empty($zip) ||
         empty($password) ||
         empty($confirm_password)
     ) {
@@ -39,8 +48,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = "Please enter a valid email address.";
         $messageType = "error";
+    } elseif (!preg_match('/^[A-Za-z\s\-\.]{1,50}$/', $first_name)) {
+        $message = "First name must contain letters only (spaces and hyphens allowed).";
+        $messageType = "error";
+    } elseif (!preg_match('/^[A-Za-z\s\-\.]{1,50}$/', $last_name)) {
+        $message = "Last name must contain letters only (spaces and hyphens allowed).";
+        $messageType = "error";
     } elseif (!preg_match('/^\d{11}$/', $phone)) {
         $message = "Please enter a valid 11-digit phone number using numbers only.";
+        $messageType = "error";
+    } elseif (!preg_match('/^\d{4}$/', $zip)) {
+        $message = "Please enter a valid 4-digit ZIP Code.";
         $messageType = "error";
     } elseif ($password !== $confirm_password) {
         $message = "Passwords do not match.";
@@ -57,6 +75,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $message = "An account with this email already exists. Please sign in or use another email.";
                 $messageType = "error";
             } else {
+                // Check duplicate phone
+                $phoneCheck = $conn->prepare("SELECT id FROM users WHERE phone = ?");
+                $phoneCheck->execute([$phone]);
+                if ($phoneCheck->rowCount() > 0) {
+                    $message = "This mobile number is already registered. Please use another number or sign in.";
+                    $messageType = "error";
+                } else {
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
                 $insert = $conn->prepare("
@@ -81,6 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $message = "Registration failed. Please try again.";
                     $messageType = "error";
                 }
+                } // end phone-check else
             }
         } catch (PDOException $e) {
             error_log("Registration error: " . $e->getMessage());
@@ -152,11 +178,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <div>
             <label for="first_name" class="block text-sm font-medium text-[#1a2e1c] mb-2">First Name</label>
             <input type="text" id="first_name" name="first_name" placeholder="First Name" required value="<?= htmlspecialchars($_POST['first_name'] ?? '') ?>"
+                   oninput="this.value = this.value.replace(/[^A-Za-z\s\-\.]/g, '')"
                    class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
           </div>
           <div>
             <label for="last_name" class="block text-sm font-medium text-[#1a2e1c] mb-2">Last Name</label>
             <input type="text" id="last_name" name="last_name" placeholder="Last Name" required value="<?= htmlspecialchars($_POST['last_name'] ?? '') ?>"
+                   oninput="this.value = this.value.replace(/[^A-Za-z\s\-\.]/g, '')"
                    class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
           </div>
         </div>
@@ -174,11 +202,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                  class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
         </div>
 
-        <div>
-          <label for="address" class="block text-sm font-medium text-[#1a2e1c] mb-2">Address</label>
-          <textarea id="address" name="address" rows="3" placeholder="Street, City, State, ZIP Code" required
-                    class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors resize-y"><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
-        </div>
+        <!-- Address Fields -->
+        <fieldset class="space-y-4">
+          <legend class="text-sm font-medium text-[#1a2e1c] mb-1">Address</legend>
+          <div>
+            <label for="street" class="block text-xs font-bold text-[#5a7a5c] mb-1">Street Address</label>
+            <input type="text" id="street" name="street" placeholder="House/Unit No., Street, Barangay" required value="<?= htmlspecialchars($_POST['street'] ?? '') ?>"
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="city" class="block text-xs font-bold text-[#5a7a5c] mb-1">City / Municipality</label>
+              <input type="text" id="city" name="city" placeholder="City or Municipality" required value="<?= htmlspecialchars($_POST['city'] ?? '') ?>"
+                     class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+            </div>
+            <div>
+              <label for="province" class="block text-xs font-bold text-[#5a7a5c] mb-1">Province</label>
+              <input type="text" id="province" name="province" placeholder="Province" required value="<?= htmlspecialchars($_POST['province'] ?? '') ?>"
+                     class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+            </div>
+          </div>
+          <div class="max-w-[200px]">
+            <label for="zip" class="block text-xs font-bold text-[#5a7a5c] mb-1">ZIP Code</label>
+            <input type="text" id="zip" name="zip" placeholder="4114" required minlength="4" maxlength="4" inputmode="numeric" pattern="\d{4}" value="<?= htmlspecialchars($_POST['zip'] ?? '') ?>"
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4)"
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+          </div>
+        </fieldset>
         
         <div>
           <label for="password" class="block text-sm font-medium text-[#1a2e1c] mb-2">Password</label>

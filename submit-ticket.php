@@ -401,7 +401,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div>
             <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Describe the Issue</label>
             <textarea id="issue_description" rows="4" name="issue_description" required maxlength="1000" 
-                      placeholder="Tell us what happened..." 
+                      placeholder="Describe your issue with your order or product..." 
                       class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors"><?= htmlspecialchars($formData['issue_description']) ?></textarea>
             <p class="mt-1.5 text-[12px] text-[#9e9e9e] text-right">
               <span id="issue_description_count"><?= mb_strlen($formData['issue_description']) ?></span> / 1000 characters

@@ -11,31 +11,35 @@ if (isset($_GET['registered'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+    $loginInput = trim($_POST['login'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    if (empty($email) || empty($password)) {
-        $message = "Please enter both your email address and password.";
+    if (empty($loginInput) || empty($password)) {
+        $message = "Please enter your email or mobile number and password.";
         $messageType = "error";
     } else {
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-
-        if ($stmt->rowCount() == 1) {
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['first_name'] = $user['first_name'];
-                $_SESSION['last_name'] = $user['last_name'];
-                $_SESSION['email'] = $user['email'];
-                header("Location: my-profile.php");
-                exit();
-            } else {
-                $message = "The password you entered is incorrect. Please try again.";
-                $messageType = "error";
-            }
+        // Detect if input is email or mobile
+        $isEmail = filter_var($loginInput, FILTER_VALIDATE_EMAIL);
+        if ($isEmail) {
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
         } else {
-            $message = "No account is registered with this email address.";
+            $stmt = $conn->prepare("SELECT * FROM users WHERE phone = ?");
+        }
+        $stmt->execute([$loginInput]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['first_name'] = $user['first_name'];
+            $_SESSION['last_name'] = $user['last_name'];
+            $_SESSION['email'] = $user['email'];
+            // Merge guest cart with persistent DB cart
+            $guestCart = $_SESSION['cart'] ?? [];
+            mergeGuestCartToDb($conn, $guestCart);
+            header("Location: my-profile.php");
+            exit();
+        } else {
+            $message = "Invalid email/mobile number or password.";
             $messageType = "error";
         }
     }
@@ -51,16 +55,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Nunito', sans-serif; }
-  </style>
+  <style>body{font-family:'Nunito',sans-serif}</style>
 </head>
 <body class="bg-[#f4faf5] text-[#1a2e1c] min-h-screen flex flex-col">
 
-  <!-- Header -->
   <?php include __DIR__ . '/includes/header.php'; ?>
 
-  <!-- Login Form -->
   <main class="flex-1 flex items-center justify-center px-6 py-16">
     <div class="w-full max-w-md bg-white rounded-2xl border border-[rgba(27,94,32,0.08)] shadow-sm p-9">
       <span class="inline-block text-[11px] font-semibold tracking-wide text-[#17611f] bg-[#e8f5e9] rounded-full px-3 py-1 mb-5">LOGIN</span>
@@ -83,16 +83,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           </div>
           <button type="button" onclick="closeAlert()" class="text-gray-400 hover:text-gray-700 transition">✕</button>
         </div>
-        <script>
-          function closeAlert(){const a=document.getElementById("alertMessage");if(a){a.classList.add("opacity-0","translate-y-2");setTimeout(()=>a.remove(),400);}}
-          setTimeout(closeAlert,5000);
-        </script>
+        <script>function closeAlert(){const a=document.getElementById("alertMessage");if(a){a.classList.add("opacity-0","translate-y-2");setTimeout(()=>a.remove(),400);}}setTimeout(closeAlert,5000);</script>
       <?php endif; ?>
 
       <form class="space-y-5" method="POST">
         <div>
-          <label for="email" class="block text-sm font-bold text-[#1a2e1c] mb-2">Email Address</label>
-          <input type="email" id="email" name="email" placeholder="your@email.com" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
+          <label for="login" class="block text-sm font-bold text-[#1a2e1c] mb-2">Email or Mobile Number</label>
+          <input type="text" id="login" name="login" placeholder="your@email.com or 09123456789" required value="<?= htmlspecialchars($_POST['login'] ?? '') ?>"
                  class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
         </div>
         <div>

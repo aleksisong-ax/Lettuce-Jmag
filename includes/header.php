@@ -26,7 +26,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
   <!-- Header -->
   <header class="bg-white border-b border-[rgba(27,94,32,0.12)] sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 h-[86px] flex items-center gap-4">
-      <a href="<?= $baseUrl ?><?= $isLoggedIn ? 'my-profile.php' : 'index.php' ?>" class="flex shrink-0 items-center gap-3">
+      <a href="<?= $baseUrl ?>index.php" class="flex shrink-0 items-center gap-3">
         <img src="<?= $baseUrl ?>images/lettuce/logo-cropped.png" alt="Luntiang H.A.P.A.G." class="h-[60px] w-auto object-contain">
       </a>
       <span class="hidden h-5 border-l border-[rgba(27,94,32,0.12)] lg:block"></span>

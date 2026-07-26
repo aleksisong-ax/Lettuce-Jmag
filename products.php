@@ -105,7 +105,7 @@ $baseQS = qs(['sort']);
     </div>
     <?php endif; ?>
     <div class="flex items-center justify-between mt-2 mb-1"><p class="font-black text-[#17611f]">P<?=number_format((float)$p['price'],2)?></p></div>
-    <a href="cart-actions.php?action=add&id=<?=$p['id']?>" class="block text-center text-xs font-bold py-1.5 rounded-lg bg-[#17611f] text-white hover:bg-[#14521a]">Add to Cart</a>
+    <a href="javascript:void(0)" onclick="addToCart(<?=$p['id']?>)" class="block text-center text-xs font-bold py-1.5 rounded-lg bg-[#17611f] text-white hover:bg-[#14521a] cursor-pointer">Add to Cart</a>
   </div>
 </article>
 <?php endforeach;?>
@@ -119,6 +119,26 @@ $baseQS = qs(['sort']);
   var sy = sessionStorage.getItem(key);
   if (sy) { window.scrollTo(0, parseInt(sy)); sessionStorage.removeItem(key); }
 })();
+
+// AJAX Add to Cart
+var toast=document.createElement('div');toast.id='cartToast';toast.className='fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-lg text-sm font-bold transition-all duration-300 translate-x-[120%] opacity-0 pointer-events-none';document.body.appendChild(toast);
+function showToast(msg,ok){toast.textContent=msg;toast.className='fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-lg text-sm font-bold transition-all duration-300 '+(ok?'bg-[#e8f5e9] text-[#17611f] border border-[#c8e6c9]':'bg-red-50 text-red-700 border border-red-100');toast.classList.remove('translate-x-[120%]','opacity-0');toast.classList.add('translate-x-0','opacity-100');clearTimeout(toast._t);toast._t=setTimeout(function(){toast.classList.add('translate-x-[120%]','opacity-0');},3000);}
+
+function updateCartCount(count){
+  var badge=document.querySelector('a[href$="cart.php"] span');
+  if(count>0){if(badge){badge.textContent=count}else{var a=document.querySelector('a[href$="cart.php"]');if(a){var s=document.createElement('span');s.className='absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#17611f] text-white text-[10px] font-bold flex items-center justify-center';s.textContent=count;a.appendChild(s)}}}
+  else{if(badge)badge.remove()}
+}
+
+async function addToCart(id,qty){
+  qty=qty||1;
+  try{
+    var r=await fetch('cart-actions-ajax.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',id:id,qty:qty})});
+    var d=await r.json();
+    showToast(d.message,d.success);
+    if(d.success)updateCartCount(d.count);
+  }catch(e){showToast('Network error',false);}
+}
 </script>
 <?php include __DIR__.'/includes/footer.php'; ?>
 </body>

@@ -15,20 +15,19 @@ $items = $conn->prepare("SELECT * FROM order_items WHERE order_id = ?");
 $items->execute([$order['id']]);
 $orderItems = $items->fetchAll(PDO::FETCH_ASSOC);
 
+$isPickup = $order['delivery_method'] === 'pickup';
 $flowSteps = [
-    ['label'=>'Order Received','icon'=>'1'],
-    ['label'=>'Payment Confirmed','icon'=>'2'],
-    ['label'=>'Harvest Queue','icon'=>'3'],
-    ['label'=>'Harvesting','icon'=>'4'],
-    ['label'=>'Packing','icon'=>'5'],
+    ['label'=>'🌱 Preparing Order','icon'=>'1'],
 ];
-if ($order['delivery_method'] === 'pickup') {
-    $flowSteps[] = ['label'=>'Ready for Pick-Up','icon'=>'6'];
+if ($isPickup) {
+    $flowSteps[] = ['label'=>'🛍️ Ready for Pick-Up','icon'=>'2'];
+    $flowSteps[] = ['label'=>'✅ Picked Up','icon'=>'3'];
 } else {
-    $flowSteps[] = ['label'=>'Out for Delivery','icon'=>'6'];
+    $flowSteps[] = ['label'=>'🚚 Out for Delivery','icon'=>'2'];
+    $flowSteps[] = ['label'=>'✅ Delivered','icon'=>'3'];
 }
-$flowSteps[] = ['label'=>'Completed','icon'=>'7'];
-$currentStep = 0; // Always start at step 0 for new orders
+$flowSteps[] = ['label'=>'🎉 Completed','icon'=>'✓'];
+$currentStep = 0; // New orders start at step 0 (Preparing)
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,13 +45,13 @@ $currentStep = 0; // Always start at step 0 for new orders
       <svg class="w-8 h-8 text-[#17611f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
     </div>
     <h1 class="text-2xl font-black mb-2">Order Confirmed!</h1>
-    <p class="text-[#5a7a5c] text-sm">Your order has been placed. We'll start harvesting your lettuce once payment is confirmed.</p>
+    <p class="text-[#5a7a5c] text-sm">Your order has been placed. We'll start preparing your lettuce right away.</p>
   </div>
 
   <div class="bg-white rounded-xl border border-[rgba(27,94,32,0.08)] p-6 mb-6">
     <div class="flex items-center justify-between mb-4">
       <div><p class="text-xs text-[#5a7a5c]">Order Number</p><p class="font-black text-lg">#<?=htmlspecialchars($order['order_number'])?></p></div>
-      <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">Awaiting Payment</span>
+      <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">🌱 Preparing Order</span>
     </div>
 
     <div class="mb-6">
@@ -63,16 +62,14 @@ $currentStep = 0; // Always start at step 0 for new orders
             <div class="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black <?=$done?'bg-[#17611f] text-white':'bg-gray-100 text-[#9e9e9e]'?>"><?=$done?'✓':$step['icon']?></div>
             <p class="text-[9px] text-center mt-1 font-bold <?=$done?'text-[#17611f]':'text-[#9e9e9e]'?>"><?=$step['label']?></p>
           </div>
-          <?php if($i < count($flowSteps)-1): ?>
-            <div class="w-6 h-0.5 mt-4 <?=$done && $i < $currentStep?'bg-[#17611f]':'bg-gray-200'?>"></div>
-          <?php endif; ?>
+          <?php if($i < count($flowSteps)-1): ?><div class="w-6 h-0.5 mt-4 <?=$done && $i < $currentStep?'bg-[#17611f]':'bg-gray-200'?>"></div><?php endif; ?>
         <?php endforeach; ?>
       </div>
     </div>
 
     <div class="p-4 rounded-xl bg-[#e8f5e9] mb-4">
-      <p class="font-black text-sm">Harvest-on-Demand</p>
-      <p class="text-xs text-[#5a7a5c] mt-1">Your lettuce will be harvested only after payment confirmation — <?=htmlspecialchars($order['estimated_harvest_time'])?></p>
+      <p class="font-black text-sm">🌱 Harvest-on-Demand</p>
+      <p class="text-xs text-[#5a7a5c] mt-1">Your lettuce will be harvested, quality-checked, and packed — all after order confirmation.</p>
     </div>
 
     <h3 class="font-bold text-sm mb-2">Items Ordered</h3>
@@ -82,14 +79,12 @@ $currentStep = 0; // Always start at step 0 for new orders
     <div class="flex justify-between font-black mt-2 pt-2 border-t border-[rgba(27,94,32,0.12)]"><span>Total</span><span class="text-[#17611f]">P<?=number_format($order['total'],2)?></span></div>
 
     <div class="grid grid-cols-2 gap-3 mt-4 text-sm">
-      <div><span class="text-[#5a7a5c]">Method:</span> <span class="font-bold"><?=$order['delivery_method']==='pickup'?'Pick-Up':'Delivery'?></span></div>
+      <div><span class="text-[#5a7a5c]">Method:</span> <span class="font-bold"><?=$isPickup?'Pick-Up':'Delivery'?></span></div>
       <div><span class="text-[#5a7a5c]">Payment:</span> <span class="font-bold"><?=strtoupper(str_replace('_',' ',$order['payment_method']))?></span></div>
-      <?php if($order['delivery_method']!=='pickup'):?>
+      <?php if(!$isPickup):?>
         <div class="col-span-2"><span class="text-[#5a7a5c]">Address:</span> <span class="font-bold text-xs"><?=htmlspecialchars($order['delivery_address'].', '.$order['delivery_city'].', '.$order['delivery_province'])?></span></div>
       <?php endif;?>
-      <?php if($order['delivery_fee']==0):?>
-        <div class="col-span-2"><span class="px-2 py-0.5 rounded-full text-xs font-bold bg-[#e8f5e9] text-[#17611f]">Free Delivery</span></div>
-      <?php endif;?>
+      <?php if($order['delivery_fee']==0):?><div class="col-span-2"><span class="px-2 py-0.5 rounded-full text-xs font-bold bg-[#e8f5e9] text-[#17611f]">Free Delivery</span></div><?php endif;?>
     </div>
   </div>
 

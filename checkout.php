@@ -3,6 +3,9 @@ session_start();
 require 'config.php';
 if (!isset($_SESSION['user_id'])) { header("Location: login.php"); exit(); }
 
+// Ensure cart is loaded from DB (in case session expired but user is still logged in)
+if (empty($_SESSION['cart'])) loadCartFromDb($conn);
+
 // Only load selected cart items
 $selectedIds = $_SESSION['selected_cart'] ?? [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sel'])) {
@@ -31,11 +34,29 @@ $defaultAddr = null;
 foreach ($savedAddresses as $sa) {
     if ($sa['is_default']) { $defaultAddr = $sa; break; }
 }
-// Fall back to first saved address, then user profile address
-$defaultAddress = $defaultAddr['address'] ?? $user['address'] ?? '';
-$defaultCity = $defaultAddr['city'] ?? 'Dasmariñas';
-$defaultProvince = $defaultAddr['province'] ?? 'Cavite';
-$defaultZip = $defaultAddr['zip'] ?? '4114';
+// Fall back to user profile address — but parse registration address into components
+$registrationAddr = $user['address'] ?? '';
+// Try to parse "Street, City, Province ZIP" format from registration
+$regParts = []; $regCity = 'Dasmariñas'; $regProvince = 'Cavite'; $regZip = '4114'; $regStreet = '';
+if ($registrationAddr) {
+    $commaParts = array_map('trim', explode(',', $registrationAddr));
+    if (count($commaParts) >= 2) {
+        $regStreet = $commaParts[0];
+        $regCity = $commaParts[1] ?: 'Dasmariñas';
+        $last = end($commaParts);
+        $provZip = array_map('trim', explode(' ', trim($last)));
+        if (count($provZip) >= 2) {
+            $regProvince = $provZip[0];
+            $regZip = $provZip[1];
+        }
+    } else {
+        $regStreet = $registrationAddr;
+    }
+}
+$defaultAddress = $defaultAddr['address'] ?? $regStreet;
+$defaultCity = $defaultAddr['city'] ?? $regCity;
+$defaultProvince = $defaultAddr['province'] ?? $regProvince;
+$defaultZip = $defaultAddr['zip'] ?? $regZip;
 $defaultAddrId = $defaultAddr['id'] ?? null;
 
 // Check free delivery zone based on default address
@@ -72,14 +93,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     try {
         $conn->beginTransaction();
         $orderStmt = $conn->prepare("INSERT INTO orders (user_id, order_number, status, subtotal, delivery_fee, discount, total, delivery_method, payment_method, promo_code, delivery_address, delivery_city, delivery_province, delivery_zip, delivery_notes, gift_note, preferred_delivery_time, is_free_delivery, estimated_harvest_time, customer_name, customer_email, customer_phone) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-        $orderStmt->execute([$_SESSION['user_id'], $orderNumber, 'pending', $subtotal, $deliveryFee, $discount, $total, $deliveryMethod, $paymentMethod, $promo['code'] ?? null, $deliveryMethod === 'pickup' ? 'Farm Pick-Up' : $addr, $city, $province, $zip, $notes, $giftNote ?: null, $preferredTime ?: null, $deliveryFee == 0 ? 1 : 0, '1-3 hours after payment confirmation', $user['first_name'] . ' ' . $user['last_name'], $user['email'], $user['phone']]);
+        $orderStmt->execute([$_SESSION['user_id'], $orderNumber, 'preparing', $subtotal, $deliveryFee, $discount, $total, $deliveryMethod, $paymentMethod, $promo['code'] ?? null, $deliveryMethod === 'pickup' ? 'Farm Pick-Up' : $addr, $city, $province, $zip, $notes, $giftNote ?: null, $preferredTime ?: null, $deliveryFee == 0 ? 1 : 0, '1-3 hours', $user['first_name'] . ' ' . $user['last_name'], $user['email'], $user['phone']]);
         $orderId = $conn->lastInsertId();
 
         foreach ($cartItems as $ci) {
             $conn->prepare("INSERT INTO order_items (order_id, product_id, product_name, price, quantity) VALUES (?,?,?,?,?)")->execute([$orderId, $ci['id'], $ci['name'], $ci['price'], $ci['qty']]);
             $conn->prepare("UPDATE products SET plants_available = GREATEST(0, plants_available - ?) WHERE id = ?")->execute([$ci['qty'], $ci['id']]);
         }
-        if ($promo) { $conn->prepare("UPDATE promotions SET used_count = used_count + 1 WHERE code = ?")->execute([$promo['code']]); }
+        if ($promo) { 
+            $conn->prepare("UPDATE promotions SET used_count = used_count + 1 WHERE code = ?")->execute([$promo['code']]);
+            // Remove claimed coupon after use (single-use)
+            $conn->prepare("DELETE FROM claimed_coupons WHERE user_id = ? AND promotion_id = ?")->execute([$_SESSION['user_id'], $promo['id']]);
+        }
 
         // Create admin notification for new order
         try {
@@ -92,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
         // Remove only purchased items from cart, keep the rest
         $purchasedIds = array_column($cartItems, 'id');
         $_SESSION['cart'] = array_values(array_filter($_SESSION['cart'], fn($i) => !in_array((int)$i['id'], $purchasedIds)));
+        syncCartToDb($conn);  // ← persist remaining items
         unset($_SESSION['selected_cart'], $_SESSION['applied_promo']);
 
         header("Location: order-confirmation.php?order=" . urlencode($orderNumber)); exit();
@@ -117,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     <h2 class="font-black text-lg mb-3">Delivery Method</h2>
     <div class="grid grid-cols-2 gap-3">
       <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-[#17611f] bg-[#e8f5e9] cursor-pointer"><input type="radio" name="delivery_method" value="delivery" checked onchange="toggleAddr()" class="accent-[#17611f]"><div><p class="font-bold text-sm">Delivery</p><p class="text-xs text-[#5a7a5c]">Same-day delivery</p></div></label>
-      <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-[rgba(27,94,32,0.12)] cursor-pointer hover:bg-[#e8f5e9]"><input type="radio" name="delivery_method" value="pickup" onchange="toggleAddr()" class="accent-[#17611f]"><div><p class="font-bold text-sm">Pick-Up</p><p class="text-xs text-[#5a7a5c]">Free, ready in 1-3 hours</p></div></label>
+      <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-[rgba(27,94,32,0.12)] cursor-pointer hover:bg-[#e8f5e9]"><input type="radio" name="delivery_method" value="pickup" onchange="toggleAddr()" class="accent-[#17611f]"><div><p class="font-bold text-sm">Pick-Up</p><p class="text-xs text-[#5a7a5c]">Free, ready in 1-3 hours</p><p class="text-[10px] text-[#17611f] font-bold mt-1">📍 Nostalji Subd., Paliparan I, Dasmarinas, Cavite</p></div></label>
     </div>
   </div>
   <div class="bg-white rounded-xl border p-5" id="addressSection">
@@ -142,10 +168,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
   <div class="bg-white rounded-xl border p-5">
     <h2 class="font-black text-lg mb-3">Payment Method</h2>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-      <label class="flex items-center gap-2 p-3 rounded-xl border-2 border-[#17611f] bg-[#e8f5e9] cursor-pointer text-sm"><input type="radio" name="payment_method" value="cod" checked class="accent-[#17611f]"> COD</label>
-      <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-[#e8f5e9] text-sm"><input type="radio" name="payment_method" value="gcash" class="accent-[#17611f]"> GCash</label>
-      <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-[#e8f5e9] text-sm"><input type="radio" name="payment_method" value="maya" class="accent-[#17611f]"> Maya</label>
-      <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-[#e8f5e9] text-sm"><input type="radio" name="payment_method" value="bank_transfer" class="accent-[#17611f]"> Bank Transfer</label>
+      <label class="flex items-center gap-2 p-3 rounded-xl border-2 border-[#17611f] bg-[#e8f5e9] cursor-pointer text-sm"><input type="radio" name="payment_method" value="cod" checked class="accent-[#17611f]"> 💵 COD</label>
+      <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-[#e8f5e9] text-sm"><input type="radio" name="payment_method" value="gcash" class="accent-[#17611f]"> <img src="images/payment/gcash.png" class="h-5 inline" alt="GCash" onerror="this.outerHTML='💙'" style="display:inline"> GCash</label>
+      <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-[#e8f5e9] text-sm"><input type="radio" name="payment_method" value="maya" class="accent-[#17611f]"> <img src="images/payment/maya.png" class="h-5 inline" alt="Maya" onerror="this.outerHTML='💜'" style="display:inline"> Maya</label>
+      <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-[#e8f5e9] text-sm"><input type="radio" name="payment_method" value="bank_transfer" class="accent-[#17611f]"> 🏦 Bank</label>
     </div>
   </div>
 </div>
@@ -153,13 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
   <h2 class="font-black text-lg mb-4">Order Summary</h2>
   <?php foreach($cartItems as $ci):?>
     <div class="flex justify-between text-sm mb-2 items-center">
-      <span class="flex-1"><?=htmlspecialchars($ci['name'])?></span>
-      <div class="flex items-center gap-1.5">
-        <span class="inline-flex items-center border border-[rgba(27,94,32,0.12)] rounded-lg overflow-hidden">
-          <button type="button" class="px-2 py-0.5 text-xs font-bold hover:bg-[#e8f5e9] text-[#5a7a5c]" onclick="adjustQty(this, -1)">−</button>
-          <span class="px-2 py-0.5 text-xs font-bold"><?=$ci['qty']?></span>
-          <button type="button" class="px-2 py-0.5 text-xs font-bold hover:bg-[#e8f5e9] text-[#5a7a5c]" onclick="adjustQty(this, 1)">+</button>
-        </span>
+      <span class="flex-1"><?=htmlspecialchars($ci['name'])?> <span class="text-xs text-[#5a7a5c]">× <?=$ci['qty']?></span></span>
         <span class="font-bold w-20 text-right">P<?=number_format($ci['line_total'],2)?></span>
       </div>
     </div>

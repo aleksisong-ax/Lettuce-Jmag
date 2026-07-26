@@ -65,24 +65,48 @@ try {
     
   </div>
 
-  <!-- Promo Cards -->
-  <div class="grid gap-4 sm:grid-cols-3 mb-10">
-    <a href="products.php?filter=best_seller" class="rounded-2xl bg-[#fff8e1] border border-[#ffecb3] p-5 hover:shadow-md transition-all">
-      <p class="text-xs font-black uppercase text-amber-700">Best Seller</p>
-      <h3 class="mt-1 text-lg font-black">Weekend Bundle · ₱260</h3>
-      <p class="mt-1 text-sm text-[#5a7a5c]">6 cups + dressing + wrap kit</p>
-    </a>
-    <a href="products.php?category=wholesale" class="rounded-2xl bg-[#e8f5e9] border border-[#c8e6c9] p-5 hover:shadow-md transition-all">
-      <p class="text-xs font-black uppercase text-[#17611f]">📦 Wholesale</p>
-      <h3 class="mt-1 text-lg font-black">Bulk Trays from ₱700</h3>
-      <p class="mt-1 text-sm text-[#5a7a5c]">Restaurants, canteens & events</p>
-    </a>
-    <a href="about.php" class="rounded-2xl bg-[#e3f2fd] border border-[#bbdefb] p-5 hover:shadow-md transition-all">
-      <p class="text-xs font-black uppercase text-blue-700">⟳ Why Harvest-on-Demand?</p>
-      <h3 class="mt-1 text-lg font-black">Fresher Than Supermarkets</h3>
-      <p class="mt-1 text-sm text-[#5a7a5c]">Never pre-cut. Never stored. Zero waste.</p>
-    </a>
+  <!-- Claimable Coupons Section -->
+  <?php
+  $isLoggedIn = isset($_SESSION['user_id']);
+  $activeCoupons = [];
+  $claimedIds = [];
+  try {
+      $activeCoupons = $conn->query("SELECT * FROM promotions WHERE is_active = 1 AND (expires_at IS NULL OR expires_at >= CURDATE()) ORDER BY created_at DESC LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+      if ($isLoggedIn) {
+          $claimed = $conn->prepare("SELECT promotion_id FROM claimed_coupons WHERE user_id = ?");
+          $claimed->execute([$_SESSION['user_id']]);
+          $claimedIds = $claimed->fetchAll(PDO::FETCH_COLUMN);
+      }
+  } catch (Exception $e) { $activeCoupons = []; }
+  ?>
+  <?php if (!empty($activeCoupons)): ?>
+  <div class="mb-10">
+    <div class="flex items-center justify-between mb-4"><h2 class="text-xl font-black">🎟️ Claimable Coupons</h2></div>
+    <div class="grid gap-4 sm:grid-cols-3" id="couponSection">
+      <?php foreach ($activeCoupons as $c):
+        $alreadyClaimed = in_array($c['id'], $claimedIds);
+        $discountLabel = $c['discount_type'] === 'percentage' ? $c['discount_value'].'% Off' : '₱'.number_format($c['discount_value'],2).' Off';
+        $expiry = $c['expires_at'] ? date('M j, Y', strtotime($c['expires_at'])) : 'No expiry';
+      ?>
+        <div class="rounded-2xl border p-5 bg-white hover:shadow-md transition-all">
+          <div class="flex items-start justify-between mb-3">
+            <div><p class="text-xs font-black uppercase text-[#17611f]"><?=htmlspecialchars($c['code'])?></p><h3 class="mt-1 text-lg font-black text-[#1a2e1c]"><?=$discountLabel?></h3></div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e8f5e9] text-[#17611f]"><?=$expiry?></span>
+          </div>
+          <p class="text-sm text-[#5a7a5c] mb-1"><?=htmlspecialchars($c['description'])?></p>
+          <?php if ($c['min_order'] > 0): ?><p class="text-xs text-[#9e9e9e] mb-3">Min. purchase: ₱<?=number_format($c['min_order'],2)?></p><?php endif; ?>
+          <?php if ($isLoggedIn): ?>
+            <button onclick="claimCoupon(this,<?=$c['id']?>)" class="w-full mt-2 py-2 rounded-xl text-sm font-bold transition-colors <?=$alreadyClaimed?'bg-gray-100 text-[#9e9e9e] cursor-not-allowed':'bg-[#17611f] text-white hover:bg-[#14521a]'?>" <?=$alreadyClaimed?'disabled':''?>>
+              <?=$alreadyClaimed?'✓ Claimed':'🎟️ Claim Coupon'?>
+            </button>
+          <?php else: ?>
+            <a href="login.php" class="block w-full mt-2 py-2 rounded-xl bg-[#17611f] text-white text-sm font-bold text-center hover:bg-[#14521a]">🎟️ Claim Coupon</a>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
+    </div>
   </div>
+  <?php endif; ?>
 
   <!-- Featured Products -->
   <section>
@@ -118,7 +142,7 @@ try {
             <div class="flex items-center justify-between mt-2">
               <p class="font-black text-[#17611f]">₱<?= number_format($pprice, 2) ?></p>
             </div>
-            <a href="cart-actions.php?action=add&id=<?= $pid ?>" class="block mt-2 text-center text-xs font-bold py-1.5 rounded-lg bg-[#17611f] text-white hover:bg-[#14521a] transition-colors">🛒 Add to Cart</a>
+            <a href="javascript:void(0)" onclick="addToCart(<?= $pid ?>)" class="block mt-2 text-center text-xs font-bold py-1.5 rounded-lg bg-[#17611f] text-white hover:bg-[#14521a] transition-colors cursor-pointer">🛒 Add to Cart</a>
           </div>
         </article>
       <?php endforeach; ?>
@@ -162,5 +186,15 @@ try {
 <?php renderBackToTop(); ?>
 <?php include __DIR__ . '/includes/footer.php'; ?>
 
+<script>
+var toast=document.createElement('div');toast.id='cartToast';toast.className='fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-lg text-sm font-bold transition-all duration-300 translate-x-[120%] opacity-0 pointer-events-none';document.body.appendChild(toast);
+function showToast(msg,ok){toast.textContent=msg;toast.className='fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-lg text-sm font-bold transition-all duration-300 '+(ok?'bg-[#e8f5e9] text-[#17611f] border border-[#c8e6c9]':'bg-red-50 text-red-700 border border-red-100');toast.classList.remove('translate-x-[120%]','opacity-0');toast.classList.add('translate-x-0','opacity-100');clearTimeout(toast._t);toast._t=setTimeout(function(){toast.classList.add('translate-x-[120%]','opacity-0');},3000);}
+function updateCartCount(count){
+  var b=document.querySelector('a[href$="cart.php"] span');
+  if(count>0){if(b){b.textContent=count}else{var a=document.querySelector('a[href$="cart.php"]');if(a){var s=document.createElement('span');s.className='absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#17611f] text-white text-[10px] font-bold flex items-center justify-center';s.textContent=count;a.appendChild(s)}}}else{if(b)b.remove()}
+}
+async function addToCart(id,qty){qty=qty||1;try{var r=await fetch('cart-actions-ajax.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',id:id,qty:qty})});var d=await r.json();showToast(d.message,d.success);if(d.success)updateCartCount(d.count)}catch(e){showToast('Network error',false)}}
+async function claimCoupon(btn,promoId){btn.disabled=true;btn.textContent='Claiming...';try{var r=await fetch('cart-actions-ajax.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'claim_coupon',promo_id:promoId})});var d=await r.json();if(d.success){btn.textContent='✓ Claimed';btn.className='w-full mt-2 py-2 rounded-xl text-sm font-bold bg-gray-100 text-[#9e9e9e] cursor-not-allowed';showToast(d.message,true)}else if(d.redirect){window.location=d.redirect}else{btn.disabled=false;btn.textContent='🎟️ Claim Coupon';showToast(d.message,false)}}catch(e){btn.disabled=false;btn.textContent='🎟️ Claim Coupon';showToast('Network error',false)}}
+</script>
 </body>
 </html>
