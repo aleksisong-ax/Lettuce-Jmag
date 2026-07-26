@@ -56,6 +56,9 @@ if (!function_exists('notificationTargetUrl')) {
                 return 'admin-warranty.php';
             case 'return_new':
                 return 'admin-returns.php';
+            case 'order_new':
+            case 'order_status':
+                return 'admin-orders.php';
             default:
                 return 'admin-dashboard.php';
         }

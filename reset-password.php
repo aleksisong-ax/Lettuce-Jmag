@@ -1,7 +1,6 @@
 <?php
 session_start();
 require 'config.php';
-require __DIR__ . '/includes/restrict-customer.php';
 
 $message = "";
 $messageType = "";
@@ -80,16 +79,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValid) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reset Password | WoodCraft Care</title>
+  <title>Reset Password | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
+<body class="bg-[#f4faf5] text-[#1a2e1c] min-h-screen flex flex-col">
 
   <!-- Header -->
   <?php include __DIR__ . '/includes/header.php'; ?>
@@ -109,19 +108,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValid) {
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
             </svg>
           </div>
-          <h1 class="font-serif text-2xl font-semibold text-gray-900 mb-2">✓ Password Reset Successful</h1>
-          <p class="text-gray-500 text-sm mb-6">Your password has been updated successfully. You can now log in using your new password.</p>
-          <p class="text-[13px] text-gray-400 mb-4">Redirecting you to login in <span id="countdown">5</span> seconds…</p>
-          <a href="login.php" class="inline-block w-full rounded-full bg-[#6B4226] text-white text-sm font-medium py-3.5 hover:bg-[#59341C] transition-colors">Go to Login Now</a>
+          <h1 class="font-black text-2xl font-semibold text-[#1a2e1c] mb-2">✓ Password Reset Successful</h1>
+          <p class="text-[#5a7a5c] text-sm mb-6">Your password has been updated successfully. You can now log in using your new password.</p>
+          <p class="text-[13px] text-[#9e9e9e] mb-4">Redirecting you to login in <span id="countdown">5</span> seconds…</p>
+          <a href="login.php" class="inline-block w-full rounded-full bg-[#17611f] text-white text-sm font-medium py-3.5 hover:bg-[#14521a] transition-colors">Go to Login Now</a>
         </div>
         <script>
           let secondsLeft = 5;
           const countdownEl = document.getElementById('countdown');
-          const timer = setInterval(() => {
+          const timer = setNunitoval(() => {
             secondsLeft -= 1;
             if (countdownEl) countdownEl.textContent = Math.max(secondsLeft, 0);
             if (secondsLeft <= 0) {
-              clearInterval(timer);
+              clearNunitoval(timer);
               window.location.href = 'login.php';
             }
           }, 1000);
@@ -138,9 +137,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValid) {
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
             </svg>
           </div>
-          <h1 class="font-serif text-2xl font-semibold text-gray-900 mb-2">Link Invalid or Expired</h1>
-          <p class="text-gray-500 text-sm mb-6">This password reset link is invalid or has expired.</p>
-          <a href="forgot-password.php" class="inline-block w-full rounded-full bg-[#6B4226] text-white text-sm font-medium py-3.5 hover:bg-[#59341C] transition-colors">Request New Reset Link</a>
+          <h1 class="font-black text-2xl font-semibold text-[#1a2e1c] mb-2">Link Invalid or Expired</h1>
+          <p class="text-[#5a7a5c] text-sm mb-6">This password reset link is invalid or has expired.</p>
+          <a href="forgot-password.php" class="inline-block w-full rounded-full bg-[#17611f] text-white text-sm font-medium py-3.5 hover:bg-[#14521a] transition-colors">Request New Reset Link</a>
         </div>
 
       <?php else: ?>
@@ -149,9 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValid) {
         <!-- Valid token: reset form                        -->
         <!-- ============================================= -->
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-9">
-          <span class="inline-block text-[11px] font-semibold tracking-wide text-gray-500 bg-gray-100 rounded-full px-3 py-1 mb-5">RESET PASSWORD</span>
-          <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-2">Reset Password</h1>
-          <p class="text-gray-500 text-sm mb-8">Choose a strong new password for your account.</p>
+          <span class="inline-block text-[11px] font-semibold tracking-wide text-[#5a7a5c] bg-gray-100 rounded-full px-3 py-1 mb-5">RESET PASSWORD</span>
+          <h1 class="font-black text-3xl font-semibold text-[#1a2e1c] mb-2">Reset Password</h1>
+          <p class="text-[#5a7a5c] text-sm mb-8">Choose a strong new password for your account.</p>
 
           <?php if (!empty($message)): ?>
             <div id="alertMessage"
@@ -165,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValid) {
                 <h3 class="font-semibold">Password Reset Failed</h3>
                 <p class="text-sm mt-1"><?= htmlspecialchars($message); ?></p>
               </div>
-              <button type="button" onclick="closeAlert()" class="text-gray-400 hover:text-gray-700 transition">✕</button>
+              <button type="button" onclick="closeAlert()" class="text-[#9e9e9e] hover:text-[#1a2e1c] transition">✕</button>
             </div>
             <script>
               function closeAlert(){
@@ -181,35 +180,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValid) {
           <form method="POST" class="space-y-5" id="resetPasswordForm">
             <input type="hidden" name="token" value="<?= htmlspecialchars($rawToken) ?>" />
             <div>
-              <label for="new_password" class="block text-sm font-medium text-gray-800 mb-2">New Password</label>
+              <label for="new_password" class="block text-sm font-medium text-[#1a2e1c] mb-2">New Password</label>
               <div class="relative">
                 <input type="password" id="new_password" name="new_password" placeholder="••••••••••••" required minlength="8"
-                       class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-                <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="new_password" aria-label="Show password">
+                       class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 pr-11 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+                <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9e9e9e] hover:text-[#5a7a5c] transition-colors" data-target="new_password" aria-label="Show password">
                   <svg class="w-4 h-4 icon-eye" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                   <svg class="w-4 h-4 icon-eye-off hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 012.132-3.532m3.32-2.454A9.958 9.958 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.132 5.411M14.121 14.121A3 3 0 019.88 9.88M9.879 9.879l4.242 4.242M9.879 9.879L3 3m6.879 6.879L21 21"/></svg>
                 </button>
               </div>
-              <ul id="passwordRequirements" class="mt-3 hidden space-y-1 text-xs text-gray-500">
-                <li id="rule-length" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 8 characters</li>
-                <li id="rule-uppercase" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 uppercase letter</li>
-                <li id="rule-lowercase" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 lowercase letter</li>
-                <li id="rule-number" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 number</li>
-                <li id="rule-special" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 special character</li>
+              <ul id="passwordRequirements" class="mt-3 hidden space-y-1 text-xs text-[#5a7a5c]">
+                <li id="rule-length" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 8 characters</li>
+                <li id="rule-uppercase" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 1 uppercase letter</li>
+                <li id="rule-lowercase" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 1 lowercase letter</li>
+                <li id="rule-number" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 1 number</li>
+                <li id="rule-special" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 1 special character</li>
               </ul>
             </div>
             <div>
-              <label for="confirm_password" class="block text-sm font-medium text-gray-800 mb-2">Confirm Password</label>
+              <label for="confirm_password" class="block text-sm font-medium text-[#1a2e1c] mb-2">Confirm Password</label>
               <div class="relative">
                 <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••••••" required minlength="8"
-                       class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-                <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="confirm_password" aria-label="Show password">
+                       class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 pr-11 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+                <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9e9e9e] hover:text-[#5a7a5c] transition-colors" data-target="confirm_password" aria-label="Show password">
                   <svg class="w-4 h-4 icon-eye" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                   <svg class="w-4 h-4 icon-eye-off hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 012.132-3.532m3.32-2.454A9.958 9.958 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.132 5.411M14.121 14.121A3 3 0 019.88 9.88M9.879 9.879l4.242 4.242M9.879 9.879L3 3m6.879 6.879L21 21"/></svg>
                 </button>
               </div>
             </div>
-            <button type="submit" id="resetPasswordSubmit" class="w-full rounded-full bg-[#6B4226] text-white text-sm font-medium py-3.5 hover:bg-[#59341C] transition-colors flex items-center justify-center gap-2">
+            <button type="submit" id="resetPasswordSubmit" class="w-full rounded-full bg-[#17611f] text-white text-sm font-medium py-3.5 hover:bg-[#14521a] transition-colors flex items-center justify-center gap-2">
               <svg id="resetPasswordSpinner" class="hidden animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -269,9 +268,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValid) {
               const bullet = element.querySelector('span');
 
               element.classList.toggle('text-green-600', isMet);
-              element.classList.toggle('text-gray-500', !isMet);
+              element.classList.toggle('text-[#5a7a5c]', !isMet);
               bullet.classList.toggle('text-green-600', isMet);
-              bullet.classList.toggle('text-gray-400', !isMet);
+              bullet.classList.toggle('text-[#9e9e9e]', !isMet);
               bullet.textContent = isMet ? '✓' : '•';
             });
           }

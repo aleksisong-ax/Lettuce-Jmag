@@ -21,7 +21,7 @@ $countStmt->execute([$chatKey]);
 if ((int)$countStmt->fetchColumn() === 0) {
     $conn->prepare("
         INSERT INTO live_chat_messages (chat_key, user_id, customer_name, sender, message)
-        VALUES (?, NULL, 'WoodCraft Assistant', 'bot', ?)
+        VALUES (?, NULL, 'Luntiang H.A.P.A.G. Assistant', 'bot', ?)
     ")->execute([$chatKey, ChatbotEngine::greeting()]);
 }
 
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($botResult['replies'] as $botReply) {
                 $conn->prepare("
                     INSERT INTO live_chat_messages (chat_key, user_id, customer_name, sender, message)
-                    VALUES (?, NULL, 'WoodCraft Assistant', 'bot', ?)
+                    VALUES (?, NULL, 'Luntiang H.A.P.A.G. Assistant', 'bot', ?)
                 ")->execute([$chatKey, $botReply]);
             }
 
@@ -118,13 +118,13 @@ function extractQuestionSuggestions(string $text): ?array
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Chat | WoodCraft Care</title>
+  <title>Live Chat | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
 
     /* Suggested Questions bar — horizontal, no wrap, hidden scrollbar
        but still natively scrollable (mouse wheel handled in JS, touch
@@ -214,7 +214,7 @@ function extractQuestionSuggestions(string $text): ?array
     }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col"
+<body class="bg-[#f4faf5] text-[#1a2e1c] min-h-screen flex flex-col"
       data-chat-key="<?= htmlspecialchars($chatKey) ?>"
       data-logged-in="<?= isset($_SESSION['user_id']) ? '1' : '0' ?>">
 
@@ -223,15 +223,15 @@ function extractQuestionSuggestions(string $text): ?array
 
   <!-- Main Content -->
   <main class="flex-1 max-w-3xl w-full mx-auto px-6 py-16">
-    <a href="index.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-8">
+    <a href="<?= isset($_SESSION['user_id']) ? 'my-profile.php?section=support' : 'index.php' ?>" class="inline-flex items-center gap-2 text-sm text-[#17611f] hover:text-[#14521a] transition-colors mb-8">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      Back to Home
+      Back to Dashboard
     </a>
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
       <div class="p-8 pb-5 border-b border-gray-100">
-        <span class="inline-block text-[11px] font-semibold tracking-wide text-[#B5702E] bg-orange-50 rounded-full px-3 py-1 mb-5">QUICK SUPPORT</span>
-        <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-2">Live Chat</h1>
-        <p class="text-gray-500 text-[15px]">Chatting as <span class="font-medium text-gray-800"><?= htmlspecialchars($customerName) ?></span>. Our team typically replies within a few minutes during business hours.</p>
+        <span class="inline-block text-[11px] font-semibold tracking-wide text-[#17611f] bg-[#e8f5e9] rounded-full px-3 py-1 mb-5">QUICK SUPPORT</span>
+        <h1 class="font-black text-3xl font-semibold text-[#1a2e1c] mb-2">Live Chat</h1>
+        <p class="text-[#5a7a5c] text-[15px]">Chatting as <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($customerName) ?></span>. Our team typically replies within a few minutes during business hours.</p>
       </div>
 
       <?php if ($message): ?>
@@ -241,68 +241,57 @@ function extractQuestionSuggestions(string $text): ?array
       <?php endif; ?>
 
       <!-- Quick actions -->
-      <div id="quickActions" class="px-6 sm:px-8 pt-6 pb-2">
-        <p class="text-[11px] font-semibold tracking-wide text-gray-400 uppercase mb-3">Quick Help</p>
-
+      <div id="quickActions" class="px-6 pt-5 pb-2">
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
           <?php foreach ($quickActionsPrimary as $qa): ?>
-            <button type="button"
-                    class="quick-action-btn flex items-center justify-center text-center text-[13px] font-medium text-[#6B4226] bg-orange-50 hover:bg-orange-100 active:scale-[0.98] border border-orange-100 rounded-xl px-3 py-3 leading-snug transition-all"
-                    data-message="<?= htmlspecialchars($qa['message']) ?>">
-              <?= htmlspecialchars($qa['label']) ?>
-            </button>
+            <button type="button" class="quick-action-btn flex items-center justify-center text-center text-[13px] font-bold text-[#17611f] bg-[#e8f5e9] hover:bg-[#c8e6c9] active:scale-[0.98] border border-[#c8e6c9] rounded-xl px-3 py-3 leading-snug transition-all" data-message="<?=htmlspecialchars($qa['message'])?>"><?=htmlspecialchars($qa['label'])?></button>
           <?php endforeach; ?>
         </div>
-
-        <button type="button" id="moreOptionsToggle"
-                class="flex items-center gap-1.5 text-[12.5px] font-medium text-gray-500 hover:text-[#6B4226] mt-3.5 mb-1 transition-colors">
+        <button type="button" id="moreOptionsToggle" class="flex items-center gap-1.5 text-[12.5px] font-medium text-[#5a7a5c] hover:text-[#17611f] mt-3 mb-1 transition-colors">
           <span>More Options</span>
-          <svg id="moreOptionsChevron" class="w-3.5 h-3.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-          </svg>
+          <svg id="moreOptionsChevron" class="w-3.5 h-3.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
         </button>
-
         <div id="moreOptionsPanel" class="hidden grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1 pb-3">
           <?php foreach ($quickActionsMore as $qa): ?>
-            <button type="button"
-                    class="quick-action-btn flex items-center justify-center text-center text-[13px] font-medium text-[#6B4226] bg-orange-50 hover:bg-orange-100 active:scale-[0.98] border border-orange-100 rounded-xl px-3 py-3 leading-snug transition-all"
-                    data-message="<?= htmlspecialchars($qa['message']) ?>">
-              <?= htmlspecialchars($qa['label']) ?>
-            </button>
+            <button type="button" class="quick-action-btn flex items-center justify-center text-center text-[13px] font-bold text-[#17611f] bg-[#e8f5e9] hover:bg-[#c8e6c9] active:scale-[0.98] border border-[#c8e6c9] rounded-xl px-3 py-3 leading-snug transition-all" data-message="<?=htmlspecialchars($qa['message'])?>"><?=htmlspecialchars($qa['label'])?></button>
           <?php endforeach; ?>
         </div>
       </div>
 
       <!-- Message thread -->
-      <div id="chatThread" class="p-6 space-y-4 max-h-[420px] overflow-y-auto bg-[#FBF9F4]" data-last-id="<?= $lastId ?>">
-        <p id="chatEmptyState" class="text-center text-sm text-gray-400 py-10" <?= empty($chatMessages) ? '' : 'style="display:none;"' ?>>
-          No messages yet — say hello below and the WoodCraft Assistant will jump in.
+      <div id="chatThread" class="p-6 space-y-4 max-h-[420px] overflow-y-auto bg-[#f4faf5]" data-last-id="<?= $lastId ?>">
+        <p id="chatEmptyState" class="text-center text-sm text-[#9e9e9e] py-10" <?= empty($chatMessages) ? '' : 'style="display:none;"' ?>>
+          No messages yet — say hello below and the Luntiang H.A.P.A.G. Assistant will jump in.
         </p>
         <?php foreach ($chatMessages as $m):
             $isCustomer = $m['sender'] === 'customer';
             $isBot = $m['sender'] === 'bot';
-            $label = $isCustomer ? 'You' : ($isBot ? 'WoodCraft Assistant 🌿' : 'WoodCraft Support');
+            $label = $isCustomer ? 'You' : ($isBot ? 'Luntiang H.A.P.A.G. Assistant 🌿' : 'Luntiang H.A.P.A.G. Support');
             $suggestions = $isBot ? extractQuestionSuggestions($m['message']) : null;
+            $hasImage = !empty($m['image_path']);
         ?>
           <div class="flex <?= $isCustomer ? 'justify-end' : 'justify-start' ?>">
             <div class="max-w-[75%]">
               <?php if ($suggestions !== null): ?>
-                <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed bg-orange-50 border border-orange-100 text-gray-800 rounded-bl-sm">
+                <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed bg-[#e8f5e9] border border-[#c8e6c9] text-[#1a2e1c] rounded-bl-sm">
                   <p>Here are some questions customers commonly ask.</p>
                   <p class="mt-1">Simply click any question below if that's what you'd like to ask.</p>
                 </div>
                 <div class="mt-2 flex flex-col gap-1.5" role="list">
                   <?php foreach ($suggestions as $q): ?>
-                    <button type="button" class="chat-suggestion-btn text-left text-[13.5px] font-medium text-[#6B4226] bg-white border border-orange-200 rounded-xl px-3.5 py-2 hover:bg-orange-50 hover:border-orange-300 active:scale-[0.98] cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40" data-message="<?= htmlspecialchars($q) ?>"><?= htmlspecialchars($q) ?></button>
+                    <button type="button" class="chat-suggestion-btn text-left text-[13.5px] font-medium text-[#17611f] bg-white border border-[#c8e6c9] rounded-xl px-3.5 py-2 hover:bg-[#e8f5e9] hover:border-orange-300 active:scale-[0.98] cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40" data-message="<?= htmlspecialchars($q) ?>"><?= htmlspecialchars($q) ?></button>
                   <?php endforeach; ?>
                 </div>
-                <p class="text-[12px] text-gray-400 mt-2">If your question isn't listed, you can always type your own message below.</p>
+                <p class="text-[12px] text-[#9e9e9e] mt-2">If your question isn't listed, you can always type your own message below.</p>
               <?php else: ?>
-                <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed <?= $isCustomer ? 'bg-[#6B4226] text-white rounded-br-sm' : ($isBot ? 'bg-orange-50 border border-orange-100 text-gray-800 rounded-bl-sm' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm') ?>">
-                  <?= nl2br(htmlspecialchars($m['message'])) ?>
+                <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed <?= $isCustomer ? 'bg-[#17611f] text-white rounded-br-sm' : ($isBot ? 'bg-[#e8f5e9] border border-[#c8e6c9] text-[#1a2e1c] rounded-bl-sm' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#1a2e1c] rounded-bl-sm') ?>">
+                  <?= $m['message'] ? nl2br(htmlspecialchars($m['message'])) : '' ?>
+                  <?php if ($hasImage): ?>
+                    <img src="<?= htmlspecialchars($m['image_path']) ?>" class="mt-2 rounded-lg max-w-full max-h-64 object-cover" alt="Shared image">
+                  <?php endif; ?>
                 </div>
               <?php endif; ?>
-              <p class="text-[11px] text-gray-400 mt-1 <?= $isCustomer ? 'text-right' : 'text-left' ?>">
+              <p class="text-[11px] text-[#9e9e9e] mt-1 <?= $isCustomer ? 'text-right' : 'text-left' ?>">
                 <?= htmlspecialchars($label) ?> · <?= date('M j, g:i A', strtotime($m['created_at'])) ?>
               </p>
             </div>
@@ -312,9 +301,9 @@ function extractQuestionSuggestions(string $text): ?array
 
       <!-- Suggested Questions -->
       <div id="suggestionBar" class="border-t border-gray-100 bg-white">
-        <p class="text-[11px] font-semibold tracking-wide text-gray-400 uppercase mb-2 px-5 pt-3">Suggested Questions</p>
+        <p class="text-[11px] font-semibold tracking-wide text-[#9e9e9e] uppercase mb-2 px-5 pt-3">Suggested Questions</p>
         <div id="suggestionChipsWrapper" class="relative px-5 pb-3">
-          <button id="suggestionScrollLeft" class="absolute left-1 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-md border border-gray-200 w-7 h-7 flex items-center justify-center hover:bg-gray-50 transition-all z-10 opacity-0 pointer-events-none">
+          <button id="suggestionScrollLeft" class="absolute left-1 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-md border border-[rgba(27,94,32,0.12)] w-7 h-7 flex items-center justify-center hover:bg-gray-50 transition-all z-10 opacity-0 pointer-events-none">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -322,7 +311,7 @@ function extractQuestionSuggestions(string $text): ?array
           <div id="suggestionChips" class="flex flex-nowrap overflow-x-auto scroll-smooth gap-2 pb-1 -webkit-overflow-scrolling-touch scrollbar-none" style="scrollbar-width: none; -ms-overflow-style: none;">
             <!-- Chips rendered by JavaScript -->
           </div>
-          <button id="suggestionScrollRight" class="absolute right-1 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-md border border-gray-200 w-7 h-7 flex items-center justify-center hover:bg-gray-50 transition-all z-10 opacity-0 pointer-events-none">
+          <button id="suggestionScrollRight" class="absolute right-1 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-md border border-[rgba(27,94,32,0.12)] w-7 h-7 flex items-center justify-center hover:bg-gray-50 transition-all z-10 opacity-0 pointer-events-none">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
             </svg>
@@ -331,22 +320,30 @@ function extractQuestionSuggestions(string $text): ?array
       </div>
 
       <!-- Send message -->
-      <form id="chatForm" method="POST" class="p-5">
+      <form id="chatForm" method="POST" enctype="multipart/form-data" class="p-5">
         <?php if (!isset($_SESSION['user_id'])): ?>
           <input type="hidden" name="gk" value="<?= htmlspecialchars($chatKey) ?>" />
         <?php endif; ?>
         <div class="flex items-center gap-3">
-          <input type="text" id="chatInput" name="message" placeholder="Type your message..." autofocus required maxlength="250"
-                 class="flex-1 rounded-full border border-gray-200 px-5 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-          <button type="submit" id="chatSendBtn" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors flex-shrink-0">Send</button>
+          <label for="chatImageInput" class="cursor-pointer flex-shrink-0 w-10 h-10 rounded-full border border-[rgba(27,94,32,0.12)] flex items-center justify-center hover:bg-[#e8f5e9] transition-colors" title="Attach image">
+            <svg class="w-5 h-5 text-[#5a7a5c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </label>
+          <input type="file" id="chatImageInput" name="chat_image" accept="image/*" class="hidden" onchange="previewChatImage(this)">
+          <input type="text" id="chatInput" name="message" placeholder="Type your message..." autofocus maxlength="250"
+                 class="flex-1 rounded-full border border-[rgba(27,94,32,0.12)] px-5 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+          <button type="submit" id="chatSendBtn" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors flex-shrink-0">Send</button>
+        </div>
+        <div id="imagePreviewContainer" class="hidden mt-2 relative inline-block">
+          <img id="imagePreview" src="" class="h-20 w-20 object-cover rounded-lg border border-[rgba(27,94,32,0.12)]">
+          <button type="button" onclick="removeChatImage()" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">×</button>
         </div>
         <div class="flex items-center justify-between mt-2 px-1">
           <p id="chatValidation" class="text-[12px] text-red-500"></p>
-          <p id="chatCharCount" class="text-[11px] text-gray-400 ml-auto">0/250</p>
+          <p id="chatCharCount" class="text-[11px] text-[#9e9e9e] ml-auto">0/250</p>
         </div>
       </form>
     </div>
-    <p class="text-center text-[12px] text-gray-400 mt-4">New replies appear here automatically — no need to refresh.</p>
+    <p class="text-center text-[12px] text-[#9e9e9e] mt-4">New replies appear here automatically — no need to refresh.</p>
   </main>
 
   <!-- Footer -->
@@ -425,9 +422,9 @@ function extractQuestionSuggestions(string $text): ?array
     // ------------------------------------------------------------------
     const SUGGESTION_MAP = {
         general: [
-            'Tell me about your furniture products',
+            'Tell me about your lettuce varieties',
             'I have a general question',
-            'How do I care for my furniture?',
+            'How do I store my lettuce?',
             'Tell me about shipping and delivery',
             'I need help with my account',
         ],
@@ -436,9 +433,9 @@ function extractQuestionSuggestions(string $text): ?array
             'Can I cancel or modify my order?',
             'How long does shipping take?',
             'What payment methods do you accept?',
-            'Do you assemble furniture on delivery?',
-            'Can I return or exchange furniture?',
-            'How do warranties work?',
+            'How does harvest-on-demand work?',
+            'Can I return or exchange lettuce?',
+            'How does the freshness guarantee work?',
         ],
         account_help: [
             'How do I create an account?',
@@ -448,25 +445,18 @@ function extractQuestionSuggestions(string $text): ?array
             'How do I update my profile?',
         ],
         product_info: [
-            'Tell me about your furniture products',
-            'What materials are used in your furniture?',
-            'What are the dimensions of your furniture?',
-            'Is your furniture in stock?',
-            'What color options are available?',
-            'Do you assemble furniture on delivery?',
+            'Tell me about your lettuce varieties',
+            'How is the lettuce grown?',
+            'What varieties do you have?',
+            'What lettuce is available?',
+            'What bundle options are available?',
+            'How does harvest-on-demand work?',
         ],
         support_tickets: [
             'How do I submit a ticket?',
             'How long for a ticket reply?',
             'Ticket Status Meaning',
             'What is the support ticket process?',
-        ],
-        warranty: [
-            'How do I submit a warranty request?',
-            'What documents are required for warranty?',
-            'How long does warranty approval take?',
-            'What does warranty cover?',
-            'What is not covered by warranty?',
         ],
         return_refund: [
             'How do I submit a return request?',
@@ -491,28 +481,23 @@ function extractQuestionSuggestions(string $text): ?array
         'Can I cancel or modify my order?': 'Can I cancel or modify my order',
         'How long does shipping take?': 'How long does shipping take',
         'What payment methods do you accept?': 'What payment methods do you accept',
-        'Do you assemble furniture on delivery?': 'Do you assemble furniture on delivery',
-        'Can I return or exchange furniture?': 'Can I return or exchange furniture',
-        'How do warranties work?': 'How do warranties work',
+        'How does harvest-on-demand work?': 'How does harvest-on-demand work',
+        'Can I return or exchange lettuce?': 'Can I return or exchange lettuce',
+        'How does the freshness guarantee work?': 'How does the freshness guarantee work',
         'How do I create an account?': 'How do I create an account',
         'How do I log in?': 'How do I log in',
         'How do I reset my password?': 'How do I reset my password',
         'How do I change my password?': 'How do I change my password',
         'How do I update my profile?': 'How do I update my profile',
-        'Tell me about your furniture products': 'Tell me about your furniture products',
-        'What materials are used in your furniture?': 'What materials are used in your furniture',
-        'What are the dimensions of your furniture?': 'What are the dimensions of your furniture',
-        'Is your furniture in stock?': 'Is your furniture in stock',
-        'What color options are available?': 'What color options are available',
+        'Tell me about your lettuce varieties': 'Tell me about your lettuce varieties',
+        'How is the lettuce grown?': 'How is the lettuce grown',
+        'What varieties do you have?': 'What varieties do you have',
+        'What lettuce is available?': 'What lettuce is available',
+        'What bundle options are available?': 'What color options are available',
         'How do I submit a ticket?': 'How do I submit a ticket',
         'How long for a ticket reply?': 'How long for a ticket reply',
         'Ticket Status Meaning': 'Ticket Status Meaning',
         'What is the support ticket process?': 'How do I submit a ticket',
-        'How do I submit a warranty request?': 'How do I submit a warranty request',
-        'What documents are required for warranty?': 'What documents are required for warranty',
-        'How long does warranty approval take?': 'How long does warranty approval take',
-        'What does warranty cover?': 'What does warranty cover',
-        'What is not covered by warranty?': 'What is not covered by warranty',
         'How do I submit a return request?': 'How do I submit a return request',
         'Am I eligible for a return?': 'Am I eligible for a return',
         'How long does a return take?': 'How long does a return take',
@@ -524,7 +509,7 @@ function extractQuestionSuggestions(string $text): ?array
         'Submit a Ticket': 'How do I submit a ticket',
         'Live Chat': 'Live Chat',
         'Response Time': 'Ticket response time',
-        'How do I care for my furniture?': 'How do I care for my furniture',
+        'How do I store my lettuce?': 'How do I store my lettuce',
         'Tell me about shipping and delivery': 'Tell me about shipping and delivery',
         'I need help with my account': 'I need help with my account',
         'I have a general question': 'I have a general question',
@@ -546,7 +531,7 @@ function extractQuestionSuggestions(string $text): ?array
     function renderSuggestionChips(list) {
         suggestionChips.innerHTML = list.map((label) => {
             const message = SUGGESTION_MESSAGE_MAP[label] || label;
-            return `<button type="button" class="suggestion-chip text-[13px] font-medium text-[#6B4226] bg-orange-50 hover:bg-orange-100 active:scale-[0.98] border border-orange-100 rounded-full px-4 py-2 transition-all" data-message="${escapeHtml(message)}" data-label="${escapeHtml(label)}">${escapeHtml(label)}</button>`;
+            return `<button type="button" class="suggestion-chip text-[13px] font-medium text-[#17611f] bg-[#e8f5e9] hover:bg-[#c8e6c9] active:scale-[0.98] border border-[#c8e6c9] rounded-full px-4 py-2 transition-all" data-message="${escapeHtml(message)}" data-label="${escapeHtml(label)}">${escapeHtml(label)}</button>`;
         }).join('');
         suggestionChips.scrollLeft = 0;
         updateScrollButtons();
@@ -590,12 +575,12 @@ function extractQuestionSuggestions(string $text): ?array
         // Check for specific topic indicators
         const topicPatterns = [
             { topic: 'account_help', patterns: ['account', 'password', 'login', 'log in', 'profile', 'register', 'sign up', 'forgot', 'create an account', 'reset my password', 'change my password', 'update my profile'] },
-            { topic: 'warranty', patterns: ['warranty', 'manufacturing defect', 'defect', 'structural', 'material flaw', 'warranty request', 'warranty coverage', 'warranty approval'] },
+            { topic: 'freshness', patterns: ['freshness', 'quality issue', 'wilted', 'damaged', 'not fresh', 'freshness request', 'freshness coverage', 'guarantee'] },
             { topic: 'return_refund', patterns: ['return', 'refund', 'exchange', 'wrong item', 'damaged on delivery', 'missing parts', 'return request', 'return eligibility', 'refund for returns'] },
             { topic: 'support_tickets', patterns: ['ticket', 'support ticket', 'submit a ticket', 'raise a ticket', 'ticket reply', 'ticket status'] },
             { topic: 'contact_support', patterns: ['contact support', 'business hours', 'phone number', 'email address', 'contact information'] },
-            { topic: 'product_info', patterns: ['furniture categories', 'products', 'materials', 'dimensions', 'in stock', 'availability', 'colors', 'furniture products'] },
-            { topic: 'faq', patterns: ['faq', 'frequently asked', 'general question', 'place an order', 'payment methods', 'assemble furniture'] },
+            { topic: 'product_info', patterns: ['lettuce types', 'products', 'materials', 'dimensions', 'in stock', 'availability', 'colors', 'lettuce varieties'] },
+            { topic: 'faq', patterns: ['faq', 'frequently asked', 'general question', 'place an order', 'payment methods', 'harvest-on-demand'] },
         ];
         
         for (const entry of topicPatterns) {
@@ -605,7 +590,7 @@ function extractQuestionSuggestions(string $text): ?array
         }
         
         // Check for product categories
-        const productCategories = ['dining table', 'chair', 'desk', 'bookshelf', 'tv stand', 'cabinet', 'bed', 'sofa', 'outdoor', 'furniture care'];
+        const productCategories = ['romaine, batavia, bianca, butterhead, red leaf, estrosa, olmetie, mixed greens'];
         if (productCategories.some((cat) => lower.includes(cat))) {
             return 'product_info';
         }
@@ -660,24 +645,24 @@ function extractQuestionSuggestions(string $text): ?array
 
     function buildSuggestionsBlock(bullets) {
         const buttons = bullets.map((q) => `
-          <button type="button" class="chat-suggestion-btn text-left text-[13.5px] font-medium text-[#6B4226] bg-white border border-orange-200 rounded-xl px-3.5 py-2 hover:bg-orange-50 hover:border-orange-300 active:scale-[0.98] cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40" data-message="${escapeHtml(q)}">${escapeHtml(q)}</button>`).join('');
+          <button type="button" class="chat-suggestion-btn text-left text-[13.5px] font-medium text-[#17611f] bg-white border border-[#c8e6c9] rounded-xl px-3.5 py-2 hover:bg-[#e8f5e9] hover:border-orange-300 active:scale-[0.98] cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40" data-message="${escapeHtml(q)}">${escapeHtml(q)}</button>`).join('');
         return `
-        <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed bg-orange-50 border border-orange-100 text-gray-800 rounded-bl-sm">
+        <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed bg-[#e8f5e9] border border-[#c8e6c9] text-[#1a2e1c] rounded-bl-sm">
           <p>Here are some questions customers commonly ask.</p>
           <p class="mt-1">Simply click any question below if that's what you'd like to ask.</p>
         </div>
         <div class="mt-2 flex flex-col gap-1.5" role="list">${buttons}</div>
-        <p class="text-[12px] text-gray-400 mt-2">If your question isn't listed, you can always type your own message below.</p>`;
+        <p class="text-[12px] text-[#9e9e9e] mt-2">If your question isn't listed, you can always type your own message below.</p>`;
     }
 
     function appendMessage(m) {
         if (emptyState) emptyState.style.display = 'none';
         const isCustomer = m.sender === 'customer';
         const isBot = m.sender === 'bot';
-        const label = isCustomer ? 'You' : (isBot ? 'WoodCraft Assistant 🌿' : 'WoodCraft Support');
+        const label = isCustomer ? 'You' : (isBot ? 'Luntiang H.A.P.A.G. Assistant 🌿' : 'Luntiang H.A.P.A.G. Support');
         const bubbleClass = isCustomer
-            ? 'bg-[#6B4226] text-white rounded-br-sm'
-            : (isBot ? 'bg-orange-50 border border-orange-100 text-gray-800 rounded-bl-sm' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm');
+            ? 'bg-[#17611f] text-white rounded-br-sm'
+            : (isBot ? 'bg-[#e8f5e9] border border-[#c8e6c9] text-[#1a2e1c] rounded-bl-sm' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#1a2e1c] rounded-bl-sm');
         const suggestions = isBot ? extractQuestionSuggestions(m.message) : null;
         if (suggestions) {
             renderSuggestionChips(suggestions);
@@ -686,15 +671,20 @@ function extractQuestionSuggestions(string $text): ?array
             const topic = detectTopicFromMessage(m.message);
             if (topic) setTopic(topic);
         }
+        // Build image HTML if present
+        let imageHtml = '';
+        if (m.image_path) {
+            imageHtml = `<img src="${escapeHtml(m.image_path)}" class="mt-2 rounded-lg max-w-full max-h-64 object-cover" alt="Shared image">`;
+        }
         const bodyHtml = suggestions
             ? buildSuggestionsBlock(suggestions)
-            : `<div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed ${bubbleClass}">${escapeHtml(m.message).replace(/\n/g, '<br>')}</div>`;
+            : `<div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed ${bubbleClass}">${m.message ? escapeHtml(m.message).replace(/\\n/g, '<br>') : ''}${imageHtml}</div>`;
         const wrap = document.createElement('div');
         wrap.className = 'flex ' + (isCustomer ? 'justify-end' : 'justify-start');
         wrap.innerHTML = `
         <div class="max-w-[75%]">
           ${bodyHtml}
-          <p class="text-[11px] text-gray-400 mt-1 ${isCustomer ? 'text-right' : 'text-left'}">
+          <p class="text-[11px] text-[#9e9e9e] mt-1 ${isCustomer ? 'text-right' : 'text-left'}">
             ${label} · ${formatTime(m.created_at)}
           </p>
         </div>`;
@@ -703,14 +693,49 @@ function extractQuestionSuggestions(string $text): ?array
         scrollToBottom();
     }
 
+    let pendingImage = null;
+
+    function previewChatImage(input) {
+        if (input.files && input.files[0]) {
+            pendingImage = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeChatImage() {
+        pendingImage = null;
+        document.getElementById('chatImageInput').value = '';
+        document.getElementById('imagePreviewContainer').classList.add('hidden');
+    }
+
     async function sendMessage(text) {
         sendBtn.disabled = true;
         try {
-            const res = await fetch(withGuestKey('chat-send.php'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text, gk: GUEST_CHAT_KEY })
-            });
+            let res;
+            if (pendingImage) {
+                const formData = new FormData();
+                formData.append('message', text || '');
+                formData.append('chat_image', pendingImage);
+                if (GUEST_CHAT_KEY) formData.append('gk', GUEST_CHAT_KEY);
+                res = await fetch(withGuestKey('chat-send.php'), {
+                    method: 'POST',
+                    body: formData
+                });
+                pendingImage = null;
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+                document.getElementById('chatImageInput').value = '';
+            } else {
+                res = await fetch(withGuestKey('chat-send.php'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, gk: GUEST_CHAT_KEY })
+                });
+            }
             const data = await res.json();
             if (data.success) {
                 const toAppend = Array.isArray(data.messages) ? data.messages : [data.message];
@@ -737,7 +762,7 @@ function extractQuestionSuggestions(string $text): ?array
         const len = input.value.length;
         charCountEl.textContent = len + '/' + MAX_LEN;
         charCountEl.classList.toggle('text-red-500', len > MAX_LEN);
-        charCountEl.classList.toggle('text-gray-400', len <= MAX_LEN);
+        charCountEl.classList.toggle('text-[#9e9e9e]', len <= MAX_LEN);
     }
     input.addEventListener('input', updateCharCount);
     updateCharCount();
@@ -786,22 +811,15 @@ function extractQuestionSuggestions(string $text): ?array
         });
     });
 
-    // "More Options" expandable panel
+    // More Options toggle
     const moreToggle = document.getElementById('moreOptionsToggle');
     const morePanel = document.getElementById('moreOptionsPanel');
     const moreChevron = document.getElementById('moreOptionsChevron');
     if (moreToggle && morePanel) {
         moreToggle.addEventListener('click', () => {
-            const isHidden = morePanel.classList.contains('hidden');
-            if (isHidden) {
-                morePanel.classList.remove('hidden');
-                moreChevron.classList.add('rotate-180');
-                moreToggle.querySelector('span').textContent = 'Fewer Options';
-            } else {
-                morePanel.classList.add('hidden');
-                moreChevron.classList.remove('rotate-180');
-                moreToggle.querySelector('span').textContent = 'More Options';
-            }
+            const h = morePanel.classList.contains('hidden');
+            if (h) { morePanel.classList.remove('hidden'); moreChevron.classList.add('rotate-180'); moreToggle.querySelector('span').textContent = 'Fewer Options'; }
+            else { morePanel.classList.add('hidden'); moreChevron.classList.remove('rotate-180'); moreToggle.querySelector('span').textContent = 'More Options'; }
         });
     }
 

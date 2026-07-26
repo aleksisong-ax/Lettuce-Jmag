@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $insert = $conn->prepare("
                 INSERT INTO live_chat_messages (chat_key, user_id, customer_name, sender, message)
-                VALUES (?, NULL, 'WoodCraft Support', 'admin', ?)
+                VALUES (?, NULL, 'Luntiang H.A.P.A.G. Support', 'admin', ?)
             ");
             $insert->execute([$chatKey, $text]);
 
@@ -82,7 +82,7 @@ if ($activeChatKey !== '') {
 $activeLastId = !empty($activeMessages) ? (int)end($activeMessages)['id'] : 0;
 
 // The first row in the thread is often the bot's auto-greeting (sender
-// = 'bot', customer_name = 'WoodCraft Assistant'), so we can't just use
+// = 'bot', customer_name = 'Luntiang H.A.P.A.G. Assistant'), so we can't just use
 // $activeMessages[0]['customer_name'] for the header — that shows the
 // bot's name instead of the customer's. Grab the name from the first
 // actual customer message instead, same as the sidebar query does.
@@ -99,18 +99,18 @@ foreach ($activeMessages as $m) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Chat | WoodCraft Admin</title>
+  <title>Live Chat | Luntiang H.A.P.A.G. Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-thumb { background: #d8cfbd; border-radius: 8px; }
   </style>
 </head>
-<body class="h-screen overflow-hidden bg-[#F3F0E4] text-gray-900">
+<body class="h-screen overflow-hidden bg-[#f4faf5] text-[#1a2e1c]">
   <div class="flex h-screen">
     <?php require_once __DIR__ . '/includes/admin-sidebar.php'; ?>
 
@@ -120,23 +120,23 @@ foreach ($activeMessages as $m) {
       <main class="flex-1 min-h-0 overflow-hidden flex">
 
         <!-- Conversation list -->
-        <div id="conversationList" class="w-80 flex-shrink-0 border-r border-gray-200 bg-white flex flex-col overflow-hidden">
+        <div id="conversationList" class="w-80 flex-shrink-0 border-r border-[rgba(27,94,32,0.12)] bg-white flex flex-col overflow-hidden">
           <div class="p-4 border-b border-gray-100">
-            <h2 class="text-sm font-semibold text-gray-900">Conversations (<span id="conversationCount"><?= count($conversations) ?></span>)</h2>
+            <h2 class="text-sm font-semibold text-[#1a2e1c]">Conversations (<span id="conversationCount"><?= count($conversations) ?></span>)</h2>
           </div>
           <div id="conversationItems" class="flex-1 overflow-y-auto">
             <?php if (empty($conversations)): ?>
-              <p class="p-4 text-sm text-gray-400" id="noConversations">No chat conversations yet.</p>
+              <p class="p-4 text-sm text-[#9e9e9e]" id="noConversations">No chat conversations yet.</p>
             <?php else: foreach ($conversations as $c):
                 $isActive = $c['chat_key'] === $activeChatKey;
             ?>
-              <div class="relative group border-b border-gray-50 conversation-row <?= $isActive ? 'bg-orange-50' : 'hover:bg-gray-50' ?>" data-chat-key="<?= e($c['chat_key']) ?>">
+              <div class="relative group border-b border-gray-50 conversation-row <?= $isActive ? 'bg-[#e8f5e9]' : 'hover:bg-gray-50' ?>" data-chat-key="<?= e($c['chat_key']) ?>">
                 <a href="admin-live-chat.php?chat=<?= urlencode($c['chat_key']) ?>" class="block px-4 py-3 pr-10 conversation-link">
                   <div class="flex items-center justify-between mb-1">
-                    <p class="text-[13px] font-semibold text-gray-900 truncate"><?= e($c['customer_name']) ?></p>
-                    <p class="text-[11px] text-gray-400 flex-shrink-0"><?= date('g:i A', strtotime($c['last_message_at'])) ?></p>
+                    <p class="text-[13px] font-semibold text-[#1a2e1c] truncate"><?= e($c['customer_name']) ?></p>
+                    <p class="text-[11px] text-[#9e9e9e] flex-shrink-0"><?= date('g:i A', strtotime($c['last_message_at'])) ?></p>
                   </div>
-                  <p class="text-[12px] text-gray-500 truncate"><?= e($c['last_message']) ?></p>
+                  <p class="text-[12px] text-[#5a7a5c] truncate"><?= e($c['last_message']) ?></p>
                 </a>
                 <button type="button" class="delete-conversation-btn absolute top-1/2 right-3 -translate-y-1/2 p-1.5 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity" data-chat-key="<?= e($c['chat_key']) ?>" title="Delete conversation">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-9 0h10" /></svg>
@@ -149,60 +149,73 @@ foreach ($activeMessages as $m) {
         <!-- Active conversation -->
         <div id="activeConversationPanel" class="flex-1 flex flex-col min-w-0 min-h-0">
           <?php if ($activeChatKey === '' || empty($activeMessages)): ?>
-            <div class="flex-1 flex items-center justify-center text-sm text-gray-400">Select a conversation to view messages.</div>
+            <div class="flex-1 flex items-center justify-center text-sm text-[#9e9e9e]">Select a conversation to view messages.</div>
           <?php else: ?>
-            <div class="px-6 py-4 border-b border-gray-200 bg-white">
-              <p class="text-sm font-semibold text-gray-900"><?= e($activeCustomerName) ?></p>
-              <p class="text-[12px] text-gray-400">Chat ID: <?= e(substr($activeChatKey, 0, 12)) ?>…</p>
+            <div class="px-6 py-4 border-b border-[rgba(27,94,32,0.12)] bg-white">
+              <p class="text-sm font-semibold text-[#1a2e1c]"><?= e($activeCustomerName) ?></p>
+              <p class="text-[12px] text-[#9e9e9e]">Chat ID: <?= e(substr($activeChatKey, 0, 12)) ?>…</p>
             </div>
-            <div id="chatThread" class="flex-1 min-h-0 overflow-y-auto p-6 space-y-4 bg-[#FBF9F4]" data-chat-key="<?= e($activeChatKey) ?>" data-last-id="<?= $activeLastId ?>">
+            <div id="chatThread" class="flex-1 min-h-0 overflow-y-auto p-6 space-y-4 bg-[#f4faf5]" data-chat-key="<?= e($activeChatKey) ?>" data-last-id="<?= $activeLastId ?>">
               <?php foreach ($activeMessages as $m):
                   $isAdmin = $m['sender'] === 'admin';
                   $isBot = $m['sender'] === 'bot';
-                  $label = $isAdmin ? 'You' : ($isBot ? 'WoodCraft Assistant 🌿' : e($m['customer_name']));
+                  $label = $isAdmin ? 'You' : ($isBot ? 'Luntiang H.A.P.A.G. Assistant 🌿' : e($m['customer_name']));
+                  $hasImage = !empty($m['image_path']);
               ?>
                 <div class="flex <?= $isAdmin ? 'justify-end' : 'justify-start' ?>">
                   <div class="max-w-[65%]">
-                    <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed <?= $isAdmin ? 'bg-[#6B4226] text-white rounded-br-sm' : ($isBot ? 'bg-orange-50 border border-orange-100 text-gray-800 rounded-bl-sm' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm') ?>">
-                      <?= nl2br(e($m['message'])) ?>
+                    <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed <?= $isAdmin ? 'bg-[#17611f] text-white rounded-br-sm' : ($isBot ? 'bg-[#e8f5e9] border border-[#c8e6c9] text-[#1a2e1c] rounded-bl-sm' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#1a2e1c] rounded-bl-sm') ?>">
+                      <?= $m['message'] ? nl2br(e($m['message'])) : '' ?>
+                      <?php if ($hasImage): ?>
+                        <img src="<?= e($m['image_path']) ?>" class="mt-2 rounded-lg max-w-full max-h-64 object-cover" alt="Shared image">
+                      <?php endif; ?>
                     </div>
-                    <p class="text-[11px] text-gray-400 mt-1 <?= $isAdmin ? 'text-right' : 'text-left' ?>">
+                    <p class="text-[11px] text-[#9e9e9e] mt-1 <?= $isAdmin ? 'text-right' : 'text-left' ?>">
                       <?= $label ?> · <?= date('M j, g:i A', strtotime($m['created_at'])) ?>
                     </p>
                   </div>
                 </div>
               <?php endforeach; ?>
             </div>
-            <form id="chatForm" method="POST" class="p-4 border-t border-gray-200 bg-white">
+            <form id="chatForm" method="POST" enctype="multipart/form-data" class="p-4 border-t border-[rgba(27,94,32,0.12)] bg-white">
               <?php if ($message): ?>
                 <p class="text-[12px] mb-2 <?= $messageType === 'error' ? 'text-red-500' : 'text-green-600' ?>"><?= e($message) ?></p>
               <?php endif; ?>
               <div class="flex items-center gap-3">
+                <label for="adminChatImageInput" class="cursor-pointer flex-shrink-0 w-10 h-10 rounded-full border border-[rgba(27,94,32,0.12)] flex items-center justify-center hover:bg-[#e8f5e9] transition-colors" title="Attach image">
+                  <svg class="w-5 h-5 text-[#5a7a5c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </label>
+                <input type="file" id="adminChatImageInput" name="chat_image" accept="image/*" class="hidden" onchange="previewAdminChatImage(this)">
                 <input type="hidden" name="chat_key" id="chatKeyInput" value="<?= e($activeChatKey) ?>" />
-                <input type="text" name="message" id="chatInput" placeholder="Type your reply..." required maxlength="250" class="flex-1 rounded-full border border-gray-200 px-5 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-                <button type="submit" id="chatSendBtn" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors flex-shrink-0">Send</button>
+                <input type="text" name="message" id="chatInput" placeholder="Type your reply..." maxlength="250" class="flex-1 rounded-full border border-[rgba(27,94,32,0.12)] px-5 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+                <button type="submit" id="chatSendBtn" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors flex-shrink-0">Send</button>
+              </div>
+              <div id="adminImagePreviewContainer" class="hidden mt-2 relative inline-block">
+                <img id="adminImagePreview" src="" class="h-20 w-20 object-cover rounded-lg border border-[rgba(27,94,32,0.12)]">
+                <button type="button" onclick="removeAdminChatImage()" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">×</button>
               </div>
               <div class="flex items-center justify-between mt-2 px-1">
                 <p id="chatValidation" class="text-[12px] text-red-500"></p>
-                <p id="chatCharCount" class="text-[11px] text-gray-400 ml-auto">0/250</p>
+                <p id="chatCharCount" class="text-[11px] text-[#9e9e9e] ml-auto">0/250</p>
               </div>
             </form>
           <?php endif; ?>
         </div>
 
       </main>
+</div>
     </div>
   </div>
 
   <!-- Delete Conversation confirmation modal -->
   <div id="deleteConfirmModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 px-4">
     <div class="bg-white rounded-2xl shadow-lg max-w-sm w-full p-6">
-      <h3 class="text-base font-semibold text-gray-900 mb-2">Delete Conversation?</h3>
-      <p class="text-[13px] text-gray-600 leading-relaxed mb-2">This action will permanently delete the selected chat conversation and all of its messages.</p>
-      <p class="text-[13px] text-gray-600 leading-relaxed mb-4">Customer account information, profile details, tickets, warranty requests, return requests, feedback, and other records will <span class="font-semibold">NOT</span> be deleted.</p>
+      <h3 class="text-base font-semibold text-[#1a2e1c] mb-2">Delete Conversation?</h3>
+      <p class="text-[13px] text-[#5a7a5c] leading-relaxed mb-2">This action will permanently delete the selected chat conversation and all of its messages.</p>
+      <p class="text-[13px] text-[#5a7a5c] leading-relaxed mb-4">Customer account information, profile details, tickets, warranty requests, return requests, feedback, and other records will <span class="font-semibold">NOT</span> be deleted.</p>
       <p class="text-[12px] text-red-500 font-medium mb-6">This action cannot be undone.</p>
       <div class="flex items-center justify-end gap-3">
-        <button type="button" id="deleteConfirmCancel" class="px-5 py-2.5 rounded-full border border-gray-300 text-gray-800 text-sm font-medium hover:bg-gray-100 transition-colors">Cancel</button>
+        <button type="button" id="deleteConfirmCancel" class="px-5 py-2.5 rounded-full border border-gray-300 text-[#1a2e1c] text-sm font-medium hover:bg-gray-100 transition-colors">Cancel</button>
         <button type="button" id="deleteConfirmSubmit" class="px-5 py-2.5 rounded-full bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors">Delete Conversation</button>
       </div>
     </div>
@@ -221,7 +234,7 @@ foreach ($activeMessages as $m) {
     // on the query string alone to detect "is the deleted conversation
     // the one I'm looking at?" misses that case).
     let currentChatKey = <?= json_encode($activeChatKey) ?>;
-    let messagePollInterval = null;
+    let messagePollNunitoval = null;
 
     function escapeHtml(str) {
       const div = document.createElement('div');
@@ -307,7 +320,7 @@ foreach ($activeMessages as $m) {
           if (countEl) countEl.textContent = remaining;
           const container = document.getElementById('conversationItems');
           if (remaining === 0 && container) {
-            container.innerHTML = '<p class="p-4 text-sm text-gray-400">No chat conversations yet.</p>';
+            container.innerHTML = '<p class="p-4 text-sm text-[#9e9e9e]">No chat conversations yet.</p>';
           }
 
           // If the deleted conversation was the one currently open,
@@ -315,9 +328,9 @@ foreach ($activeMessages as $m) {
           if (currentChatKey === chatKey) {
             currentChatKey = '';
 
-            if (messagePollInterval) {
-              clearInterval(messagePollInterval);
-              messagePollInterval = null;
+            if (messagePollNunitoval) {
+              clearNunitoval(messagePollNunitoval);
+              messagePollNunitoval = null;
             }
 
             const panel = document.getElementById('activeConversationPanel');
@@ -325,13 +338,13 @@ foreach ($activeMessages as $m) {
               panel.innerHTML = remaining === 0
                 ? `<div class="flex-1 flex flex-col items-center justify-center text-center px-6">
                      <div class="text-4xl mb-3">💬</div>
-                     <p class="text-sm font-semibold text-gray-700 mb-1">No Conversations Available</p>
-                     <p class="text-[13px] text-gray-400 max-w-xs">There are currently no customer conversations. New conversations will appear here once customers start chatting.</p>
+                     <p class="text-sm font-semibold text-[#1a2e1c] mb-1">No Conversations Available</p>
+                     <p class="text-[13px] text-[#9e9e9e] max-w-xs">There are currently no customer conversations. New conversations will appear here once customers start chatting.</p>
                    </div>`
                 : `<div class="flex-1 flex flex-col items-center justify-center text-center px-6">
                      <div class="text-4xl mb-3">🗑️</div>
-                     <p class="text-sm font-semibold text-gray-700 mb-1">Conversation Deleted</p>
-                     <p class="text-[13px] text-gray-400 max-w-xs">This conversation has been deleted successfully. Select another conversation from the list to continue assisting customers.</p>
+                     <p class="text-sm font-semibold text-[#1a2e1c] mb-1">Conversation Deleted</p>
+                     <p class="text-[13px] text-[#9e9e9e] max-w-xs">This conversation has been deleted successfully. Select another conversation from the list to continue assisting customers.</p>
                    </div>`;
             }
 
@@ -368,7 +381,7 @@ foreach ($activeMessages as $m) {
         const len = input.value.length;
         charCountEl.textContent = len + '/' + MAX_LEN;
         charCountEl.classList.toggle('text-red-500', len > MAX_LEN);
-        charCountEl.classList.toggle('text-gray-400', len <= MAX_LEN);
+        charCountEl.classList.toggle('text-[#9e9e9e]', len <= MAX_LEN);
       }
       input.addEventListener('input', updateCharCount);
       updateCharCount();
@@ -376,18 +389,22 @@ foreach ($activeMessages as $m) {
       function appendMessage(m) {
         const isAdmin = m.sender === 'admin';
         const isBot = m.sender === 'bot';
-        const label = isAdmin ? 'You' : (isBot ? 'WoodCraft Assistant 🌿' : escapeHtml(m.customer_name));
+        const label = isAdmin ? 'You' : (isBot ? 'Luntiang H.A.P.A.G. Assistant 🌿' : escapeHtml(m.customer_name));
         const bubbleClass = isAdmin
-          ? 'bg-[#6B4226] text-white rounded-br-sm'
-          : (isBot ? 'bg-orange-50 border border-orange-100 text-gray-800 rounded-bl-sm' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm');
+          ? 'bg-[#17611f] text-white rounded-br-sm'
+          : (isBot ? 'bg-[#e8f5e9] border border-[#c8e6c9] text-[#1a2e1c] rounded-bl-sm' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#1a2e1c] rounded-bl-sm');
+        let imageHtml = '';
+        if (m.image_path) {
+          imageHtml = `<img src="${escapeHtml(m.image_path)}" class="mt-2 rounded-lg max-w-full max-h-64 object-cover" alt="Shared image">`;
+        }
         const wrap = document.createElement('div');
         wrap.className = 'flex ' + (isAdmin ? 'justify-end' : 'justify-start');
         wrap.innerHTML = `
           <div class="max-w-[65%]">
             <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed ${bubbleClass}">
-              ${escapeHtml(m.message).replace(/\n/g, '<br>')}
+              ${m.message ? escapeHtml(m.message).replace(/\\n/g, '<br>') : ''}${imageHtml}
             </div>
-            <p class="text-[11px] text-gray-400 mt-1 ${isAdmin ? 'text-right' : 'text-left'}">
+            <p class="text-[11px] text-[#9e9e9e] mt-1 ${isAdmin ? 'text-right' : 'text-left'}">
               ${label} · ${formatTime(m.created_at)}
             </p>
           </div>`;
@@ -396,14 +413,46 @@ foreach ($activeMessages as $m) {
         scrollToBottom();
       }
 
+      let pendingAdminImage = null;
+
+      window.previewAdminChatImage = function(input) {
+        if (input.files && input.files[0]) {
+          pendingAdminImage = input.files[0];
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById('adminImagePreview').src = e.target.result;
+            document.getElementById('adminImagePreviewContainer').classList.remove('hidden');
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      };
+
+      window.removeAdminChatImage = function() {
+        pendingAdminImage = null;
+        document.getElementById('adminChatImageInput').value = '';
+        document.getElementById('adminImagePreviewContainer').classList.add('hidden');
+      };
+
       async function sendMessage(text) {
         sendBtn.disabled = true;
         try {
-          const res = await fetch('chat-send.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_key: chatKeyInput.value, message: text })
-          });
+          let res;
+          if (pendingAdminImage) {
+            const formData = new FormData();
+            formData.append('message', text || '');
+            formData.append('chat_key', chatKeyInput.value);
+            formData.append('chat_image', pendingAdminImage);
+            res = await fetch('chat-send.php', { method: 'POST', body: formData });
+            pendingAdminImage = null;
+            document.getElementById('adminImagePreviewContainer').classList.add('hidden');
+            document.getElementById('adminChatImageInput').value = '';
+          } else {
+            res = await fetch('chat-send.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ chat_key: chatKeyInput.value, message: text })
+            });
+          }
           const data = await res.json();
           if (data.success) {
             appendMessage(data.message);
@@ -451,7 +500,7 @@ foreach ($activeMessages as $m) {
         }
       }
 
-      messagePollInterval = setInterval(pollMessages, 4000);
+      messagePollNunitoval = setNunitoval(pollMessages, 4000);
     }
 
     // Refresh the conversation sidebar in place, without touching
@@ -469,7 +518,7 @@ foreach ($activeMessages as $m) {
 
         const container = document.getElementById('conversationItems');
         if (data.conversations.length === 0) {
-          container.innerHTML = '<p class="p-4 text-sm text-gray-400">No chat conversations yet.</p>';
+          container.innerHTML = '<p class="p-4 text-sm text-[#9e9e9e]">No chat conversations yet.</p>';
           return;
         }
 
@@ -477,13 +526,13 @@ foreach ($activeMessages as $m) {
           const isActive = c.chat_key === activeKey;
           const time = formatTime(c.last_message_at).split(', ')[1] || '';
           return `
-            <div class="relative group border-b border-gray-50 conversation-row ${isActive ? 'bg-orange-50' : 'hover:bg-gray-50'}" data-chat-key="${escapeHtml(c.chat_key)}">
+            <div class="relative group border-b border-gray-50 conversation-row ${isActive ? 'bg-[#e8f5e9]' : 'hover:bg-gray-50'}" data-chat-key="${escapeHtml(c.chat_key)}">
               <a href="admin-live-chat.php?chat=${encodeURIComponent(c.chat_key)}" class="block px-4 py-3 pr-10 conversation-link">
                 <div class="flex items-center justify-between mb-1">
-                  <p class="text-[13px] font-semibold text-gray-900 truncate">${escapeHtml(c.customer_name)}</p>
-                  <p class="text-[11px] text-gray-400 flex-shrink-0">${time}</p>
+                  <p class="text-[13px] font-semibold text-[#1a2e1c] truncate">${escapeHtml(c.customer_name)}</p>
+                  <p class="text-[11px] text-[#9e9e9e] flex-shrink-0">${time}</p>
                 </div>
-                <p class="text-[12px] text-gray-500 truncate">${escapeHtml(c.last_message)}</p>
+                <p class="text-[12px] text-[#5a7a5c] truncate">${escapeHtml(c.last_message)}</p>
               </a>
               <button type="button" class="delete-conversation-btn absolute top-1/2 right-3 -translate-y-1/2 p-1.5 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity" data-chat-key="${escapeHtml(c.chat_key)}" title="Delete conversation">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-9 0h10" /></svg>
@@ -495,7 +544,7 @@ foreach ($activeMessages as $m) {
       }
     }
 
-    setInterval(refreshConversationList, 6000);
+    setNunitoval(refreshConversationList, 6000);
   </script>
 </body>
 </html>

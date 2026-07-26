@@ -2,29 +2,16 @@
 /**
  * includes/restrict-customer.php
  * ------------------------------------------------------------------
- * Include this (after session_start() + config.php) on every page
- * that is NOT part of the logged-in customer's allowed feature set.
+ * This file previously blocked logged-in customers from browsing
+ * the public pages (home, products, about). That made no sense for
+ * an e-commerce platform — customers need to SHOP.
  *
- * Once a customer logs in, they are only allowed to access
- * my-profile.php and its related customer features:
- *   my-profile.php, edit-profile.php, change-password.php,
- *   submit-ticket.php, warranty-request.php, returns-refund.php,
- *   live-chat.php, feedback.php, logout.php
- *
- * Any other page (home, FAQ, contact support, about, register,
- * login, articles, etc.) redirects a logged-in customer straight
- * back to their profile. Logging out clears $_SESSION['user_id'],
- * so this guard stops applying and the site returns to normal.
- *
- * Same $baseUrl convention as includes/header.php / footer.php:
- *   - Pages in the project root:      $baseUrl = '';
- *   - Pages one folder deep (e.g.
- *     /articles/*.php):               $baseUrl = '../';
+ * Now this file is a harmless no-op: all pages are open to everyone.
+ * Login is only enforced on pages that require authentication
+ * (checkout, order tracking, my-profile, submit-ticket, etc),
+ * which handle login checks themselves via session checks at the
+ * top of the file, not this include.
  * ------------------------------------------------------------------
  */
-
-if (isset($_SESSION['user_id'])) {
-    $redirectBase = isset($baseUrl) ? $baseUrl : '';
-    header("Location: {$redirectBase}my-profile.php");
-    exit();
-}
+// This file intentionally left empty — all auth gating is now
+// handled per-page.

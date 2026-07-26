@@ -67,13 +67,13 @@ function warrantyBadge(string $status): string
 {
     $map = ['pending' => ['amber', 'Pending'], 'approved' => ['green', 'Approved'], 'denied' => ['red', 'Denied']];
     [$color, $label] = $map[$status] ?? ['gray', ucfirst($status)];
-    $colors = ['amber' => 'text-amber-600 bg-amber-500', 'green' => 'text-green-600 bg-green-500', 'red' => 'text-red-600 bg-red-400', 'gray' => 'text-gray-400 bg-gray-400'];
+    $colors = ['amber' => 'text-amber-600 bg-[#fff8e1]0', 'green' => 'text-green-600 bg-green-500', 'red' => 'text-red-600 bg-red-400', 'gray' => 'text-[#9e9e9e] bg-gray-400'];
     [$textColor, $dotColor] = explode(' ', $colors[$color]);
     return "<span class=\"inline-flex items-center gap-1.5 text-[13px] font-medium $textColor\"><span class=\"w-1.5 h-1.5 rounded-full $dotColor\"></span>$label</span>";
 }
 
-// WoodCraft's manufacturer warranty covers 5 years from the purchase
-// date (see warranty-request.php). Older claims that predate the
+// Luntiang H.A.P.A.G.'s manufacturer warranty covers 5 years from the purchase
+// // stored as part of the freshness guarantee workflow. Older claims that predate the
 // purchase_date column simply have no date on file, so eligibility
 // can't be determined for them yet.
 const WARRANTY_POLICY_YEARS = 5;
@@ -81,7 +81,7 @@ const WARRANTY_POLICY_YEARS = 5;
 function warrantyEligibilityBadge(?string $purchaseDate): string
 {
     if (empty($purchaseDate)) {
-        return '<span class="inline-flex items-center gap-1.5 text-[12px] font-medium text-gray-400"><span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>No purchase date on file</span>';
+        return '<span class="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#9e9e9e]"><span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>No purchase date on file</span>';
     }
 
     $purchase = new DateTime($purchaseDate);
@@ -100,18 +100,18 @@ function warrantyEligibilityBadge(?string $purchaseDate): string
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Warranty Requests | WoodCraft Admin</title>
+  <title>Warranty Requests | Luntiang H.A.P.A.G. Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-thumb { background: #d8cfbd; border-radius: 8px; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900">
+<body class="bg-[#f4faf5] text-[#1a2e1c]">
   <div class="flex min-h-screen">
     <?php require_once __DIR__ . '/includes/admin-sidebar.php'; ?>
 
@@ -127,34 +127,34 @@ function warrantyEligibilityBadge(?string $purchaseDate): string
         <?php endif; ?>
 
         <div class="flex flex-wrap items-center gap-2">
-          <a href="admin-warranty.php" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $statusFilter === 'all' ? 'bg-[#4A2E1D] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>">All <span class="opacity-70">(<?= $totalCount ?>)</span></a>
+          <a href="admin-warranty.php" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $statusFilter === 'all' ? 'bg-[#17611f] text-white' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#5a7a5c] hover:bg-gray-50' ?>">All <span class="opacity-70">(<?= $totalCount ?>)</span></a>
           <?php foreach ($allowedStatuses as $s): ?>
-            <a href="admin-warranty.php?status=<?= $s ?>" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $statusFilter === $s ? 'bg-[#4A2E1D] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>"><?= ucfirst($s) ?> <span class="opacity-70">(<?= $statusCounts[$s] ?>)</span></a>
+            <a href="admin-warranty.php?status=<?= $s ?>" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $statusFilter === $s ? 'bg-[#17611f] text-white' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#5a7a5c] hover:bg-gray-50' ?>"><?= ucfirst($s) ?> <span class="opacity-70">(<?= $statusCounts[$s] ?>)</span></a>
           <?php endforeach; ?>
         </div>
 
         <div class="grid grid-cols-1 gap-4">
           <?php if (empty($requests)): ?>
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center text-sm text-gray-400">No warranty requests found.</div>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center text-sm text-[#9e9e9e]">No warranty requests found.</div>
           <?php else: foreach ($requests as $r): ?>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-3 mb-2">
-                    <p class="text-[12px] text-gray-400">Request #<?= $r['id'] ?> · <?= date('M j, Y', strtotime($r['created_at'])) ?></p>
+                    <p class="text-[12px] text-[#9e9e9e]">Request #<?= $r['id'] ?> · <?= date('M j, Y', strtotime($r['created_at'])) ?></p>
                     <?= warrantyBadge($r['status']) ?>
                   </div>
-                  <h3 class="font-semibold text-gray-900 mb-1"><?= htmlspecialchars($r['product_name']) ?></h3>
-                  <p class="text-[13px] text-gray-500 mb-1">
+                  <h3 class="font-semibold text-[#1a2e1c] mb-1"><?= htmlspecialchars($r['product_name']) ?></h3>
+                  <p class="text-[13px] text-[#5a7a5c] mb-1">
                     <?php if (!empty($r['order_number'])): ?>
-                      Order #: <span class="font-medium text-gray-700"><?= htmlspecialchars($r['order_number']) ?></span> ·
+                      Order #: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($r['order_number']) ?></span> ·
                     <?php endif; ?>
-                    Purchased: <span class="font-medium text-gray-700"><?= !empty($r['purchase_date']) ? date('M j, Y', strtotime($r['purchase_date'])) : '—' ?></span>
+                    Purchased: <span class="font-medium text-[#1a2e1c]"><?= !empty($r['purchase_date']) ? date('M j, Y', strtotime($r['purchase_date'])) : '—' ?></span>
                   </p>
                   <?php if (!empty($r['warranty_issue'])): ?>
-                    <p class="text-[13px] text-gray-500 mb-1">Issue type: <span class="font-medium text-gray-700"><?= htmlspecialchars($r['warranty_issue']) ?></span></p>
+                    <p class="text-[13px] text-[#5a7a5c] mb-1">Issue type: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($r['warranty_issue']) ?></span></p>
                   <?php endif; ?>
-                  <p class="text-[13px] text-gray-500 mb-3"><?= htmlspecialchars($r['defect_description']) ?></p>
+                  <p class="text-[13px] text-[#5a7a5c] mb-3"><?= htmlspecialchars($r['defect_description']) ?></p>
                   <p class="mb-3"><?= warrantyEligibilityBadge($r['purchase_date']) ?></p>
                   <?php
                     $proofAttachments = decodeAttachmentPaths($r['proof_of_purchase_path'] ?? null);
@@ -163,36 +163,36 @@ function warrantyEligibilityBadge(?string $purchaseDate): string
                   <?php if (!empty($proofAttachments) || !empty($damageAttachments)): ?>
                     <div class="flex flex-wrap gap-4 mb-3">
                       <?php foreach ($proofAttachments as $i => $path): ?>
-                        <a href="view-attachment.php?path=<?= urlencode($path) ?>" target="_blank" rel="noopener" class="text-[12px] font-medium text-[#6B4226] hover:underline">View Proof of Purchase<?= count($proofAttachments) > 1 ? ' ' . ($i + 1) : '' ?></a>
+                        <a href="view-attachment.php?path=<?= urlencode($path) ?>" target="_blank" rel="noopener" class="text-[12px] font-medium text-[#17611f] hover:underline">View Proof of Purchase<?= count($proofAttachments) > 1 ? ' ' . ($i + 1) : '' ?></a>
                       <?php endforeach; ?>
                       <?php foreach ($damageAttachments as $i => $path): ?>
-                        <a href="view-attachment.php?path=<?= urlencode($path) ?>" target="_blank" rel="noopener" class="text-[12px] font-medium text-[#6B4226] hover:underline">View Damage Photo<?= count($damageAttachments) > 1 ? ' ' . ($i + 1) : '' ?></a>
+                        <a href="view-attachment.php?path=<?= urlencode($path) ?>" target="_blank" rel="noopener" class="text-[12px] font-medium text-[#17611f] hover:underline">View Damage Photo<?= count($damageAttachments) > 1 ? ' ' . ($i + 1) : '' ?></a>
                       <?php endforeach; ?>
                     </div>
                   <?php endif; ?>
-                  <p class="text-[12px] text-gray-500">
-                    Customer: <span class="font-medium text-gray-700"><?= htmlspecialchars($r['first_name'] . ' ' . $r['last_name']) ?></span> · 
+                  <p class="text-[12px] text-[#5a7a5c]">
+                    Customer: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($r['first_name'] . ' ' . $r['last_name']) ?></span> · 
                     <?= htmlspecialchars($r['email']) ?>
                     <?php if (!empty($r['address'])): ?>
-                      <br><span class="text-gray-500">Address: </span><span class="font-medium text-gray-700 whitespace-pre-line"><?= htmlspecialchars($r['address']) ?></span>
+                      <br><span class="text-[#5a7a5c]">Address: </span><span class="font-medium text-[#1a2e1c] whitespace-pre-line"><?= htmlspecialchars($r['address']) ?></span>
                     <?php endif; ?>
                   </p>
                 </div>
                 <form method="POST" class="flex-shrink-0 w-full md:w-80 space-y-2">
                   <input type="hidden" name="request_id" value="<?= $r['id'] ?>" />
-                  <label class="block text-[12px] font-medium text-gray-600">Admin Note <span class="text-gray-400 font-normal">(visible to customer)</span></label>
-                  <textarea name="admin_note" rows="3" data-warranty-note placeholder="e.g. Your warranty request has been approved. Please bring the product to our service center together with your proof of purchase." class="w-full rounded-xl border border-gray-200 px-3 py-2 text-[13px] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/30 focus:border-[#6B4226] transition-colors resize-none"><?= htmlspecialchars($r['admin_note'] ?? '') ?></textarea>
-                  <p class="text-[11px] text-gray-400">Changing the status below fills this in automatically — feel free to edit it before saving.</p>
+                  <label class="block text-[12px] font-medium text-[#5a7a5c]">Admin Note <span class="text-[#9e9e9e] font-normal">(visible to customer)</span></label>
+                  <textarea name="admin_note" rows="3" data-warranty-note placeholder="e.g. Your warranty request has been approved. Please bring the product to our service center together with your proof of purchase." class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-3 py-2 text-[13px] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#6B4226]/30 focus:border-[#6B4226] transition-colors resize-none"><?= htmlspecialchars($r['admin_note'] ?? '') ?></textarea>
+                  <p class="text-[11px] text-[#9e9e9e]">Changing the status below fills this in automatically — feel free to edit it before saving.</p>
                   <div class="flex items-center gap-2">
-                    <select name="new_status" data-warranty-status-select class="flex-1 rounded-full border border-gray-200 px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#6B4226]/30 focus:border-[#6B4226] transition-colors">
+                    <select name="new_status" data-warranty-status-select class="flex-1 rounded-full border border-[rgba(27,94,32,0.12)] px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#6B4226]/30 focus:border-[#6B4226] transition-colors">
                       <option value="pending" data-note="<?= htmlspecialchars(defaultAdminNote('warranty', 'pending')) ?>" <?= $r['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
                       <option value="approved" data-note="<?= htmlspecialchars(defaultAdminNote('warranty', 'approved')) ?>" <?= $r['status'] === 'approved' ? 'selected' : '' ?>>Approve</option>
                       <option value="denied" data-note="<?= htmlspecialchars(defaultAdminNote('warranty', 'denied')) ?>" <?= $r['status'] === 'denied' ? 'selected' : '' ?>>Deny</option>
                     </select>
-                    <button type="submit" class="px-4 py-2 rounded-full bg-[#6B4226] text-white text-[13px] font-medium hover:bg-[#59341C] transition-colors flex-shrink-0">Save</button>
+                    <button type="submit" class="px-4 py-2 rounded-full bg-[#17611f] text-white text-[13px] font-medium hover:bg-[#14521a] transition-colors flex-shrink-0">Save</button>
                   </div>
                   <?php if (!empty($r['updated_at'])): ?>
-                    <p class="text-[11px] text-gray-400">Last updated <?= date('M j, Y g:i A', strtotime($r['updated_at'])) ?></p>
+                    <p class="text-[11px] text-[#9e9e9e]">Last updated <?= date('M j, Y g:i A', strtotime($r['updated_at'])) ?></p>
                   <?php endif; ?>
                 </form>
               </div>

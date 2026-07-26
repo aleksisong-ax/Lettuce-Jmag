@@ -1,50 +1,28 @@
 <?php
 session_start();
-require __DIR__ . '/../config.php';
-
-// This page lives one folder below the project root (/articles),
-// so header.php/footer.php need '../' prepended to every link.
-$baseUrl = '../';
-require __DIR__ . '/../includes/restrict-customer.php';
+require '../config.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Warranty Coverage | WoodCraft Care</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freshness Guarantee | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>body{font-family:'Nunito',sans-serif;background:#f4faf5}</style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
-
-  <!-- Header -->
-  <?php include __DIR__ . '/../includes/header.php'; ?>
-
-  <!-- Main Content -->
-  <main class="flex-1 max-w-3xl w-full mx-auto px-6 py-16">
-    <a href="../index.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-8">
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      Back to Home
-    </a>
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-10">
-      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#B5702E] bg-orange-50 rounded-full px-3 py-1 mb-5">WARRANTY</span>
-      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-4">Understanding your 5-year WoodCraft warranty coverage</h1>
-      <div class="text-gray-600 text-[15px] leading-relaxed space-y-4">
-        <p>Every WoodCraft piece comes with a 5-year warranty covering manufacturing defects in materials and craftsmanship, starting from your date of purchase.</p>
-        <p>The warranty does not cover normal wear and tear, accidental damage, or issues caused by improper care. Visit the Warranty Request page to file a claim if you believe your item qualifies.</p>
-      </div>
-      
+<body class="bg-[#f4faf5] text-[#1a2e1c]">
+<?php include __DIR__.'/../includes/header.php'; ?>
+<main class="max-w-3xl mx-auto px-6 py-10">
+  <a href="<?= isset($_SESSION['user_id'])?'../my-profile.php?section=support':'../index.php'?>" class="inline-flex items-center gap-2 text-sm text-[#17611f] font-semibold hover:underline mb-6">← Back</a>
+  <div class="bg-white rounded-xl border border-[rgba(27,94,32,0.08)] p-8">
+    <h1 class="text-2xl font-black mb-4">Freshness Guarantee</h1>
+    <div class="text-sm text-[#5a7a5c] leading-relaxed space-y-3">
+      <p>We guarantee your lettuce arrives fresh, crisp, and of the highest quality. If your order is wilted, damaged, or not meeting our standards, we will replace it at no cost — just let us know within 24 hours.</p>
+      <p><strong>What's covered:</strong> Wilted or damaged lettuce upon delivery, wrong variety delivered, missing items, quality below our standards.</p>
+      <p><strong>How to claim:</strong> Submit a support ticket or contact us with your order number and photos. We will review and resolve within 1-2 business days.</p>
     </div>
-  </main>
-
-  <!-- Footer -->
-  <?php include __DIR__ . '/../includes/footer.php'; ?>
-
+  </div>
+</main>
+<?php include __DIR__.'/../includes/footer.php'; ?>
 </body>
 </html>

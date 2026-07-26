@@ -1,50 +1,29 @@
 <?php
 session_start();
-require __DIR__ . '/../config.php';
-
-// This page lives one folder below the project root (/articles),
-// so header.php/footer.php need '../' prepended to every link.
-$baseUrl = '../';
-require __DIR__ . '/../includes/restrict-customer.php';
+require '../config.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cleaning Your Oak Table | WoodCraft Care</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hydroponic Growing Process | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>body{font-family:'Nunito',sans-serif;background:#f4faf5}</style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
-
-  <!-- Header -->
-  <?php include __DIR__ . '/../includes/header.php'; ?>
-
-  <!-- Main Content -->
-  <main class="flex-1 max-w-3xl w-full mx-auto px-6 py-16">
-    <a href="../index.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-8">
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      Back to Home
-    </a>
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-10">
-      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#B5702E] bg-orange-50 rounded-full px-3 py-1 mb-5">FURNITURECARE</span>
-      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-4">How to clean and protect your oak dining table</h1>
-      <div class="text-gray-600 text-[15px] leading-relaxed space-y-4">
-        <p>Oak furniture is durable, but a little regular care keeps it looking its best for generations. Start by dusting with a soft, dry microfiber cloth to remove surface debris before it scratches the finish.</p>
-        <p>For deeper cleaning, use a barely damp cloth with a mild wood-safe cleaner, then dry immediately. Avoid harsh chemicals, and reapply a food-safe wood conditioner every few months to keep the grain protected.</p>
-      </div>
-      
+<body class="bg-[#f4faf5] text-[#1a2e1c]">
+<?php include __DIR__.'/../includes/header.php'; ?>
+<main class="max-w-3xl mx-auto px-6 py-10">
+  <a href="<?= isset($_SESSION['user_id'])?'../my-profile.php?section=support':'../index.php'?>" class="inline-flex items-center gap-2 text-sm text-[#17611f] font-semibold hover:underline mb-6">← Back</a>
+  <div class="bg-white rounded-xl border border-[rgba(27,94,32,0.08)] p-8">
+    <h1 class="text-2xl font-black mb-4">Hydroponic Growing Process</h1>
+    <div class="text-sm text-[#5a7a5c] leading-relaxed space-y-3">
+      <p>Hydroponics is a method of growing plants without soil, using nutrient-rich water instead. Our lettuce is grown in controlled systems with no pesticides or chemicals.</p>
+      <p><strong>Why Hydroponics?</strong> It uses 90% less water than traditional farming, produces cleaner crops, and allows year-round growing regardless of weather.</p>
+      <p><strong>Our Process:</strong> Premium seeds → Nursery seedlings → Nutrient-rich water systems → Daily harvest at peak freshness → Same-day delivery to your doorstep.</p>
+      <p>This means you get consistently crisp, clean, and nutritious lettuce — chemical-free and harvested on demand.</p>
     </div>
-  </main>
-
-  <!-- Footer -->
-  <?php include __DIR__ . '/../includes/footer.php'; ?>
-
+  </div>
+</main>
+<?php include __DIR__.'/../includes/footer.php'; ?>
 </body>
 </html>

@@ -1,7 +1,6 @@
 <?php
 session_start();
 require 'config.php';
-require __DIR__ . '/includes/restrict-customer.php';
 
 $message = "";
 $messageType = "";
@@ -59,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $resetUrl = "reset-password.php?token=" . urlencode($rawToken);
                 $devPreview = [
                     'to' => $email,
-                    'subject' => 'Reset Your WoodCraft Care Password',
+                    'subject' => 'Reset Your Luntiang H.A.P.A.G. Password',
                     'reset_url' => $resetUrl,
                 ];
 
@@ -90,30 +89,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Forgot Password | WoodCraft Care</title>
+  <title>Forgot Password | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
+<body class="bg-[#f4faf5] text-[#1a2e1c] min-h-screen flex flex-col">
 
   <!-- Header -->
   <?php include __DIR__ . '/includes/header.php'; ?>
 
   <!-- Main Content -->
   <main class="flex-1 max-w-3xl w-full mx-auto px-6 py-16">
-    <a href="login.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-8">
+    <a href="login.php" class="inline-flex items-center gap-2 text-sm text-[#17611f] hover:text-[#14521a] transition-colors mb-8">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
       Back to Login
     </a>
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-10">
-      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#B5702E] bg-orange-50 rounded-full px-3 py-1 mb-5">ACCOUNT</span>
-      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-4">Forgot Your Password?</h1>
-      <div class="text-gray-600 text-[15px] leading-relaxed space-y-4">
+      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#17611f] bg-[#e8f5e9] rounded-full px-3 py-1 mb-5">ACCOUNT</span>
+      <h1 class="font-black text-3xl font-semibold text-[#1a2e1c] mb-4">Forgot Your Password?</h1>
+      <div class="text-[#5a7a5c] text-[15px] leading-relaxed space-y-4">
         <p>Enter the email address associated with your account and we'll generate a password reset link.</p>
       </div>
 
@@ -136,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h3 class="font-semibold"><?= $messageType === 'error' ? ($message === $notFoundMessage ? 'No Account Found' : 'Something Went Wrong') : 'Request Received' ?></h3>
             <p class="text-sm mt-1"><?= htmlspecialchars($message); ?></p>
           </div>
-          <button type="button" onclick="closeAlert()" class="text-gray-400 hover:text-gray-700 transition">✕</button>
+          <button type="button" onclick="closeAlert()" class="text-[#9e9e9e] hover:text-[#1a2e1c] transition">✕</button>
         </div>
         <script>
           function closeAlert(){
@@ -157,47 +156,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- instead of actually being sent. Swapping in a real -->
         <!-- mailer later means replacing this block only.      -->
         <!-- ================================================= -->
-        <div class="mt-8 rounded-2xl border border-gray-200 overflow-hidden">
-          <div class="bg-gray-50 border-b border-gray-200 px-5 py-3 flex items-center gap-2">
-            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            <p class="text-[12px] font-semibold tracking-wide text-gray-500 uppercase">Development Email Preview</p>
+        <div class="mt-8 rounded-2xl border border-[rgba(27,94,32,0.12)] overflow-hidden">
+          <div class="bg-gray-50 border-b border-[rgba(27,94,32,0.12)] px-5 py-3 flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#9e9e9e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <p class="text-[12px] font-semibold tracking-wide text-[#5a7a5c] uppercase">Development Email Preview</p>
           </div>
 
           <div class="px-6 py-5 bg-white">
             <div class="grid grid-cols-[70px_1fr] gap-y-1 text-[13px] mb-4 pb-4 border-b border-gray-100">
-              <span class="text-gray-400">To:</span>
-              <span class="text-gray-800 font-medium"><?= htmlspecialchars($devPreview['to']) ?></span>
-              <span class="text-gray-400">Subject:</span>
-              <span class="text-gray-800 font-medium"><?= htmlspecialchars($devPreview['subject']) ?></span>
+              <span class="text-[#9e9e9e]">To:</span>
+              <span class="text-[#1a2e1c] font-medium"><?= htmlspecialchars($devPreview['to']) ?></span>
+              <span class="text-[#9e9e9e]">Subject:</span>
+              <span class="text-[#1a2e1c] font-medium"><?= htmlspecialchars($devPreview['subject']) ?></span>
             </div>
 
-            <div class="text-[14px] text-gray-700 leading-relaxed space-y-4">
+            <div class="text-[14px] text-[#1a2e1c] leading-relaxed space-y-4">
               <p>Hello,</p>
-              <p>We received a request to reset the password for your WoodCraft Care account.</p>
+              <p>We received a request to reset the password for your Luntiang H.A.P.A.G. account.</p>
               <p>Click the button below to reset your password.</p>
               <p class="py-2">
-                <a href="<?= htmlspecialchars($devPreview['reset_url']) ?>" class="inline-block rounded-full bg-[#6B4226] text-white text-sm font-medium px-6 py-3 hover:bg-[#59341C] transition-colors">Reset Password</a>
+                <a href="<?= htmlspecialchars($devPreview['reset_url']) ?>" class="inline-block rounded-full bg-[#17611f] text-white text-sm font-medium px-6 py-3 hover:bg-[#14521a] transition-colors">Reset Password</a>
               </p>
               <p>This password reset link will expire in 30 minutes.</p>
               <p>If you did not request a password reset, you can safely ignore this message.</p>
-              <p>WoodCraft Care Customer Support</p>
+              <p>Luntiang H.A.P.A.G. Customer Support</p>
             </div>
           </div>
 
-          <div class="bg-orange-50 border-t border-orange-100 px-6 py-3">
-            <p class="text-[12px] text-[#B5702E] leading-relaxed">This email is being displayed because SMTP/email delivery is not yet configured for this development environment.</p>
+          <div class="bg-[#e8f5e9] border-t border-[#c8e6c9] px-6 py-3">
+            <p class="text-[12px] text-[#17611f] leading-relaxed">This email is being displayed because SMTP/email delivery is not yet configured for this development environment.</p>
           </div>
         </div>
       <?php endif; ?>
 
       <form method="POST" class="space-y-5 mt-6" id="forgotPasswordForm">
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-800 mb-2">Email Address</label>
+            <label for="email" class="block text-sm font-medium text-[#1a2e1c] mb-2">Email Address</label>
             <input type="email" id="email" name="email" placeholder="you@email.com" required
                    value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
-                   class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
           </div>
-          <button type="submit" id="forgotPasswordSubmit" class="w-full rounded-full bg-[#6B4226] text-white text-sm font-medium py-3.5 hover:bg-[#59341C] transition-colors flex items-center justify-center gap-2">
+          <button type="submit" id="forgotPasswordSubmit" class="w-full rounded-full bg-[#17611f] text-white text-sm font-medium py-3.5 hover:bg-[#14521a] transition-colors flex items-center justify-center gap-2">
             <svg id="forgotPasswordSpinner" class="hidden animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -205,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <span>Send Reset Link</span>
           </button>
         </form>
-        <p class="text-sm text-gray-500 mt-5 text-center">Remembered your password? <a href="login.php" class="text-[#6B4226] hover:text-[#59341C] font-medium transition-colors">Back to Login</a></p>
+        <p class="text-sm text-[#5a7a5c] mt-5 text-center">Remembered your password? <a href="login.php" class="text-[#17611f] hover:text-[#14521a] font-medium transition-colors">Back to Login</a></p>
     </div>
   </main>
 

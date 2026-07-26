@@ -27,10 +27,36 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-$raw = file_get_contents('php://input');
-$data = json_decode($raw, true);
-$chatKey = trim((string)($data['chat_key'] ?? $_POST['chat_key'] ?? ''));
-$text = trim((string)($data['message'] ?? $_POST['message'] ?? ''));
+// Handle multipart form data (for image upload) or JSON
+$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+$isMultipart = strpos($contentType, 'multipart/form-data') !== false;
+
+if ($isMultipart) {
+    $chatKey = trim((string)($_POST['chat_key'] ?? ''));
+    $text = trim((string)($_POST['message'] ?? ''));
+} else {
+    $raw = file_get_contents('php://input');
+    $data = json_decode($raw, true);
+    $chatKey = trim((string)($data['chat_key'] ?? $_POST['chat_key'] ?? ''));
+    $text = trim((string)($data['message'] ?? $_POST['message'] ?? ''));
+}
+
+$imagePath = null;
+
+// Handle image upload
+if ($isMultipart && isset($_FILES['chat_image']) && $_FILES['chat_image']['error'] === UPLOAD_ERR_OK) {
+    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    $ext = strtolower(pathinfo($_FILES['chat_image']['name'], PATHINFO_EXTENSION));
+    if (in_array($ext, $allowed) && $_FILES['chat_image']['size'] <= 5 * 1024 * 1024) {
+        $destDir = __DIR__ . '/../uploads/chat';
+        if (!is_dir($destDir)) mkdir($destDir, 0755, true);
+        $safeName = bin2hex(random_bytes(8)) . '.' . $ext;
+        $destPath = $destDir . '/' . $safeName;
+        if (move_uploaded_file($_FILES['chat_image']['tmp_name'], $destPath)) {
+            $imagePath = 'uploads/chat/' . $safeName;
+        }
+    }
+}
 
 if ($chatKey === '') {
     http_response_code(422);
@@ -38,13 +64,13 @@ if ($chatKey === '') {
     exit();
 }
 
-if ($text === '') {
+if ($text === '' && !$imagePath) {
     http_response_code(422);
     echo json_encode(['success' => false, 'error' => 'Message cannot be empty.']);
     exit();
 }
 
-if (mb_strlen($text) > 250) {
+if ($text !== '' && mb_strlen($text) > 250) {
     http_response_code(422);
     echo json_encode(['success' => false, 'error' => 'Messages are limited to 250 characters.']);
     exit();
@@ -62,10 +88,10 @@ try {
     }
 
     $insert = $conn->prepare("
-        INSERT INTO live_chat_messages (chat_key, user_id, customer_name, sender, message)
-        VALUES (?, NULL, 'WoodCraft Support', 'admin', ?)
+        INSERT INTO live_chat_messages (chat_key, user_id, customer_name, sender, message, image_path)
+        VALUES (?, NULL, 'Luntiang H.A.P.A.G. Support', 'admin', ?, ?)
     ");
-    $insert->execute([$chatKey, $text]);
+    $insert->execute([$chatKey, $text ?: null, $imagePath]);
     $newId = (int)$conn->lastInsertId();
 
     // A human agent has now joined this conversation — stop the AI

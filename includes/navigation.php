@@ -1,6 +1,6 @@
 <?php
 /**
- * Navigation components for WoodCraft Care
+ * Navigation components for Luntiang H.A.P.A.G.
  * Reusable navigation elements including breadcrumbs and back-to-top button
  */
 

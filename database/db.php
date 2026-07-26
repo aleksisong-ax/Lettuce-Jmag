@@ -2,7 +2,7 @@
 /**
  * db.php
  * ------------------------------------------------------------------
- * WoodCraft Care — Automatic Database Initializer
+ * Luntiang H.A.P.A.G. — Automatic Database Initializer
  * ------------------------------------------------------------------
  * Visit this file directly in your browser (or run it once via CLI)
  * after importing the project into XAMPP:
@@ -263,14 +263,14 @@ try {
     // existed keep working without errors; new submissions always set it
     // (warranty-request.php requires it before allowing submission).
     addColumnIfMissing($conn, $dbname, 'warranty_requests', 'purchase_date', "purchase_date DATE NULL AFTER product_name");
-    // order_number and warranty_issue support the Warranty Request form's
-    // Order Number field and Warranty Issue dropdown. proof_of_purchase_path
+    // order_number and quality_issue support the Freshness Request form's
+    // Order Number field and Quality Issue dropdown. proof_of_purchase_path
     // and damage_photo_path store the uploaded supporting files. All are
     // nullable so existing rows keep working without errors; the form
-    // itself requires order_number/warranty_issue/proof of purchase before
+    // itself requires order_number/quality_issue/proof of purchase before
     // allowing submission.
     addColumnIfMissing($conn, $dbname, 'warranty_requests', 'order_number', "order_number VARCHAR(50) NULL AFTER product_name");
-    addColumnIfMissing($conn, $dbname, 'warranty_requests', 'warranty_issue', "warranty_issue VARCHAR(100) NULL AFTER purchase_date");
+    addColumnIfMissing($conn, $dbname, 'warranty_requests', 'quality_issue', "quality_issue VARCHAR(100) NULL AFTER purchase_date");
     addColumnIfMissing($conn, $dbname, 'warranty_requests', 'proof_of_purchase_path', "proof_of_purchase_path VARCHAR(255) NULL AFTER defect_description");
     addColumnIfMissing($conn, $dbname, 'warranty_requests', 'damage_photo_path', "damage_photo_path VARCHAR(255) NULL AFTER proof_of_purchase_path");
     widenColumnToText($conn, $dbname, 'warranty_requests', 'proof_of_purchase_path');
@@ -463,35 +463,315 @@ try {
     ");
     $report[] = "Table `faqs` is ready.";
 
+    // -----------------------------------------------------------
+    // 🌱 E-COMMERCE TABLES
+    // -----------------------------------------------------------
+
+    // 14. TABLE: categories
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS categories (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            slug VARCHAR(100) NOT NULL UNIQUE,
+            description TEXT NULL,
+            image VARCHAR(255) NULL,
+            is_active TINYINT(1) NOT NULL DEFAULT 1,
+            sort_order INT NOT NULL DEFAULT 0,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `categories` is ready.";
+
+    // 15. TABLE: products (full e-commerce)
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS products (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            category_id INT NULL,
+            name VARCHAR(200) NOT NULL,
+            slug VARCHAR(200) NOT NULL UNIQUE,
+            variety VARCHAR(200) NULL,
+            description TEXT NULL,
+            price DECIMAL(10,2) NOT NULL,
+            unit VARCHAR(50) NOT NULL DEFAULT 'per cup',
+            image VARCHAR(255) NULL,
+            image_2 VARCHAR(255) NULL,
+            image_3 VARCHAR(255) NULL,
+            calories INT NULL,
+            protein DECIMAL(5,1) NULL,
+            fiber DECIMAL(5,1) NULL,
+            vitamin_a VARCHAR(50) NULL,
+            vitamin_c VARCHAR(50) NULL,
+            best_for TEXT NULL,
+            storage_instructions TEXT NULL,
+            shelf_life VARCHAR(100) NULL,
+            harvest_time VARCHAR(100) NULL DEFAULT '1-3 hours after order',
+            plants_available INT NOT NULL DEFAULT 0,
+            is_best_seller TINYINT(1) NOT NULL DEFAULT 0,
+            is_new TINYINT(1) NOT NULL DEFAULT 0,
+            is_active TINYINT(1) NOT NULL DEFAULT 1,
+            is_featured TINYINT(1) NOT NULL DEFAULT 0,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            KEY idx_products_category (category_id),
+            KEY idx_products_active (is_active),
+            CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `products` is ready.";
+
+    // 16. TABLE: orders
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            order_number VARCHAR(20) NOT NULL UNIQUE,
+            status ENUM('pending','payment_confirmed','harvest_queue','harvesting','quality_check','packing','ready_pickup','out_delivery','delivered','completed','cancelled','refund_requested','replacement_requested') NOT NULL DEFAULT 'pending',
+            subtotal DECIMAL(10,2) NOT NULL,
+            delivery_fee DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+            discount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+            total DECIMAL(10,2) NOT NULL,
+            delivery_method ENUM('delivery','pickup') NOT NULL DEFAULT 'delivery',
+            payment_method VARCHAR(50) NOT NULL DEFAULT 'cod',
+            promo_code VARCHAR(50) NULL,
+            delivery_address TEXT NULL,
+            delivery_city VARCHAR(100) NULL,
+            delivery_province VARCHAR(100) NULL,
+            delivery_zip VARCHAR(20) NULL,
+            delivery_notes TEXT NULL,
+            gift_note TEXT NULL,
+            preferred_delivery_time VARCHAR(100) NULL,
+            is_free_delivery TINYINT(1) NOT NULL DEFAULT 0,
+            estimated_harvest_time VARCHAR(100) NULL,
+            customer_name VARCHAR(200) NULL,
+            customer_email VARCHAR(150) NULL,
+            customer_phone VARCHAR(30) NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            KEY idx_orders_user (user_id),
+            KEY idx_orders_status (status),
+            KEY idx_orders_created (created_at),
+            CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `orders` is ready.";
+
+    // 17. TABLE: order_items
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS order_items (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            order_id INT NOT NULL,
+            product_id INT NULL,
+            product_name VARCHAR(200) NOT NULL,
+            price DECIMAL(10,2) NOT NULL,
+            quantity INT NOT NULL DEFAULT 1,
+            harvest_notes VARCHAR(200) NULL,
+            KEY idx_order_items_order (order_id),
+            CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `order_items` is ready.";
+
+    // 18. TABLE: wishlist
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS wishlist (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            product_id INT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uq_wishlist (user_id, product_id),
+            KEY idx_wishlist_user (user_id),
+            CONSTRAINT fk_wishlist_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+            CONSTRAINT fk_wishlist_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `wishlist` is ready.";
+
+    // 19. TABLE: reviews
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS reviews (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            product_id INT NOT NULL,
+            order_id INT NULL,
+            rating TINYINT UNSIGNED NOT NULL,
+            freshness_rating TINYINT UNSIGNED NULL,
+            packaging_rating TINYINT UNSIGNED NULL,
+            delivery_rating TINYINT UNSIGNED NULL,
+            comment TEXT NULL,
+            photos TEXT NULL,
+            is_verified TINYINT(1) NOT NULL DEFAULT 0,
+            is_approved TINYINT(1) NOT NULL DEFAULT 0,
+            helpful_count INT NOT NULL DEFAULT 0,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            KEY idx_reviews_product (product_id),
+            KEY idx_reviews_user (user_id),
+            CONSTRAINT fk_reviews_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+            CONSTRAINT fk_reviews_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE,
+            CONSTRAINT chk_reviews_rating CHECK (rating BETWEEN 1 AND 5)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `reviews` is ready.";
+
+    // 20. TABLE: promotions
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS promotions (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            code VARCHAR(50) NOT NULL UNIQUE,
+            description VARCHAR(255) NULL,
+            discount_type ENUM('percentage','fixed') NOT NULL DEFAULT 'percentage',
+            discount_value DECIMAL(10,2) NOT NULL,
+            min_order DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+            max_uses INT NULL,
+            used_count INT NOT NULL DEFAULT 0,
+            is_active TINYINT(1) NOT NULL DEFAULT 1,
+            is_free_delivery TINYINT(1) NOT NULL DEFAULT 0,
+            expires_at DATE NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `promotions` is ready.";
+
+    // 21. TABLE: knowledge_base
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS knowledge_base (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            slug VARCHAR(255) NOT NULL UNIQUE,
+            content TEXT NOT NULL,
+            category VARCHAR(100) NOT NULL DEFAULT 'General',
+            is_published TINYINT(1) NOT NULL DEFAULT 1,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `knowledge_base` is ready.";
+
+    // 21b. TABLE: customer_addresses
+    $conn->exec("
+        CREATE TABLE IF NOT EXISTS customer_addresses (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            label VARCHAR(100) NULL DEFAULT 'Default',
+            address TEXT NOT NULL,
+            city VARCHAR(100) NOT NULL,
+            province VARCHAR(100) NOT NULL,
+            zip VARCHAR(20) NULL,
+            is_default TINYINT(1) NOT NULL DEFAULT 0,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            KEY idx_addresses_user (user_id),
+            CONSTRAINT fk_addresses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    $report[] = "Table `customer_addresses` is ready.";
+
+    // Add new notification types: add related_link column
+    addColumnIfMissing($conn, $dbname, 'notifications', 'related_link', "related_link VARCHAR(255) NULL AFTER message");
+
+    // Reviews: add admin_reply and admin_replied_at
+    addColumnIfMissing($conn, $dbname, 'reviews', 'admin_reply', "admin_reply TEXT NULL AFTER helpful_count");
+    addColumnIfMissing($conn, $dbname, 'reviews', 'admin_replied_at', "admin_replied_at TIMESTAMP NULL DEFAULT NULL AFTER admin_reply");
+
+    // Live chat: add image_path for image uploads
+    addColumnIfMissing($conn, $dbname, 'live_chat_messages', 'image_path', "image_path VARCHAR(500) NULL AFTER message");
+
+    // -----------------------------------------------------------
+    // SEED: Categories
+    // -----------------------------------------------------------
+    $catCount = (int)$conn->query("SELECT COUNT(*) FROM categories")->fetchColumn();
+    if ($catCount === 0) {
+        $seedCat = $conn->prepare("INSERT INTO categories (name, slug, description, sort_order) VALUES (?,?,?,?)");
+        $seedCat->execute(['Green Lettuce', 'green-lettuce', 'Crisp, classic green hydroponic lettuce varieties', 1]);
+        $seedCat->execute(['Red Lettuce', 'red-lettuce', 'Vibrant red-tipped and burgundy lettuce varieties', 2]);
+        $seedCat->execute(['Whole Lettuce', 'whole-lettuce', 'Single head lettuce cups — harvest on demand', 3]);
+        $seedCat->execute(['Twin Packs', 'twin-packs', 'Two cups of the same variety — perfect for couples', 4]);
+        $seedCat->execute(['Family Packs', 'family-packs', 'Four cups — ideal for family meals', 5]);
+        $seedCat->execute(['Salad Mix Bundles', 'salad-mix-bundles', 'Pre-mixed varieties with dressings and extras', 6]);
+        $seedCat->execute(['Wholesale', 'wholesale', 'Bulk packs for restaurants, events, and resellers', 7]);
+        $seedCat->execute(['Best Sellers', 'best-sellers', 'Our most popular lettuce varieties and bundles', 8]);
+        $report[] = "Seeded 8 product categories.";
+    }
+
+    // -----------------------------------------------------------
+    // SEED: Products
+    // -----------------------------------------------------------
+    $prodCount = (int)$conn->query("SELECT COUNT(*) FROM products")->fetchColumn();
+    if ($prodCount === 0) {
+        $seedProd = $conn->prepare("INSERT INTO products (category_id, name, slug, variety, description, price, unit, image, calories, best_for, shelf_life, harvest_time, plants_available, is_best_seller, is_active) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        $seedProd->execute([1, 'Romaine Lettuce', 'romaine-lettuce', 'Giulia NH & Grizzari NZ', 'Tall, crisp dark green leaves — the essential Caesar salad green. Our most versatile variety, perfect for everything from salads to wraps.', 45.00, 'per cup', 'images/lettuce/romaine-lettuce.png', 17, 'Caesar salad, sandwiches, wraps, grilling', '5-7 days refrigerated', '1-3 hours after order', 150, 1, 1]);
+        $seedProd->execute([1, 'Batavia Lettuce', 'batavia-lettuce', 'Graction NZ, Rijk Zwaan', 'Broad, crunchy leaves with excellent texture. The ideal sandwich and burger lettuce — holds up beautifully to heat and dressings.', 40.00, 'per cup', 'images/lettuce/batavia-lettuce.png', 15, 'Sandwiches, burgers, wraps, everyday salads', '5-7 days refrigerated', '1-3 hours after order', 110, 1, 1]);
+        $seedProd->execute([1, 'Bianca Lettuce', 'bianca-lettuce', 'Butterhead, NH', 'Smooth, pliable leaves with a mild sweet flavor. The delicate butterhead variety prized by chefs for its tender texture.', 45.00, 'per cup', 'images/lettuce/bianca-lettuce.png', 13, 'Lettuce wraps, delicate salads, garnish', '5-7 days refrigerated', '1-3 hours after order', 80, 1, 1]);
+        $seedProd->execute([1, 'Dabi Lettuce', 'dabi-lettuce', 'Lollo Bionda, Frizz Zakken', 'Frilly, crinkled bright green leaves with a delicate crunch. Adds visual drama and texture to any plate.', 40.00, 'per cup', 'images/lettuce/dabi-lettuce.png', 14, 'Garnishes, mixed salads, elegant plating', '5-7 days refrigerated', '1-3 hours after order', 85, 0, 1]);
+        $seedProd->execute([2, 'Red Lettuce', 'red-lettuce', 'Lollo Rossa', 'Vibrant red-tipped leaves with a nutty, slightly bitter flavor. Rich in antioxidants — as nutritious as it is beautiful.', 42.00, 'per cup', 'images/lettuce/red-lettuce.png', 16, 'Gourmet salads, colorful plating, antioxidant boost', '5-7 days refrigerated', '1-3 hours after order', 95, 0, 1]);
+        $seedProd->execute([1, 'Estrosa Lettuce', 'estrosa-lettuce', 'Lollo Bionda, Frizz Zakken', 'Intense green, firm crinkled leaves. The go-to choice for artisan salads and garnishes that make an impression.', 38.00, 'per cup', 'images/lettuce/estrosa-lettuce.png', 12, 'Artisan salads, restaurant garnishes', '5-7 days refrigerated', '1-3 hours after order', 75, 0, 1]);
+        $seedProd->execute([1, 'Olmetie Lettuce', 'olmetie-lettuce', 'Batavia, Rijk Zwaan', 'Premium Batavia cultivar loved by chefs for its crisp bite and deep flavor. A standout lettuce for discerning palates.', 48.00, 'per cup', 'images/lettuce/olmetie-lettuce.png', 15, 'Chef-preferred, premium salads, fine dining', '5-7 days refrigerated', '1-3 hours after order', 90, 0, 1]);
+        $seedProd->execute([4, 'Romaine Twin Pack', 'romaine-twin-pack', 'Giulia NH · 2 Cups', 'Two cups of our bestselling Romaine. Perfect for couples or small households who want fresh lettuce twice a week.', 85.00, 'per twin pack', 'images/lettuce/romaine-lettuce.png', 34, 'Small families, couples, meal prep', '5-7 days refrigerated', '1-3 hours after order', 75, 0, 1]);
+        $seedProd->execute([5, 'Romaine Family Pack', 'romaine-family-pack', 'Giulia NH · 4 Cups', 'Four cups of crisp Romaine — a week\'s supply for the family. Best value for regular Romaine fans.', 160.00, 'per family pack', 'images/lettuce/romaine-lettuce.png', 68, 'Family meals, weekly supply', '5-7 days refrigerated', '1-3 hours after order', 40, 1, 1]);
+        $seedProd->execute([6, 'Mixed Greens Cup', 'mixed-greens-cup', 'Butterhead + Lollo Rossa + Romaine', 'A colorful medley of three hand-picked varieties tossed together. Instant salad — just add dressing.', 60.00, 'per cup', 'images/lettuce/mixed-greens.png', 18, 'Instant colorful salads, quick meals', 'Best consumed immediately', '1-3 hours after order', 50, 0, 1]);
+        $seedProd->execute([6, 'Garden Salad Mix', 'garden-salad-mix', 'Batavia + Estrosa + Red Leaf', 'Crisp, layered textures and colors for a restaurant-style garden salad at home. Our most popular mixed option.', 65.00, 'per cup', 'images/lettuce/garden-salad.png', 20, 'Restaurant-style garden salads at home', 'Best consumed immediately', '1-3 hours after order', 45, 1, 1]);
+        $seedProd->execute([6, 'Family Bundle', 'family-bundle', '4 Cups + House Dressing', 'Four assorted lettuce cups paired with our signature house dressing. Ready for family dinner.', 180.00, 'per bundle', 'images/lettuce/family-bundle.png', 75, 'Family dinner, 4 servings', '5-7 days refrigerated', '1-3 hours after order', 30, 0, 1]);
+        $seedProd->execute([6, 'Weekend Bundle', 'weekend-bundle', '6 Cups + Dressing + Wrap Kit', 'Our best-selling weekend bundle: six assorted cups, house dressing, and a wrap kit for the whole table.', 260.00, 'per bundle', 'images/lettuce/weekend-bundle.png', 110, 'Weekend gatherings, family of 4-6', '5-7 days refrigerated', '1-3 hours after order', 20, 1, 1]);
+        $seedProd->execute([6, 'Healthy Starter Bundle', 'healthy-starter-bundle', '2 Romaine + 2 Bianca + Dressing', 'The perfect introduction to hydroponic lettuce. Two classic varieties with our house dressing.', 160.00, 'per bundle', 'images/lettuce/family-bundle.png', 60, 'New to hydroponics, starter kit', '5-7 days refrigerated', '1-3 hours after order', 25, 0, 1]);
+        $seedProd->execute([6, 'Caesar Salad Bundle', 'caesar-salad-bundle', '3 Romaine + Dressing + Croutons', 'Everything you need for classic Caesar salads — three Romaine cups, dressing, and crunchy croutons.', 170.00, 'per bundle', 'images/lettuce/romaine-lettuce.png', 65, 'Classic Caesar salads for the family', '5-7 days refrigerated', '1-3 hours after order', 25, 0, 1]);
+        $seedProd->execute([7, 'Restaurant Pack', 'restaurant-pack', '10 Cups - Chef\'s Assortment', 'Ten cups of chef-selected varieties. Ideal for small restaurants, cafés, and food stalls.', 380.00, 'per pack', 'images/lettuce/garden-salad.png', 160, 'Small restaurants, cafés, food stalls', '5-7 days refrigerated', '2-3 hours after order', 15, 0, 1]);
+        $seedProd->execute([7, 'Wholesale Tray', 'wholesale-tray', '20 Cups - Bulk Assorted', 'Bulk tray of 20 mixed-variety cups. Perfect for resellers, canteens, and events.', 700.00, 'per tray', 'images/lettuce/wholesale-tray.png', 300, 'Resellers, canteens, small events', '5-7 days refrigerated', '2-4 hours after order', 8, 0, 1]);
+        $seedProd->execute([7, 'Wholesale Box', 'wholesale-box', '50 Cups - Bulk Assorted', 'Our biggest bulk box of 50 cups. Maximum value for wholesale buyers and large events.', 1650.00, 'per box', 'images/lettuce/wholesale-tray.png', 750, 'Restaurants, events, large gatherings', '5-7 days refrigerated', '3-5 hours after order', 3, 0, 1]);
+        $report[] = "Seeded 18 hydroponic lettuce products.";
+    }
+
+    // -----------------------------------------------------------
+    // SEED: Promotions
+    // -----------------------------------------------------------
+    $promoCount = (int)$conn->query("SELECT COUNT(*) FROM promotions")->fetchColumn();
+    if ($promoCount === 0) {
+        $seedPromo = $conn->prepare("INSERT INTO promotions (code, description, discount_type, discount_value, min_order, is_active) VALUES (?,?,?,?,?,?)");
+        $seedPromo->execute(['FRESH10', '10% off your first order', 'percentage', 10.00, 0.00, 1]);
+        $seedPromo->execute(['FREESUBD', 'Free delivery within Nostalji Subdivision', 'fixed', 0.00, 0.00, 1]);
+        $seedPromo->execute(['BUNDLE5', '₱50 off any bundle purchase', 'fixed', 50.00, 150.00, 1]);
+        $report[] = "Seeded 3 promotion codes.";
+    }
+
+    // -----------------------------------------------------------
+    // SEED: Knowledge Base
+    // -----------------------------------------------------------
+    $kbCount = (int)$conn->query("SELECT COUNT(*) FROM knowledge_base")->fetchColumn();
+    if ($kbCount === 0) {
+        $seedKb = $conn->prepare("INSERT INTO knowledge_base (title, slug, content, category) VALUES (?,?,?,?)");
+        $seedKb->execute(['How to Order', 'how-to-order', "## How to Order Fresh Hydroponic Lettuce\n\n1. **Browse** our Products page to see available lettuce varieties, bundles, and wholesale options.\n2. **Add to Cart** the items you want — choose quantities for each.\n3. **Review Your Cart** to confirm items, quantities, and see delivery fee estimates.\n4. **Checkout** — enter your delivery address or choose Pick-Up. We automatically detect if you're within our free delivery area (Nostalji Subdivision).\n5. **Choose Payment** — Cash on Delivery, GCash, Maya, or Bank Transfer.\n6. **Place Order** — once confirmed, we add your order to the harvest queue.\n\nYou'll receive order status updates as we harvest, quality-check, pack, and deliver your lettuce — all on the same day!", 'Ordering']);
+        $seedKb->execute(['Harvest-on-Demand Guide', 'harvest-on-demand-guide', "## What is Harvest-on-Demand?\n\nUnlike supermarkets where lettuce sits on shelves for days, our harvest-on-demand model means:\n\n- **Lettuce stays growing** in our hydroponic system until you order\n- **Harvested only after order confirmation** — usually within 1-3 hours\n- **Same-day delivery or pick-up** — maximum freshness\n- **Zero food waste** — nothing is pre-harvested and left unsold\n- **Better nutrition** — nutrients peak when freshly harvested\n\nThis is why our lettuce lasts 5-7 days in your refrigerator — it starts fresher than anything you'll find at the grocery store.", 'Harvest']);
+        $seedKb->execute(['Delivery Guide', 'delivery-guide', "## Delivery Information\n\n### Free Delivery\nFREE delivery within **Nostalji Subdivision, Paliparan I, Dasmariñas, Cavite** — no minimum order required.\n\n### Paid Delivery\nDelivery to areas outside the subdivision incurs a fee automatically calculated based on your address.\n\n### Same-Day Delivery\nOrders placed before 2 PM are delivered the same day. Orders after 2 PM are delivered the following morning.\n\n### Same-Day Pick-Up\nOrder online and pick up at the farm. Ready within 1-3 hours after order confirmation. No delivery fee.\n\n### Delivery Hours\nMonday – Sunday, 8:00 AM – 6:00 PM", 'Delivery']);
+        $seedKb->execute(['Storage Guide', 'storage-guide', "## How to Store Your Lettuce\n\n### Whole Heads\n- **Refrigerate immediately** at 2-4°C\n- **Do not wash** until ready to use\n- **Keep in a sealed container** or wrap in paper towel\n- **Store in crisper drawer** away from ethylene-producing fruits\n- **Shelf life:** 5-7 days refrigerated\n\n### Cut Leaves / Salad Mix\n- **Refrigerate immediately**\n- **Best consumed within 24 hours**\n- Room temperature: less than 24 hours\n\n### Pro Tips\n- Revive slightly wilted lettuce by soaking in cold water for 10-15 minutes\n- Pat dry with paper towels before using\n- Keep away from apples, bananas, and avocados (they release ethylene)", 'Storage']);
+        $report[] = "Seeded 4 knowledge base articles.";
+    }
+
     $faqCount = (int)$conn->query("SELECT COUNT(*) FROM faqs")->fetchColumn();
     if ($faqCount === 0) {
         $seedFaq = $conn->prepare("INSERT INTO faqs (question, answer, category) VALUES (?, ?, ?)");
         
         // Original starter FAQs
-        $seedFaq->execute(["How long does WoodCraft's warranty last?", "All WoodCraft furniture is backed by a 5-year limited warranty that covers manufacturing defects in materials and craftsmanship, starting from your original date of purchase. If a covered issue comes up, we'll repair, replace the part, or replace the item at no extra cost.", "Warranty"]);
-        $seedFaq->execute(["What is WoodCraft's return policy?", "You can return most items within 30 days of delivery for a full refund, as long as they're unused and in their original packaging. Custom and made-to-order pieces are final sale and aren't eligible for return unless they arrive damaged or defective.", "Returns"]);
-        $seedFaq->execute(["How do I care for my solid oak furniture?", "Dust regularly with a soft, dry microfiber cloth and keep your piece out of direct sunlight and away from heat sources, which can dry out and crack the wood. Every few months, apply a food-safe wood conditioner to nourish the grain, and avoid harsh chemical cleaners or abrasive pads.", "Care"]);
-        $seedFaq->execute(["My furniture arrived damaged. What should I do?", "Please contact our support team within 48 hours of delivery and include a few photos of the damage along with your order number. We'll get a replacement part, repair, or full replacement shipped out to you at no additional cost.", "Damaged"]);
-        $seedFaq->execute(["How long does delivery take?", "Most in-stock orders arrive within 5-10 business days. Custom or made-to-order pieces typically take 3-6 weeks to craft and ship, depending on the item. You'll receive tracking information by email as soon as your order leaves our workshop.", "Shipping"]);
+        $seedFaq->execute(["How fresh is our lettuce?", "Our lettuce is harvested only after you order — it stays growing in our hydroponic system until your order is confirmed. We harvest, quality-check, pack, and deliver all on the same day. When properly refrigerated at 2-4°C, whole heads stay fresh for 5-7 days.", "Freshness"]);
+        $seedFaq->execute(["What is our harvest-on-demand policy?", "Unlike supermarkets where lettuce may have been cut days ago, our harvest-on-demand model means every head of lettuce stays growing in our hydroponic system until you place your order. We only harvest after your order confirmation — usually within 1-3 hours before delivery or pick-up.", "Orders"]);
+        $seedFaq->execute(["How should I store my lettuce?", "Refrigerate immediately after receiving at 2-4°C. Do not wash until ready to use. Keep inside a sealed container in the crisper drawer. Store away from ethylene-producing fruits like apples and bananas. Whole heads last 5-7 days refrigerated.", "Care"]);
+        $seedFaq->execute(["My lettuce arrived damaged. What should I do?", "Please contact our support team within 24 hours of delivery and include a few photos of the issue along with your order number. We'll send a replacement at no additional cost — fresh, same-day harvested.", "Quality"]);
+        $seedFaq->execute(["How does delivery work?", "We offer same-day delivery and same-day pick-up. Delivery is FREE within Nostalji Subdivision, Paliparan I, Dasmariñas, Cavite. For locations outside the subdivision, a delivery fee is automatically calculated based on your address.", "Delivery"]);
         
         // NEW: Technical Support & Account FAQs
-        $seedFaq->execute(["How do I submit a support ticket?", "To submit a support ticket:\n\n1. Log into your WoodCraft Care account\n2. Go to the Submit a Ticket page\n3. Fill in the Subject, Category, and a clear description\n4. Add your Order Number (if applicable)\n5. Attach any relevant photos or files\n6. Click Submit\n\nYou can track your ticket's status in My Support Tickets.", "Technical Support"]);
-        $seedFaq->execute(["How do I submit a warranty request?", "To submit a warranty request:\n\n1. Log into your WoodCraft Care account\n2. Go to Warranty Request\n3. Provide:\n   • Product Name\n   • Order Number\n   • Purchase Date\n   • Warranty Issue (category)\n   • Description of the defect\n   • Proof of Purchase (required)\n   • Damage Photo (optional)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Warranty"]);
-        $seedFaq->execute(["How do I request a return or refund?", "To request a return or refund:\n\n1. Log into your WoodCraft Care account\n2. Go to Return Request\n3. Provide:\n   • Order Number\n   • Product Name\n   • Purchase Date\n   • Reason for Return\n   • Detailed Explanation\n   • Product Condition\n   • Proof of Purchase (required)\n   • Damage Photo (optional)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Returns"]);
-        $seedFaq->execute(["How do I create an account?", "Creating an account is quick:\n\n1. Go to the Register page\n2. Enter your full name, email address, and a password\n3. Confirm your password and submit the form\n4. Check your inbox for a verification link (if required) and click it to activate your account\n\nOnce that's done, you can log in and start tracking orders right away.", "Account"]);
-        $seedFaq->execute(["What does the warranty cover?", "Our warranty covers manufacturing defects including:\n\n• Structural issues\n• Material flaws\n• Broken parts during normal use\n\nIt does NOT cover:\n• Accidental damage\n• Misuse or improper assembly\n• Normal wear and tear\n• Damage from moving or transporting\n\nFor a detailed breakdown of the warranty process, visit our warranty page or contact support.", "Warranty"]);
-        $seedFaq->execute(["How long is the delivery time?", "Delivery times vary by location and item:\n\n• Metro areas: 5-7 business days\n• Regional areas: 7-10 business days\n• Remote areas: 10-14 business days\n• Large/bulky items: add 2-3 extra days for freight scheduling\n• Custom/made-to-order: 3-6 weeks\n\nYou'll receive a tracking number via email once your order ships.", "Shipping"]);
+        $seedFaq->execute(["How do I submit a support ticket?", "To submit a support ticket:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to the Submit a Ticket page\n3. Fill in the Subject, Category, and a clear description\n4. Add your Order Number (if applicable)\n5. Attach any relevant photos or files\n6. Click Submit\n\nYou can track your ticket's status in My Support Tickets.", "Technical Support"]);
+        $seedFaq->execute(["How do I submit a freshness guarantee request?", "To submit a freshness guarantee request:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to Freshness Guarantee Request\n3. Provide:\n   • Product Name\n   • Order Number\n   • Delivery Date\n   • Quality Issue (category)\n   • Description of the issue\n   • Photos of the product (required)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Freshness"]);
+        $seedFaq->execute(["How do I request a return or refund?", "To request a return or refund:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to Return Request\n3. Provide:\n   • Order Number\n   • Product Name\n   • Delivery Date\n   • Reason for Return\n   • Detailed Explanation\n   • Product Condition\n   • Photos (required)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Returns"]);
+        $seedFaq->execute(["How do I create an account?", "Creating an account is quick:\n\n1. Go to the Register page\n2. Enter your full name, email address, phone number, and a password\n3. Confirm your password and submit the form\n4. You'll be logged in automatically\n\nOnce that's done, you can browse products, place orders, and track deliveries right away.", "Account"]);
+        $seedFaq->execute(["What does the freshness guarantee cover?", "Our freshness guarantee covers:\n\n• Wilted or damaged lettuce upon delivery\n• Wrong variety delivered\n• Missing items from your order\n• Quality below our standards\n\nSimply submit a Freshness Guarantee Request with photos within 24 hours of delivery. We'll approve a replacement or refund at no cost to you.", "Freshness"]);
+        $seedFaq->execute(["How does delivery work in my area?", "Delivery is FREE within Nostalji Subdivision, Paliparan I, Dasmariñas, Cavite.\n\nFor locations outside the subdivision, a delivery fee is automatically calculated based on your address.\n\nSame-day delivery is available for orders placed before 2 PM. Same-day pick-up is always available — your lettuce is ready 1-3 hours after order confirmation.", "Delivery"]);
         
         $report[] = "Seeded 11 FAQ entries (5 original + 6 new technical support/account FAQs).";
     } else {
         // Check if new FAQs exist, if not add them
         $newFaqs = [
-            ["How do I submit a support ticket?", "To submit a support ticket:\n\n1. Log into your WoodCraft Care account\n2. Go to the Submit a Ticket page\n3. Fill in the Subject, Category, and a clear description\n4. Add your Order Number (if applicable)\n5. Attach any relevant photos or files\n6. Click Submit\n\nYou can track your ticket's status in My Support Tickets.", "Technical Support"],
-            ["How do I submit a warranty request?", "To submit a warranty request:\n\n1. Log into your WoodCraft Care account\n2. Go to Warranty Request\n3. Provide:\n   • Product Name\n   • Order Number\n   • Purchase Date\n   • Warranty Issue (category)\n   • Description of the defect\n   • Proof of Purchase (required)\n   • Damage Photo (optional)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Warranty"],
-            ["How do I request a return or refund?", "To request a return or refund:\n\n1. Log into your WoodCraft Care account\n2. Go to Return Request\n3. Provide:\n   • Order Number\n   • Product Name\n   • Purchase Date\n   • Reason for Return\n   • Detailed Explanation\n   • Product Condition\n   • Proof of Purchase (required)\n   • Damage Photo (optional)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Returns"],
-            ["How do I create an account?", "Creating an account is quick:\n\n1. Go to the Register page\n2. Enter your full name, email address, and a password\n3. Confirm your password and submit the form\n4. Check your inbox for a verification link (if required) and click it to activate your account\n\nOnce that's done, you can log in and start tracking orders right away.", "Account"],
-            ["What does the warranty cover?", "Our warranty covers manufacturing defects including:\n\n• Structural issues\n• Material flaws\n• Broken parts during normal use\n\nIt does NOT cover:\n• Accidental damage\n• Misuse or improper assembly\n• Normal wear and tear\n• Damage from moving or transporting\n\nFor a detailed breakdown of the warranty process, visit our warranty page or contact support.", "Warranty"],
-            ["How long is the delivery time?", "Delivery times vary by location and item:\n\n• Metro areas: 5-7 business days\n• Regional areas: 7-10 business days\n• Remote areas: 10-14 business days\n• Large/bulky items: add 2-3 extra days for freight scheduling\n• Custom/made-to-order: 3-6 weeks\n\nYou'll receive a tracking number via email once your order ships.", "Shipping"],
+            ["How do I submit a support ticket?", "To submit a support ticket:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to the Submit a Ticket page\n3. Fill in the Subject, Category, and a clear description\n4. Add your Order Number (if applicable)\n5. Attach any relevant photos or files\n6. Click Submit\n\nYou can track your ticket's status in My Support Tickets.", "Technical Support"],
+            ["How do I submit a freshness guarantee request?", "To submit a freshness guarantee request:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to Freshness Guarantee Request\n3. Provide:\n   • Product Name\n   • Order Number\n   • Delivery Date\n   • Quality Issue (category)\n   • Description of the issue\n   • Photos of the product (required)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Freshness"],
+            ["How do I request a return or refund?", "To request a return or refund:\n\n1. Log into your Luntiang H.A.P.A.G. account\n2. Go to Return Request\n3. Provide:\n   • Order Number\n   • Product Name\n   • Delivery Date\n   • Reason for Return\n   • Detailed Explanation\n   • Photos (required)\n4. Click Submit\n\nOur team will review your request within 1-2 business days.", "Returns"],
+            ["How do I create an account?", "Creating an account is quick:\n\n1. Go to the Register page\n2. Enter your full name, email address, phone, and a password\n3. Confirm your password and submit the form\n\nOnce done, you can browse products, place orders, and track deliveries.", "Account"],
+            ["What does the freshness guarantee cover?", "Our freshness guarantee covers wilted or damaged lettuce, wrong varieties, missing items, and quality below our standards. Submit a request with photos within 24 hours of delivery for a free replacement or refund.", "Freshness"],
+            ["How does delivery work in my area?", "FREE delivery within Nostalji Subdivision. For outside areas, a delivery fee is automatically calculated. Same-day delivery for orders before 2 PM. Same-day pick-up always available — ready 1-3 hours after confirmation.", "Delivery"],
         ];
         
         $added = 0;
@@ -513,13 +793,10 @@ try {
 
     // -----------------------------------------------------------
     // 14. Seed / default data
-    //     A default admin account is created only if the `admins`
-    //     table is completely empty, so this is safe to run on
-    //     every request and won't reset a password you've changed.
-    //
-    //     Default login (change the password after first login):
-    //       Email:    admin@woodcraftcare.com
-    //       Password: Admin@123
+    //     Always ensure admin@luntianghapag.com exists.
+    //     If the table is empty, create it fresh.
+    //     If an old admin@woodcraftcare.com still exists from a
+    //     previous install, update it to the new email.
     // -----------------------------------------------------------
     $adminCount = (int)$conn->query("SELECT COUNT(*) FROM admins")->fetchColumn();
     if ($adminCount === 0) {
@@ -528,10 +805,20 @@ try {
             INSERT INTO admins (name, email, password, role)
             VALUES (?, ?, ?, ?)
         ");
-        $seed->execute(["WoodCraft Admin", "admin@woodcraftcare.com", $defaultHash, "Super Admin"]);
-        $report[] = "Default admin account created (admin@woodcraftcare.com / Admin@123 — please change this password after logging in).";
+        $seed->execute(["Luntiang H.A.P.A.G. Admin", "admin@luntianghapag.com", $defaultHash, "Super Admin"]);
+        $report[] = "Default admin account created (admin@luntianghapag.com / Admin@123).";
     } else {
-        $report[] = "Admin account(s) already exist — no default account needed.";
+        // Check for old WoodCraft email and update it
+        $old = $conn->prepare("SELECT id FROM admins WHERE email = ?");
+        $old->execute(["admin@woodcraftcare.com"]);
+        if ($oldId = $old->fetchColumn()) {
+            $newHash = password_hash("Admin@123", PASSWORD_DEFAULT);
+            $conn->prepare("UPDATE admins SET email = ?, name = ?, password = ? WHERE id = ?")
+                 ->execute(["admin@luntianghapag.com", "Luntiang H.A.P.A.G. Admin", $newHash, $oldId]);
+            $report[] = "Updated old admin account to admin@luntianghapag.com.";
+        } else {
+            $report[] = "Admin account(s) already exist.";
+        }
     }
 
 } catch (PDOException $e) {
@@ -559,7 +846,7 @@ if ($isDirectRequest) {
     <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>Database Setup | WoodCraft Care</title>
+        <title>Database Setup | Luntiang H.A.P.A.G.</title>
         <style>
             body { font-family: system-ui, sans-serif; background: #F3F0E4; color: #2E1D14; padding: 40px; }
             .card { max-width: 640px; margin: 0 auto; background: #fff; border-radius: 16px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }

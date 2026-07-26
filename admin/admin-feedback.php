@@ -48,18 +48,18 @@ $avgRating = (float)($conn->query("SELECT COALESCE(AVG(rating), 0) FROM feedback
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Feedback Management | WoodCraft Admin</title>
+  <title>Feedback Management | Luntiang H.A.P.A.G. Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-thumb { background: #d8cfbd; border-radius: 8px; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900">
+<body class="bg-[#f4faf5] text-[#1a2e1c]">
   <div class="flex min-h-screen">
     <?php require_once __DIR__ . '/includes/admin-sidebar.php'; ?>
 
@@ -76,17 +76,17 @@ $avgRating = (float)($conn->query("SELECT COALESCE(AVG(rating), 0) FROM feedback
 
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex flex-wrap items-center gap-2">
-            <a href="admin-feedback.php" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $ratingFilter === 'all' ? 'bg-[#4A2E1D] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>">All</a>
+            <a href="admin-feedback.php" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $ratingFilter === 'all' ? 'bg-[#17611f] text-white' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#5a7a5c] hover:bg-gray-50' ?>">All</a>
             <?php for ($i = 5; $i >= 1; $i--): ?>
-              <a href="admin-feedback.php?rating=<?= $i ?>" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $ratingFilter == $i ? 'bg-[#4A2E1D] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>"><?= $i ?>★</a>
+              <a href="admin-feedback.php?rating=<?= $i ?>" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $ratingFilter == $i ? 'bg-[#17611f] text-white' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#5a7a5c] hover:bg-gray-50' ?>"><?= $i ?>★</a>
             <?php endfor; ?>
           </div>
-          <div class="text-[13px] text-gray-500"><?= $totalCount ?> total · avg <span class="font-semibold text-gray-800"><?= $totalCount > 0 ? number_format($avgRating, 1) : '—' ?></span> ★</div>
+          <div class="text-[13px] text-[#5a7a5c]"><?= $totalCount ?> total · avg <span class="font-semibold text-[#1a2e1c]"><?= $totalCount > 0 ? number_format($avgRating, 1) : '—' ?></span> ★</div>
         </div>
 
         <div class="grid grid-cols-1 gap-4">
           <?php if (empty($feedbackEntries)): ?>
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center text-sm text-gray-400">No feedback submitted yet.</div>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center text-sm text-[#9e9e9e]">No feedback submitted yet.</div>
           <?php else: foreach ($feedbackEntries as $f):
               $isGuest = empty($f['user_id']);
               $displayName = $isGuest ? ($f['guest_name'] ?: 'Guest') : trim($f['first_name'] . ' ' . $f['last_name']);
@@ -96,17 +96,17 @@ $avgRating = (float)($conn->query("SELECT COALESCE(AVG(rating), 0) FROM feedback
               <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-3 mb-2 flex-wrap">
-                    <p class="text-[12px] text-gray-400"><?= date('M j, Y', strtotime($f['created_at'])) ?></p>
+                    <p class="text-[12px] text-[#9e9e9e]"><?= date('M j, Y', strtotime($f['created_at'])) ?></p>
                     <span class="text-amber-400 text-sm"><?= str_repeat('★', (int)$f['rating']) . str_repeat('☆', 5 - (int)$f['rating']) ?></span>
                     <?php if ($isGuest): ?>
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-500">Guest</span>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-[#5a7a5c]">Guest</span>
                     <?php endif; ?>
                   </div>
                   <?php if (!empty($f['subject'])): ?>
-                    <h3 class="font-semibold text-gray-900 mb-1"><?= htmlspecialchars($f['subject']) ?></h3>
+                    <h3 class="font-semibold text-[#1a2e1c] mb-1"><?= htmlspecialchars($f['subject']) ?></h3>
                   <?php endif; ?>
-                  <p class="text-[13px] text-gray-600 mb-3"><?= $f['comments'] ? htmlspecialchars($f['comments']) : '<span class="text-gray-400 italic">No comment left.</span>' ?></p>
-                  <p class="text-[12px] text-gray-500">From: <span class="font-medium text-gray-700"><?= htmlspecialchars($displayName) ?></span> · <?= htmlspecialchars($displayEmail) ?></p>
+                  <p class="text-[13px] text-[#5a7a5c] mb-3"><?= $f['comments'] ? htmlspecialchars($f['comments']) : '<span class="text-[#9e9e9e] italic">No comment left.</span>' ?></p>
+                  <p class="text-[12px] text-[#5a7a5c]">From: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($displayName) ?></span> · <?= htmlspecialchars($displayEmail) ?></p>
                 </div>
                 <form method="POST" onsubmit="return confirm('Delete this feedback entry? This cannot be undone.');">
                   <input type="hidden" name="delete_id" value="<?= $f['id'] ?>" />
@@ -118,6 +118,7 @@ $avgRating = (float)($conn->query("SELECT COALESCE(AVG(rating), 0) FROM feedback
         </div>
 
       </main>
+</div>
     </div>
   </div>
 </body>

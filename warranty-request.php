@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $conn,
                         'warranty_new',
                         $newRequestId,
-                        'New Warranty Request',
+                        'New Freshness Guarantee Request',
                         "Product: $product_name\n\nOrder: $order_number",
                         $customerName
                     );
@@ -133,13 +133,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($product_name) || empty($order_number) || empty($warranty_issue) || empty($defect_description) || $purchase_date === '') {
-            $message = "Please fill in the product name, order number, purchase date, warranty issue, and describe the defect.";
+            $message = "Please fill in the product name, order number, purchase date, quality issue, and describe the defect.";
             $messageType = "error";
         } elseif (!isValidOrderNumber($order_number)) {
             $message = ORDER_NUMBER_HELP_TEXT;
             $messageType = "error";
         } elseif (!in_array($warranty_issue, $warrantyIssues, true)) {
-            $message = "Please choose a valid warranty issue.";
+            $message = "Please choose a valid quality issue.";
             $messageType = "error";
         } elseif (!$isValidDate) {
             $message = "Please enter a valid purchase date.";
@@ -199,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Warranty Request | WoodCraft Care</title>
+  <title>Freshness Guarantee Request | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -276,9 +276,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </a>
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-10">
       <span class="inline-block text-[11px] font-semibold tracking-wide text-[#B5702E] bg-orange-50 rounded-full px-3 py-1 mb-5">QUICK SUPPORT</span>
-      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-4">Warranty Request</h1>
+      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-4">Freshness Guarantee Request</h1>
       <div class="text-gray-600 text-[15px] leading-relaxed space-y-4">
-        <p>Claim your manufacturer's warranty for defects in materials or craftsmanship. All WoodCraft pieces are covered for 5 years from the date of purchase.</p>
+        <p>Submit a freshness guarantee request for quality issues with your lettuce. If your lettuce arrived wilted, damaged, or not meeting our standards, we'll replace it at no cost.</p>
       </div>
 
       <?php if ($message && !$showConfirmation): ?>
@@ -318,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               </div>
 
               <div class="confirm-field">
-                <span class="confirm-label">Warranty Issue</span>
+                <span class="confirm-label">Quality Issue</span>
                 <p class="confirm-value"><?= htmlspecialchars($submittedData['warranty_issue']) ?></p>
               </div>
 
@@ -383,7 +383,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-800 mb-2">Warranty Issue</label>
+            <label class="block text-sm font-medium text-gray-800 mb-2">Quality Issue</label>
             <select name="warranty_issue" required class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors">
               <option value="" disabled <?= empty($formData['warranty_issue']) ? 'selected' : '' ?>>Select an issue</option>
               <?php foreach ($warrantyIssues as $issue): ?>
@@ -456,7 +456,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
             </svg>
-            <span>Submit Warranty Request</span>
+            <span>Submit Freshness Guarantee Request</span>
           </button>
         </form>
     </div>

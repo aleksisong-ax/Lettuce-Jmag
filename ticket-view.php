@@ -183,7 +183,7 @@ function ticketStatusBadge(string $status): string
         'closed' => ['gray', 'Closed'],
     ];
     [$color, $label] = $map[$status] ?? ['gray', ucfirst($status)];
-    $colors = ['blue' => 'text-blue-600 bg-blue-50', 'amber' => 'text-amber-600 bg-amber-50', 'green' => 'text-green-600 bg-green-50', 'gray' => 'text-gray-500 bg-gray-100'];
+    $colors = ['blue' => 'text-blue-600 bg-blue-50', 'amber' => 'text-amber-600 bg-[#fff8e1]', 'green' => 'text-green-600 bg-green-50', 'gray' => 'text-[#5a7a5c] bg-gray-100'];
     return "<span class=\"inline-flex items-center px-3 py-1 rounded-full text-[12px] font-medium {$colors[$color]}\">$label</span>";
 }
 
@@ -195,23 +195,23 @@ $isClosed = $ticket['status'] === 'closed';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ticket #WC-<?= str_pad($ticket['id'], 4, '0', STR_PAD_LEFT) ?> | WoodCraft Care</title>
+  <title>Ticket #WC-<?= str_pad($ticket['id'], 4, '0', STR_PAD_LEFT) ?> | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
+<body class="bg-[#f4faf5] text-[#1a2e1c] min-h-screen flex flex-col">
 
   <!-- Header -->
   <?php include __DIR__ . '/includes/header.php'; ?>
 
   <!-- Main Content -->
   <main class="flex-1 max-w-3xl w-full mx-auto px-6 py-16">
-    <a href="my-profile.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-8">
+    <a href="my-profile.php" class="inline-flex items-center gap-2 text-sm text-[#17611f] hover:text-[#14521a] transition-colors mb-8">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
       Back to My Profile
     </a>
@@ -220,24 +220,24 @@ $isClosed = $ticket['status'] === 'closed';
       <div class="p-8 pb-5 border-b border-gray-100">
         <div class="flex items-start justify-between gap-3 mb-2">
           <div>
-            <p class="text-[12px] text-gray-400 mb-1">Ticket #WC-<?= str_pad($ticket['id'], 4, '0', STR_PAD_LEFT) ?></p>
-            <h1 class="font-serif text-2xl font-semibold text-gray-900"><?= htmlspecialchars($ticket['subject']) ?></h1>
+            <p class="text-[12px] text-[#9e9e9e] mb-1">Ticket #WC-<?= str_pad($ticket['id'], 4, '0', STR_PAD_LEFT) ?></p>
+            <h1 class="font-black text-2xl font-semibold text-[#1a2e1c]"><?= htmlspecialchars($ticket['subject']) ?></h1>
           </div>
           <?= ticketStatusBadge($ticket['status']) ?>
         </div>
-        <div class="flex flex-wrap gap-x-6 gap-y-1 text-[13px] text-gray-500 mt-3">
-          <span>Category: <span class="font-medium text-gray-700"><?= htmlspecialchars($ticket['category']) ?></span></span>
-          <span>Priority: <span class="font-medium text-gray-700"><?= htmlspecialchars($ticket['priority'] ?? 'Medium') ?></span></span>
+        <div class="flex flex-wrap gap-x-6 gap-y-1 text-[13px] text-[#5a7a5c] mt-3">
+          <span>Category: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($ticket['category']) ?></span></span>
+          <span>Priority: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($ticket['priority'] ?? 'Medium') ?></span></span>
           <?php if (!empty($ticket['order_number'])): ?>
-            <span>Order #: <span class="font-medium text-gray-700"><?= htmlspecialchars($ticket['order_number']) ?></span></span>
+            <span>Order #: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($ticket['order_number']) ?></span></span>
           <?php endif; ?>
-          <span>Submitted: <span class="font-medium text-gray-700"><?= date('M j, Y g:i A', strtotime($ticket['created_at'])) ?></span></span>
+          <span>Submitted: <span class="font-medium text-[#1a2e1c]"><?= date('M j, Y g:i A', strtotime($ticket['created_at'])) ?></span></span>
         </div>
         <?php $ticketAttachments = decodeAttachmentPaths($ticket['attachment_path'] ?? null); ?>
         <?php if (!empty($ticketAttachments)): ?>
           <div class="flex flex-col gap-1 mt-3">
             <?php foreach ($ticketAttachments as $i => $attPath): ?>
-              <a href="<?= htmlspecialchars($attPath) ?>" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#6B4226] hover:underline">
+              <a href="<?= htmlspecialchars($attPath) ?>" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#17611f] hover:underline">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                 View Your Attachment<?= count($ticketAttachments) > 1 ? ' ' . ($i + 1) : '' ?>
               </a>
@@ -253,13 +253,13 @@ $isClosed = $ticket['status'] === 'closed';
       <?php endif; ?>
 
       <!-- Conversation thread -->
-      <div class="p-6 space-y-4 max-h-[440px] overflow-y-auto bg-[#FBF9F4]" id="threadContainer">
+      <div class="p-6 space-y-4 max-h-[440px] overflow-y-auto bg-[#f4faf5]" id="threadContainer">
 
         <!-- Original ticket message -->
         <div class="flex justify-end">
           <div class="max-w-[80%]">
-            <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed bg-[#6B4226] text-white rounded-br-sm whitespace-pre-line"><?= htmlspecialchars($ticket['issue_description']) ?></div>
-            <p class="text-[11px] text-gray-400 mt-1 text-right">
+            <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed bg-[#17611f] text-white rounded-br-sm whitespace-pre-line"><?= htmlspecialchars($ticket['issue_description']) ?></div>
+            <p class="text-[11px] text-[#9e9e9e] mt-1 text-right">
               You · <?= date('M j, Y g:i A', strtotime($ticket['created_at'])) ?>
             </p>
           </div>
@@ -273,12 +273,12 @@ $isClosed = $ticket['status'] === 'closed';
             <div class="max-w-[80%]">
               <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed whitespace-pre-line 
                 <?= $isCustomer 
-                    ? ($isSystem ? 'bg-blue-50 border border-blue-200 text-blue-800 rounded-br-sm' : 'bg-[#6B4226] text-white rounded-br-sm') 
-                    : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm' ?>">
+                    ? ($isSystem ? 'bg-blue-50 border border-blue-200 text-blue-800 rounded-br-sm' : 'bg-[#17611f] text-white rounded-br-sm') 
+                    : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#1a2e1c] rounded-bl-sm' ?>">
                 <?= htmlspecialchars($r['message']) ?>
               </div>
-              <p class="text-[11px] text-gray-400 mt-1 <?= $isCustomer ? 'text-right' : 'text-left' ?>">
-                <?= $isCustomer ? ($isSystem ? 'You (System)' : 'You') : 'WoodCraft Support' ?> · <?= date('M j, Y g:i A', strtotime($r['created_at'])) ?>
+              <p class="text-[11px] text-[#9e9e9e] mt-1 <?= $isCustomer ? 'text-right' : 'text-left' ?>">
+                <?= $isCustomer ? ($isSystem ? 'You (System)' : 'You') : 'Luntiang H.A.P.A.G. Support' ?> · <?= date('M j, Y g:i A', strtotime($r['created_at'])) ?>
               </p>
             </div>
           </div>
@@ -296,14 +296,14 @@ $isClosed = $ticket['status'] === 'closed';
               </svg>
             </div>
             <div>
-              <p class="text-sm font-medium text-gray-800">✅ Our support team believes your issue has been resolved.</p>
-              <p class="text-sm text-gray-600">Please let us know if everything has been resolved successfully.</p>
+              <p class="text-sm font-medium text-[#1a2e1c]">✅ Our support team believes your issue has been resolved.</p>
+              <p class="text-sm text-[#5a7a5c]">Please let us know if everything has been resolved successfully.</p>
             </div>
           </div>
           <div class="flex flex-wrap gap-3 pt-1 pl-11">
             <form method="POST" onsubmit="return confirm('Are you sure you want to close this ticket?\n\nOnce closed, no additional replies can be added.');">
               <input type="hidden" name="ticket_action" value="close" />
-              <button type="submit" class="px-5 py-2.5 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors flex items-center gap-2">
+              <button type="submit" class="px-5 py-2.5 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                 </svg>
@@ -312,7 +312,7 @@ $isClosed = $ticket['status'] === 'closed';
             </form>
             <form method="POST" onsubmit="return confirm('We are sorry your issue has not been fully resolved.\n\nWould you like to reopen this ticket?');">
               <input type="hidden" name="ticket_action" value="reopen" />
-              <button type="submit" class="px-5 py-2.5 rounded-full border border-gray-300 text-gray-800 text-sm font-medium hover:bg-gray-50 transition-colors">
+              <button type="submit" class="px-5 py-2.5 rounded-full border border-gray-300 text-[#1a2e1c] text-sm font-medium hover:bg-gray-50 transition-colors">
                 No, I Still Need Help
               </button>
             </form>
@@ -323,23 +323,23 @@ $isClosed = $ticket['status'] === 'closed';
       <!-- Send reply -->
       <?php if ($isClosed): ?>
         <div class="p-5 border-t border-gray-100 text-center">
-          <div class="inline-flex items-center gap-2 text-sm text-gray-500 bg-gray-50 rounded-xl px-4 py-3">
-            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <div class="inline-flex items-center gap-2 text-sm text-[#5a7a5c] bg-gray-50 rounded-xl px-4 py-3">
+            <svg class="w-4 h-4 text-[#9e9e9e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
             </svg>
             This ticket has been closed and no longer accepts new replies.
           </div>
-          <p class="text-xs text-gray-400 mt-2">If you experience another issue, please <a href="submit-ticket.php" class="text-[#6B4226] font-medium hover:underline">submit a new support ticket</a>.</p>
+          <p class="text-xs text-[#9e9e9e] mt-2">If you experience another issue, please <a href="submit-ticket.php" class="text-[#17611f] font-medium hover:underline">submit a new support ticket</a>.</p>
         </div>
       <?php else: ?>
         <form method="POST" class="p-5 border-t border-gray-100">
           <div class="flex items-end gap-3">
             <div class="flex-1">
               <textarea name="reply_message" rows="2" maxlength="2000" required placeholder="Type your reply..."
-                        class="w-full rounded-2xl border border-gray-200 px-5 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors resize-none"></textarea>
-              <p class="mt-1.5 text-[11px] text-gray-400 text-right max-w-[2000]">Max 2000 characters</p>
+                        class="w-full rounded-2xl border border-[rgba(27,94,32,0.12)] px-5 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors resize-none"></textarea>
+              <p class="mt-1.5 text-[11px] text-[#9e9e9e] text-right max-w-[2000]">Max 2000 characters</p>
             </div>
-            <button type="submit" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors flex-shrink-0">Send</button>
+            <button type="submit" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors flex-shrink-0">Send</button>
           </div>
         </form>
       <?php endif; ?>

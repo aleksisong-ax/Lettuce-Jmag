@@ -51,18 +51,18 @@ function notificationIcon(string $type): string
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notifications | WoodCraft Admin</title>
+  <title>Notifications | Luntiang H.A.P.A.G. Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-thumb { background: #d8cfbd; border-radius: 8px; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900">
+<body class="bg-[#f4faf5] text-[#1a2e1c]">
   <div class="flex min-h-screen">
     <?php require_once __DIR__ . '/includes/admin-sidebar.php'; ?>
 
@@ -73,43 +73,43 @@ function notificationIcon(string $type): string
 
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex flex-wrap items-center gap-2">
-            <a href="notifications.php?filter=all" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $filter === 'all' ? 'bg-[#4A2E1D] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>">All <span class="opacity-70">(<?= $totalCount ?>)</span></a>
-            <a href="notifications.php?filter=unread" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $filter === 'unread' ? 'bg-[#4A2E1D] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>">Unread <span class="opacity-70">(<?= $unreadCount ?>)</span></a>
+            <a href="notifications.php?filter=all" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $filter === 'all' ? 'bg-[#17611f] text-white' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#5a7a5c] hover:bg-gray-50' ?>">All <span class="opacity-70">(<?= $totalCount ?>)</span></a>
+            <a href="notifications.php?filter=unread" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $filter === 'unread' ? 'bg-[#17611f] text-white' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#5a7a5c] hover:bg-gray-50' ?>">Unread <span class="opacity-70">(<?= $unreadCount ?>)</span></a>
           </div>
           <?php if ($unreadCount > 0): ?>
             <form method="POST">
               <input type="hidden" name="mark_all_read" value="1" />
-              <button type="submit" class="px-4 py-2 rounded-full bg-white border border-gray-200 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors">Mark all as read</button>
+              <button type="submit" class="px-4 py-2 rounded-full bg-white border border-[rgba(27,94,32,0.12)] text-[13px] font-medium text-[#1a2e1c] hover:bg-gray-50 transition-colors">Mark all as read</button>
             </form>
           <?php endif; ?>
         </div>
 
         <div class="grid grid-cols-1 gap-3">
           <?php if (empty($notifications)): ?>
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center text-sm text-gray-400">No notifications found.</div>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center text-sm text-[#9e9e9e]">No notifications found.</div>
           <?php else: foreach ($notifications as $n): ?>
-            <div class="bg-white rounded-2xl border <?= !$n['is_read'] ? 'border-[#D8B98A] bg-orange-50/30' : 'border-gray-100' ?> shadow-sm p-5 flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-[#F3F0E4] flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-[#6B4226]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="<?= notificationIcon($n['type']) ?>"/></svg>
+            <div class="bg-white rounded-2xl border <?= !$n['is_read'] ? 'border-[#c8e6c9] bg-[#e8f5e9]/30' : 'border-gray-100' ?> shadow-sm p-5 flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-[#f4faf5] flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-[#17611f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="<?= notificationIcon($n['type']) ?>"/></svg>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-3">
                   <div>
-                    <p class="font-semibold text-gray-900 text-[14px]"><?= htmlspecialchars($n['title']) ?><?php if (!$n['is_read']): ?> <span class="inline-block w-2 h-2 rounded-full bg-[#B5702E] align-middle ml-1"></span><?php endif; ?></p>
-                    <p class="text-[13px] text-gray-600 mt-1 whitespace-pre-line"><?= htmlspecialchars($n['message']) ?></p>
+                    <p class="font-semibold text-[#1a2e1c] text-[14px]"><?= htmlspecialchars($n['title']) ?><?php if (!$n['is_read']): ?> <span class="inline-block w-2 h-2 rounded-full bg-[#17611f] align-middle ml-1"></span><?php endif; ?></p>
+                    <p class="text-[13px] text-[#5a7a5c] mt-1 whitespace-pre-line"><?= htmlspecialchars($n['message']) ?></p>
                   </div>
                 </div>
-                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-[12px] text-gray-400">
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-[12px] text-[#9e9e9e]">
                   <span>Related #<?= (int)$n['related_id'] ?></span>
                   <?php if (!empty($n['customer_name'])): ?><span><?= htmlspecialchars($n['customer_name']) ?></span><?php endif; ?>
                   <span><?= date('M j, Y g:i A', strtotime($n['created_at'])) ?></span>
                 </div>
                 <div class="flex items-center gap-4 mt-3">
-                  <a href="notification-open.php?id=<?= (int)$n['id'] ?>" class="text-[12px] font-medium text-[#6B4226] hover:underline">View Related Request →</a>
+                  <a href="notification-open.php?id=<?= (int)$n['id'] ?>" class="text-[12px] font-medium text-[#17611f] hover:underline">View Related Request →</a>
                   <?php if (!$n['is_read']): ?>
                     <form method="POST">
                       <input type="hidden" name="mark_read_id" value="<?= (int)$n['id'] ?>" />
-                      <button type="submit" class="text-[12px] font-medium text-gray-500 hover:underline">Mark as read</button>
+                      <button type="submit" class="text-[12px] font-medium text-[#5a7a5c] hover:underline">Mark as read</button>
                     </form>
                   <?php endif; ?>
                 </div>

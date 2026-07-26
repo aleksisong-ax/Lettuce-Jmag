@@ -2,7 +2,7 @@
 /**
  * includes/chatbot-engine.php
  * ------------------------------------------------------------------
- * WoodCraft AI Customer Service Assistant — intent matching engine.
+ * Luntiang H.A.P.A.G. AI Customer Service Assistant — intent matching engine.
  *
  * This is the first responder in Live Chat. It never replaces the
  * existing service modules (Support Ticket, Warranty, Return &
@@ -41,7 +41,7 @@ class ChatbotEngine
 
     /**
      * @param bool $isLoggedIn Whether the current visitor has an active
-     *     WoodCraft Care session ($_SESSION['user_id']). Drives
+     *     Luntiang H.A.P.A.G. session ($_SESSION['user_id']). Drives
      *     auth-aware replies (login/registration guidance, and gated
      *     service routing for Support Ticket / Warranty / Return &
      *     Refund) — see OBJECTIVE #3 and #5.
@@ -68,9 +68,9 @@ class ChatbotEngine
 public static function greeting(): string
 {
     $greetings = [
-        "Hi, I'm the Fresh Lettuce Assistant 🥬 I can answer questions about our products, orders, delivery, and freshness — and I'll help point you to the right form if you need one. What can I help you with today?",
-        "Welcome to Fresh Lettuce Farm! 🌱 I'm your AI assistant here to help with orders, product info, delivery questions, and more. What brings you here today?",
-        "Hello there! 👋 I'm the Fresh Lettuce Assistant. Need help with an order, have questions about our organic lettuce, or just want to know more about our farm? I'm here to help — just let me know what you need!"
+        "Hi, I'm the Luntiang H.A.P.A.G. Assistant 🥬 I can answer questions about our products, orders, delivery, and freshness — and I'll help point you to the right form if you need one. What can I help you with today?",
+        "Welcome to Luntiang H.A.P.A.G.! 🌱 I'm your AI assistant here to help with orders, product info, delivery questions, and more. What brings you here today?",
+        "Hello there! 👋 I'm the Luntiang H.A.P.A.G. Assistant. Need help with an order, have questions about our organic lettuce, or just want to know more about our farm? I'm here to help — just let me know what you need!"
     ];
     return $greetings[array_rand($greetings)];
 }
@@ -277,15 +277,15 @@ public static function greeting(): string
      */
     private function buildHelpResponse(): string
     {
-        return "I'm the WoodCraft Assistant 🌿 Here's what I can help you with:\n\n" .
+        return "I'm the Luntiang H.A.P.A.G. Assistant 🌿 Here's what I can help you with:\n\n" .
                "📦 **Orders & Products**\n" .
                "• Track your order\n" .
                "• Product information and availability\n" .
-               "• Materials, dimensions, and colors\n" .
-               "• Assembly information\n\n" .
-               "🛡️ **Warranty & Returns**\n" .
-               "• File a warranty claim\n" .
-               "• Check warranty coverage\n" .
+               "• Varieties, pack sizes, and bundles\n" .
+               "• Harvest-on-demand information\n\n" .
+               "🛡️ **Freshness & Returns**\n" .
+               "• Submit a freshness complaint\n" .
+               "• Check refund eligibility\n" .
                "• Start a return or refund\n" .
                "• Return policy information\n\n" .
                "👤 **Account Help**\n" .
@@ -358,7 +358,7 @@ public static function greeting(): string
     /**
      * Dynamic answer for knowledge topics marked 'auth_aware' (login
      * and registration help) — the assistant needs to know the
-     * WoodCraft Care session state to answer these usefully, since
+     * Luntiang H.A.P.A.G. session state to answer these usefully, since
      * "where do I log in" means something different to a guest than
      * to someone already signed in.
      */
@@ -366,14 +366,14 @@ public static function greeting(): string
     {
         if ($topicId === 'login_help') {
             return $this->isLoggedIn
-                ? "You're already signed in to your WoodCraft Care account.\n\nIf you'd like to sign in using another account, please log out first.\n\nAfter logging out, return to the Home page and click the Login button in the upper-right corner."
-                : "You're currently browsing as a guest.\n\n{$this->loginInstructions()}\n\nAfter logging in, you'll be able to submit Support Tickets, Warranty Requests, and Return & Refund Requests.";
+                ? "You're already signed in to your Luntiang H.A.P.A.G. account.\n\nIf you'd like to sign in using another account, please log out first.\n\nAfter logging out, return to the Home page and click the Login button in the upper-right corner."
+                : "You're currently browsing as a guest.\n\n{$this->loginInstructions()}\n\nAfter logging in, you'll be able to submit Support Tickets, Freshness Requests, and Return & Refund Requests.";
         }
 
         if ($topicId === 'create_account') {
             return $this->isLoggedIn
-                ? "You're already signed in to your WoodCraft Care account.\n\nIf you'd like to create a new account, please log out first.\n\nAfter logging out, return to the Home page and click the Register button next to Login in the upper-right corner."
-                : "You're currently browsing as a guest.\n\nTo create an account, return to the Home page and click the Register button next to Login in the upper-right corner.\n\nOnce you're registered and logged in, you'll be able to submit Support Tickets, Warranty Requests, and Return & Refund Requests.";
+                ? "You're already signed in to your Luntiang H.A.P.A.G. account.\n\nIf you'd like to create a new account, please log out first.\n\nAfter logging out, return to the Home page and click the Register button next to Login in the upper-right corner."
+                : "You're currently browsing as a guest.\n\nTo create an account, return to the Home page and click the Register button next to Login in the upper-right corner.\n\nOnce you're registered and logged in, you'll be able to submit Support Tickets, Freshness Requests, and Return & Refund Requests.";
         }
 
         $index = $this->kbIndexById[$topicId] ?? null;
@@ -386,7 +386,7 @@ public static function greeting(): string
     private function buildForgotPasswordReply(): string
     {
         if ($this->isLoggedIn) {
-            return "You're already logged in to your WoodCraft Care account.\n\nIf you simply want to change your password, you can do so from your Customer Dashboard --> Show Details.\n\nIf you're trying to access another account, please log out first, then use the \"Forgot Password?\" option on the Login page.";
+            return "You're already logged in to your Luntiang H.A.P.A.G. account.\n\nIf you simply want to change your password, you can do so from your Customer Dashboard --> Show Details.\n\nIf you're trying to access another account, please log out first, then use the \"Forgot Password?\" option on the Login page.";
         }
 
         $this->setState(true, 'offer', json_encode(['kind' => 'password_reset_guide']));
@@ -725,14 +725,14 @@ public static function greeting(): string
         }
 
         if ($afterUse && !$onArrival) {
-            return ['replies' => [$this->buildServiceReply('warranty')], 'escalate' => false, 'context' => null];
+            return ['replies' => [$this->buildServiceReply('freshness_guarantee')], 'escalate' => false, 'context' => null];
         }
 
         $return = $this->kb['services']['return'];
-        $warranty = $this->kb['services']['warranty'];
+        $freshnessGuarantee = $this->kb['services']['freshness_guarantee'];
         return [
             'replies' => [
-                "To point you to the right form: if the issue was there when it arrived (wrong/damaged/missing parts), that's a {$return['label']}. If it developed after normal use (a manufacturing defect), that's a {$warranty['label']}. Which sounds closer to what happened?",
+                "To point you to the right form: if the issue was there when it arrived (wrong/damaged/missing parts), that's a {$return['label']}. If it developed after normal use (a quality issue), that's a {$freshnessGuarantee['label']}. Which sounds closer to what happened?",
             ],
             'escalate' => false,
             'context' => null,
@@ -1038,7 +1038,7 @@ public static function greeting(): string
 
         if (!empty($service['requires_login']) && !$this->isLoggedIn) {
             $this->setState(true, 'offer', json_encode(['kind' => 'login_then_goal', 'service' => $key]));
-            return "{$service['label']}s require a WoodCraft Care account.\n\nWould you like me to show you how to log in?";
+            return "{$service['label']}s require a Luntiang H.A.P.A.G. account.\n\nWould you like me to show you how to log in?";
         }
 
         $parts = [$service['explain']];

@@ -93,7 +93,7 @@ function statusBadgeDetail(string $status): string
         'closed' => ['gray', 'Closed'],
     ];
     [$color, $label] = $map[$status] ?? ['gray', ucfirst($status)];
-    $colors = ['blue' => 'text-blue-600 bg-blue-50', 'amber' => 'text-amber-600 bg-amber-50', 'green' => 'text-green-600 bg-green-50', 'gray' => 'text-gray-500 bg-gray-100'];
+    $colors = ['blue' => 'text-blue-600 bg-blue-50', 'amber' => 'text-amber-600 bg-[#fff8e1]', 'green' => 'text-green-600 bg-green-50', 'gray' => 'text-[#5a7a5c] bg-gray-100'];
     return "<span class=\"inline-flex items-center px-3 py-1 rounded-full text-[12px] font-medium {$colors[$color]}\">$label</span>";
 }
 ?>
@@ -102,18 +102,18 @@ function statusBadgeDetail(string $status): string
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ticket #WC-<?= str_pad($ticket['id'], 4, '0', STR_PAD_LEFT) ?> | WoodCraft Admin</title>
+  <title>Ticket #WC-<?= str_pad($ticket['id'], 4, '0', STR_PAD_LEFT) ?> | Luntiang H.A.P.A.G. Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-thumb { background: #d8cfbd; border-radius: 8px; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900">
+<body class="bg-[#f4faf5] text-[#1a2e1c]">
   <div class="flex min-h-screen">
     <?php require_once __DIR__ . '/includes/admin-sidebar.php'; ?>
 
@@ -121,7 +121,7 @@ function statusBadgeDetail(string $status): string
       <?php require_once __DIR__ . '/includes/admin-topbar.php'; ?>
 
       <main class="flex-1 overflow-y-auto p-6">
-        <a href="admin-tickets.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-5">
+        <a href="admin-tickets.php" class="inline-flex items-center gap-2 text-sm text-[#17611f] hover:text-[#14521a] transition-colors mb-5">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
           Back to Tickets
         </a>
@@ -138,25 +138,25 @@ function statusBadgeDetail(string $status): string
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <div class="flex items-start justify-between mb-4">
                 <div>
-                  <p class="text-[12px] text-gray-400 mb-1">Ticket #WC-<?= str_pad($ticket['id'], 4, '0', STR_PAD_LEFT) ?></p>
-                  <h1 class="font-serif text-2xl font-semibold text-gray-900"><?= htmlspecialchars($ticket['subject']) ?></h1>
+                  <p class="text-[12px] text-[#9e9e9e] mb-1">Ticket #WC-<?= str_pad($ticket['id'], 4, '0', STR_PAD_LEFT) ?></p>
+                  <h1 class="font-black text-2xl font-semibold text-[#1a2e1c]"><?= htmlspecialchars($ticket['subject']) ?></h1>
                 </div>
                 <?= statusBadgeDetail($ticket['status']) ?>
               </div>
-              <div class="flex flex-wrap gap-x-6 gap-y-1 text-[13px] text-gray-500 mb-5">
-                <span>Category: <span class="font-medium text-gray-700"><?= htmlspecialchars($ticket['category']) ?></span></span>
-                <span>Priority: <span class="font-medium text-gray-700"><?= htmlspecialchars($ticket['priority'] ?? 'Medium') ?></span></span>
+              <div class="flex flex-wrap gap-x-6 gap-y-1 text-[13px] text-[#5a7a5c] mb-5">
+                <span>Category: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($ticket['category']) ?></span></span>
+                <span>Priority: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($ticket['priority'] ?? 'Medium') ?></span></span>
                 <?php if (!empty($ticket['order_number'])): ?>
-                  <span>Order #: <span class="font-medium text-gray-700"><?= htmlspecialchars($ticket['order_number']) ?></span></span>
+                  <span>Order #: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($ticket['order_number']) ?></span></span>
                 <?php endif; ?>
-                <span>Submitted: <span class="font-medium text-gray-700"><?= date('M j, Y g:i A', strtotime($ticket['created_at'])) ?></span></span>
+                <span>Submitted: <span class="font-medium text-[#1a2e1c]"><?= date('M j, Y g:i A', strtotime($ticket['created_at'])) ?></span></span>
               </div>
-              <div class="bg-gray-50 rounded-xl p-4 text-[14px] text-gray-700 leading-relaxed whitespace-pre-line"><?= htmlspecialchars($ticket['issue_description']) ?></div>
+              <div class="bg-gray-50 rounded-xl p-4 text-[14px] text-[#1a2e1c] leading-relaxed whitespace-pre-line"><?= htmlspecialchars($ticket['issue_description']) ?></div>
               <?php $ticketAttachments = decodeAttachmentPaths($ticket['attachment_path'] ?? null); ?>
               <?php if (!empty($ticketAttachments)): ?>
                 <div class="flex flex-col gap-1 mt-3">
                   <?php foreach ($ticketAttachments as $i => $attPath): ?>
-                    <a href="view-attachment.php?path=<?= urlencode($attPath) ?>" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#6B4226] hover:underline">
+                    <a href="view-attachment.php?path=<?= urlencode($attPath) ?>" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#17611f] hover:underline">
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                       View Attachment<?= count($ticketAttachments) > 1 ? ' ' . ($i + 1) : '' ?>
                     </a>
@@ -166,14 +166,14 @@ function statusBadgeDetail(string $status): string
             </div>
 
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 class="text-sm font-semibold text-gray-900 mb-4">Conversation</h3>
+              <h3 class="text-sm font-semibold text-[#1a2e1c] mb-4">Conversation</h3>
               <div class="space-y-4 max-h-[420px] overflow-y-auto pr-1">
 
                 <!-- Original customer message -->
                 <div class="flex justify-start">
                   <div class="max-w-[80%]">
-                    <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed bg-white border border-gray-200 text-gray-800 rounded-bl-sm whitespace-pre-line"><?= htmlspecialchars($ticket['issue_description']) ?></div>
-                    <p class="text-[11px] text-gray-400 mt-1 text-left">
+                    <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed bg-white border border-[rgba(27,94,32,0.12)] text-[#1a2e1c] rounded-bl-sm whitespace-pre-line"><?= htmlspecialchars($ticket['issue_description']) ?></div>
+                    <p class="text-[11px] text-[#9e9e9e] mt-1 text-left">
                       <?= htmlspecialchars($ticket['first_name']) ?> · <?= date('M j, Y g:i A', strtotime($ticket['created_at'])) ?>
                     </p>
                   </div>
@@ -184,11 +184,11 @@ function statusBadgeDetail(string $status): string
                 ?>
                   <div class="flex <?= $isAdmin ? 'justify-end' : 'justify-start' ?>">
                     <div class="max-w-[80%]">
-                      <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed whitespace-pre-line <?= $isAdmin ? 'bg-[#6B4226] text-white rounded-br-sm' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm' ?>">
+                      <div class="rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed whitespace-pre-line <?= $isAdmin ? 'bg-[#17611f] text-white rounded-br-sm' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#1a2e1c] rounded-bl-sm' ?>">
                         <?= htmlspecialchars($r['message']) ?>
                       </div>
-                      <p class="text-[11px] text-gray-400 mt-1 <?= $isAdmin ? 'text-right' : 'text-left' ?>">
-                        <?= $isAdmin ? 'WoodCraft Support' : htmlspecialchars($ticket['first_name']) ?> · <?= date('M j, Y g:i A', strtotime($r['created_at'])) ?>
+                      <p class="text-[11px] text-[#9e9e9e] mt-1 <?= $isAdmin ? 'text-right' : 'text-left' ?>">
+                        <?= $isAdmin ? 'Luntiang H.A.P.A.G. Support' : htmlspecialchars($ticket['first_name']) ?> · <?= date('M j, Y g:i A', strtotime($r['created_at'])) ?>
                       </p>
                     </div>
                   </div>
@@ -198,42 +198,42 @@ function statusBadgeDetail(string $status): string
             </div>
 
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 class="text-sm font-semibold text-gray-900 mb-4">Reply &amp; Update Status</h3>
+              <h3 class="text-sm font-semibold text-[#1a2e1c] mb-4">Reply &amp; Update Status</h3>
               <form method="POST" class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-800 mb-2">Reply to customer</label>
-                  <textarea name="admin_reply" rows="5" maxlength="2000" placeholder="Type your reply..." class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors"></textarea>
+                  <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Reply to customer</label>
+                  <textarea name="admin_reply" rows="5" maxlength="2000" placeholder="Type your reply..." class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors"></textarea>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-800 mb-2">Status</label>
-                  <select name="status" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors">
+                  <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Status</label>
+                  <select name="status" class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors">
                     <?php foreach (['open' => 'Open', 'in_progress' => 'In Progress', 'resolved' => 'Resolved', 'closed' => 'Closed'] as $val => $label): ?>
                       <option value="<?= $val ?>" <?= $ticket['status'] === $val ? 'selected' : '' ?>><?= $label ?></option>
                     <?php endforeach; ?>
                   </select>
                 </div>
-                <button type="submit" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors">Save Changes</button>
+                <button type="submit" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors">Save Changes</button>
               </form>
             </div>
           </div>
 
           <div class="space-y-5">
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 class="text-sm font-semibold text-gray-900 mb-4">Customer</h3>
+              <h3 class="text-sm font-semibold text-[#1a2e1c] mb-4">Customer</h3>
               <div class="flex items-center gap-3 mb-4">
-                <div class="w-11 h-11 rounded-full bg-[#6B4226] text-white text-sm font-semibold flex items-center justify-center"><?= strtoupper(substr($ticket['first_name'], 0, 1) . substr($ticket['last_name'], 0, 1)) ?></div>
+                <div class="w-11 h-11 rounded-full bg-[#17611f] text-white text-sm font-semibold flex items-center justify-center"><?= strtoupper(substr($ticket['first_name'], 0, 1) . substr($ticket['last_name'], 0, 1)) ?></div>
                 <div>
-                  <p class="text-sm font-semibold text-gray-900"><?= htmlspecialchars($ticket['first_name'] . ' ' . $ticket['last_name']) ?></p>
-                  <p class="text-[12px] text-gray-400"><?= htmlspecialchars($ticket['email']) ?></p>
+                  <p class="text-sm font-semibold text-[#1a2e1c]"><?= htmlspecialchars($ticket['first_name'] . ' ' . $ticket['last_name']) ?></p>
+                  <p class="text-[12px] text-[#9e9e9e]"><?= htmlspecialchars($ticket['email']) ?></p>
                 </div>
               </div>
-              <div class="text-[13px] text-gray-500 space-y-1">
-                <p>Phone: <span class="text-gray-700"><?= htmlspecialchars($ticket['phone']) ?></span></p>
+              <div class="text-[13px] text-[#5a7a5c] space-y-1">
+                <p>Phone: <span class="text-[#1a2e1c]"><?= htmlspecialchars($ticket['phone']) ?></span></p>
                 <?php if (!empty($ticket['address'])): ?>
-                  <p>Address: <span class="text-gray-700 whitespace-pre-line"><?= htmlspecialchars($ticket['address']) ?></span></p>
+                  <p>Address: <span class="text-[#1a2e1c] whitespace-pre-line"><?= htmlspecialchars($ticket['address']) ?></span></p>
                 <?php endif; ?>
               </div>
-              <a href="admin-customers.php?email=<?= urlencode($ticket['email']) ?>" class="inline-block mt-4 text-[12px] font-medium text-[#6B4226] hover:underline">View customer profile →</a>
+              <a href="admin-customers.php?email=<?= urlencode($ticket['email']) ?>" class="inline-block mt-4 text-[12px] font-medium text-[#17611f] hover:underline">View customer profile →</a>
             </div>
           </div>
 

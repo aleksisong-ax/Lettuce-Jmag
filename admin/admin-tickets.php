@@ -54,15 +54,15 @@ function statusBadgeTickets(string $status): string
         'closed' => ['gray', 'Closed'],
     ];
     [$color, $label] = $map[$status] ?? ['gray', ucfirst($status)];
-    $colors = ['blue' => 'text-blue-600 bg-blue-500', 'amber' => 'text-amber-600 bg-amber-500', 'green' => 'text-green-600 bg-green-500', 'gray' => 'text-gray-400 bg-gray-400'];
+    $colors = ['blue' => 'text-blue-600 bg-blue-500', 'amber' => 'text-amber-600 bg-[#fff8e1]0', 'green' => 'text-green-600 bg-green-500', 'gray' => 'text-[#9e9e9e] bg-gray-400'];
     [$textColor, $dotColor] = explode(' ', $colors[$color]);
     return "<span class=\"inline-flex items-center gap-1.5 text-[13px] font-medium $textColor\"><span class=\"w-1.5 h-1.5 rounded-full $dotColor\"></span>$label</span>";
 }
 
 function priorityBadgeTickets(string $priority): string
 {
-    $colors = ['Low' => 'text-gray-500 bg-gray-100', 'Medium' => 'text-amber-600 bg-amber-50', 'High' => 'text-red-600 bg-red-50'];
-    $classes = $colors[$priority] ?? 'text-gray-500 bg-gray-100';
+    $colors = ['Low' => 'text-[#5a7a5c] bg-gray-100', 'Medium' => 'text-amber-600 bg-[#fff8e1]', 'High' => 'text-red-600 bg-red-50'];
+    $classes = $colors[$priority] ?? 'text-[#5a7a5c] bg-gray-100';
     return "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium $classes\">" . htmlspecialchars($priority) . "</span>";
 }
 ?>
@@ -71,18 +71,18 @@ function priorityBadgeTickets(string $priority): string
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Support Tickets | WoodCraft Admin</title>
+  <title>Support Tickets | Luntiang H.A.P.A.G. Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-thumb { background: #d8cfbd; border-radius: 8px; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900">
+<body class="bg-[#f4faf5] text-[#1a2e1c]">
   <div class="flex min-h-screen">
     <?php require_once __DIR__ . '/includes/admin-sidebar.php'; ?>
 
@@ -93,17 +93,17 @@ function priorityBadgeTickets(string $priority): string
 
         <!-- Status filter tabs -->
         <div class="flex flex-wrap items-center gap-2">
-          <a href="admin-tickets.php" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $statusFilter === 'all' ? 'bg-[#4A2E1D] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>">All <span class="opacity-70">(<?= $totalCount ?>)</span></a>
+          <a href="admin-tickets.php" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $statusFilter === 'all' ? 'bg-[#17611f] text-white' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#5a7a5c] hover:bg-gray-50' ?>">All <span class="opacity-70">(<?= $totalCount ?>)</span></a>
           <?php foreach ($allowedStatuses as $s):
             $label = ucwords(str_replace('_', ' ', $s));
           ?>
-            <a href="admin-tickets.php?status=<?= $s ?>" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $statusFilter === $s ? 'bg-[#4A2E1D] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>"><?= $label ?> <span class="opacity-70">(<?= $statusCounts[$s] ?>)</span></a>
+            <a href="admin-tickets.php?status=<?= $s ?>" class="px-4 py-2 rounded-full text-[13px] font-medium <?= $statusFilter === $s ? 'bg-[#17611f] text-white' : 'bg-white border border-[rgba(27,94,32,0.12)] text-[#5a7a5c] hover:bg-gray-50' ?>"><?= $label ?> <span class="opacity-70">(<?= $statusCounts[$s] ?>)</span></a>
           <?php endforeach; ?>
 
           <form method="GET" class="ml-auto flex items-center gap-2">
             <input type="hidden" name="status" value="<?= htmlspecialchars($statusFilter) ?>" />
-            <input type="text" name="q" value="<?= htmlspecialchars($search) ?>" placeholder="Search customer, email, subject..." class="w-64 rounded-full border border-gray-200 px-4 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/30 focus:border-[#6B4226] transition-colors" />
-            <button type="submit" class="px-4 py-2 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors">Search</button>
+            <input type="text" name="q" value="<?= htmlspecialchars($search) ?>" placeholder="Search customer, email, subject..." class="w-64 rounded-full border border-[rgba(27,94,32,0.12)] px-4 py-2 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#6B4226]/30 focus:border-[#6B4226] transition-colors" />
+            <button type="submit" class="px-4 py-2 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors">Search</button>
           </form>
         </div>
 
@@ -111,7 +111,7 @@ function priorityBadgeTickets(string $priority): string
           <div class="overflow-x-auto">
             <table class="w-full text-left">
               <thead>
-                <tr class="text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-100">
+                <tr class="text-[11px] uppercase tracking-wide text-[#9e9e9e] border-b border-gray-100">
                   <th class="py-3 px-4 font-medium">Ticket</th>
                   <th class="py-3 px-4 font-medium">Customer</th>
                   <th class="py-3 px-4 font-medium">Email</th>
@@ -125,18 +125,18 @@ function priorityBadgeTickets(string $priority): string
               </thead>
               <tbody>
                 <?php if (empty($tickets)): ?>
-                  <tr><td colspan="9" class="py-10 px-4 text-center text-sm text-gray-400">No tickets found.</td></tr>
+                  <tr><td colspan="9" class="py-10 px-4 text-center text-sm text-[#9e9e9e]">No tickets found.</td></tr>
                 <?php else: foreach ($tickets as $t): ?>
                   <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
-                    <td class="py-3 px-4 text-[13px] font-medium text-gray-900">#WC-<?= str_pad($t['id'], 4, '0', STR_PAD_LEFT) ?></td>
-                    <td class="py-3 px-4 text-[13px] text-gray-700"><?= htmlspecialchars($t['first_name'] . ' ' . $t['last_name']) ?></td>
-                    <td class="py-3 px-4 text-[13px] text-gray-500"><?= htmlspecialchars($t['email']) ?></td>
-                    <td class="py-3 px-4 text-[13px] text-gray-500 max-w-[200px] truncate"><?= htmlspecialchars($t['subject']) ?></td>
-                    <td class="py-3 px-4 text-[13px] text-gray-500"><?= htmlspecialchars($t['category']) ?></td>
+                    <td class="py-3 px-4 text-[13px] font-medium text-[#1a2e1c]">#WC-<?= str_pad($t['id'], 4, '0', STR_PAD_LEFT) ?></td>
+                    <td class="py-3 px-4 text-[13px] text-[#1a2e1c]"><?= htmlspecialchars($t['first_name'] . ' ' . $t['last_name']) ?></td>
+                    <td class="py-3 px-4 text-[13px] text-[#5a7a5c]"><?= htmlspecialchars($t['email']) ?></td>
+                    <td class="py-3 px-4 text-[13px] text-[#5a7a5c] max-w-[200px] truncate"><?= htmlspecialchars($t['subject']) ?></td>
+                    <td class="py-3 px-4 text-[13px] text-[#5a7a5c]"><?= htmlspecialchars($t['category']) ?></td>
                     <td class="py-3 px-4"><?= priorityBadgeTickets($t['priority'] ?? 'Medium') ?></td>
                     <td class="py-3 px-4"><?= statusBadgeTickets($t['status']) ?></td>
-                    <td class="py-3 px-4 text-[13px] text-gray-400"><?= date('M j, Y', strtotime($t['created_at'])) ?></td>
-                    <td class="py-3 px-4"><a href="admin-ticket-detail.php?id=<?= $t['id'] ?>" class="text-[12px] font-medium border border-[#6B4226] rounded-full px-3 py-1 text-[#6B4226] hover:bg-[#6B4226] hover:text-white transition-colors">View</a></td>
+                    <td class="py-3 px-4 text-[13px] text-[#9e9e9e]"><?= date('M j, Y', strtotime($t['created_at'])) ?></td>
+                    <td class="py-3 px-4"><a href="admin-ticket-detail.php?id=<?= $t['id'] ?>" class="text-[12px] font-medium border border-[#6B4226] rounded-full px-3 py-1 text-[#17611f] hover:bg-[#17611f] hover:text-white transition-colors">View</a></td>
                   </tr>
                 <?php endforeach; endif; ?>
               </tbody>
@@ -145,6 +145,7 @@ function priorityBadgeTickets(string $priority): string
         </div>
 
       </main>
+</div>
     </div>
   </div>
 </body>

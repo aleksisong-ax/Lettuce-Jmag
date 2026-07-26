@@ -28,10 +28,10 @@
  * ------------------------------------------------------------------
  */
 
-// WC-XXXX: literal "WC-" followed by the order number's digits.
-const ORDER_NUMBER_PATTERN = '/^WC-\d{4}$/';
-const ORDER_NUMBER_PLACEHOLDER = 'WC-XXXX';
-const ORDER_NUMBER_HELP_TEXT = 'Please enter a valid order number in the format WC-XXXX.';
+// LH-0000: "LH-" followed by 4 digits (e.g. LH-0001, LH-0100).
+const ORDER_NUMBER_PATTERN = '/^LH-\d{4}$/';
+const ORDER_NUMBER_PLACEHOLDER = 'LH-0000';
+const ORDER_NUMBER_HELP_TEXT = 'Please enter a valid order number in the format LH-0000.';
 
 // Combined size limit for every file attached to one upload field in a
 // single submission (not a per-file limit) — matches what the forms

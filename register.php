@@ -5,7 +5,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require 'config.php';
-require __DIR__ . '/includes/restrict-customer.php';
 
 $message = "";
 $messageType = "";
@@ -97,16 +96,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Register | WoodCraft Care</title>
+  <title>Register | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
+<body class="bg-[#f4faf5] text-[#1a2e1c] min-h-screen flex flex-col">
 
   <!-- Header -->
   <?php include __DIR__ . '/includes/header.php'; ?>
@@ -114,9 +112,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <!-- Register Form -->
   <main class="flex-1 flex items-center justify-center px-6 py-16">
     <div class="w-full max-w-2xl bg-white rounded-3xl shadow-sm border border-gray-100 p-9">
-      <span class="inline-block text-[11px] font-semibold tracking-wide text-gray-500 bg-gray-100 rounded-full px-3 py-1 mb-5">REGISTER</span>
-      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-2">Create your account</h1>
-      <p class="text-gray-500 text-sm mb-8">Join WoodCraft Care to track your support requests and manage your furniture.</p>
+      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#17611f] bg-[#e8f5e9] rounded-xl px-3 py-1 mb-5">REGISTER</span>
+      <h1 class="text-3xl font-black text-[#1a2e1c] mb-2">Create your account 🌱</h1>
+      <p class="text-[#5a7a5c] text-sm mb-8">Join Luntiang H.A.P.A.G. to order fresh hydroponic lettuce and track your deliveries.</p>
 
       <?php if (!empty($message)): ?>
         <div id="alertMessage" class="mb-6 flex items-start gap-3 rounded-2xl border px-5 py-4 shadow-sm transition-all duration-500 <?= $messageType == 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'; ?>">
@@ -135,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h3 class="font-semibold"><?= $messageType == 'error' ? 'Registration Failed' : 'Success'; ?></h3>
             <p class="text-sm mt-1"><?= htmlspecialchars($message); ?></p>
           </div>
-          <button type="button" onclick="closeAlert()" class="text-gray-400 hover:text-gray-700 transition">✕</button>
+          <button type="button" onclick="closeAlert()" class="text-[#9e9e9e] hover:text-[#1a2e1c] transition">✕</button>
         </div>
         <script>
           function closeAlert(){
@@ -152,63 +150,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <form class="space-y-5" method="POST">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label for="first_name" class="block text-sm font-medium text-gray-800 mb-2">First Name</label>
+            <label for="first_name" class="block text-sm font-medium text-[#1a2e1c] mb-2">First Name</label>
             <input type="text" id="first_name" name="first_name" placeholder="First Name" required value="<?= htmlspecialchars($_POST['first_name'] ?? '') ?>"
-                   class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
           </div>
           <div>
-            <label for="last_name" class="block text-sm font-medium text-gray-800 mb-2">Last Name</label>
+            <label for="last_name" class="block text-sm font-medium text-[#1a2e1c] mb-2">Last Name</label>
             <input type="text" id="last_name" name="last_name" placeholder="Last Name" required value="<?= htmlspecialchars($_POST['last_name'] ?? '') ?>"
-                   class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
           </div>
         </div>
 
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-800 mb-2">Email Address</label>
+          <label for="email" class="block text-sm font-medium text-[#1a2e1c] mb-2">Email Address</label>
           <input type="email" id="email" name="email" placeholder="your@email.com" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
-                 class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                 class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
         </div>
 
         <div>
-          <label for="phone" class="block text-sm font-medium text-gray-800 mb-2">Phone Number</label>
+          <label for="phone" class="block text-sm font-medium text-[#1a2e1c] mb-2">Phone Number</label>
           <input type="text" id="phone" name="phone" placeholder="09123456789" required minlength="11" maxlength="11" inputmode="numeric" pattern="[0-9]*" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>"
                  oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)"
-                 class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                 class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
         </div>
 
         <div>
-          <label for="address" class="block text-sm font-medium text-gray-800 mb-2">Address</label>
+          <label for="address" class="block text-sm font-medium text-[#1a2e1c] mb-2">Address</label>
           <textarea id="address" name="address" rows="3" placeholder="Street, City, State, ZIP Code" required
-                    class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors resize-y"><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
+                    class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors resize-y"><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
         </div>
         
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-800 mb-2">Password</label>
+          <label for="password" class="block text-sm font-medium text-[#1a2e1c] mb-2">Password</label>
           <div class="relative">
             <input type="password" id="password" name="password" placeholder="••••••••••••" required minlength="8"
                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$"
                    title="Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character."
-                   class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-            <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="password" aria-label="Show password">
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 pr-11 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+            <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9e9e9e] hover:text-[#5a7a5c] transition-colors" data-target="password" aria-label="Show password">
               <svg class="w-4 h-4 icon-eye" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
               <svg class="w-4 h-4 icon-eye-off hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 012.132-3.532m3.32-2.454A9.958 9.958 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.132 5.411M14.121 14.121A3 3 0 019.88 9.88M9.879 9.879l4.242 4.242M9.879 9.879L3 3m6.879 6.879L21 21"/></svg>
             </button>
           </div>
-          <ul id="passwordRequirements" class="mt-3 hidden space-y-1 text-xs text-gray-500">
-            <li id="rule-length" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 8 characters</li>
-            <li id="rule-uppercase" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 uppercase letter</li>
-            <li id="rule-lowercase" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 lowercase letter</li>
-            <li id="rule-number" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 number</li>
-            <li id="rule-special" class="flex items-center gap-2"><span class="text-gray-400">•</span> At least 1 special character</li>
+          <ul id="passwordRequirements" class="mt-3 hidden space-y-1 text-xs text-[#5a7a5c]">
+            <li id="rule-length" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 8 characters</li>
+            <li id="rule-uppercase" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 1 uppercase letter</li>
+            <li id="rule-lowercase" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 1 lowercase letter</li>
+            <li id="rule-number" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 1 number</li>
+            <li id="rule-special" class="flex items-center gap-2"><span class="text-[#9e9e9e]">•</span> At least 1 special character</li>
           </ul>
         </div>
 
         <div>
-          <label for="confirm_password" class="block text-sm font-medium text-gray-800 mb-2">Confirm Password</label>
+          <label for="confirm_password" class="block text-sm font-medium text-[#1a2e1c] mb-2">Confirm Password</label>
           <div class="relative">
             <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••••••" required
-                   class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-            <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="confirm_password" aria-label="Show password">
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 pr-11 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+            <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9e9e9e] hover:text-[#5a7a5c] transition-colors" data-target="confirm_password" aria-label="Show password">
               <svg class="w-4 h-4 icon-eye" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
               <svg class="w-4 h-4 icon-eye-off hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 012.132-3.532m3.32-2.454A9.958 9.958 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.132 5.411M14.121 14.121A3 3 0 019.88 9.88M9.879 9.879l4.242 4.242M9.879 9.879L3 3m6.879 6.879L21 21"/></svg>
             </button>
@@ -218,21 +216,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!-- Terms Acceptance -->
         <div class="flex items-start gap-3 pt-1">
           <input type="checkbox" id="accept_terms" name="accept_terms" value="1" required
-                 class="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#6B4226] focus:ring-2 focus:ring-[#6B4226]/40 focus:ring-offset-0 cursor-pointer" />
-          <label for="accept_terms" class="text-sm text-gray-600 cursor-pointer leading-relaxed">
-            By creating an account, you agree to WoodCraft's
-            <a href="terms.php" target="_blank" class="text-[#6B4226] font-medium hover:underline">Terms of Service</a> 
+                 class="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#17611f] focus:ring-2 focus:ring-[#6B4226]/40 focus:ring-offset-0 cursor-pointer" />
+          <label for="accept_terms" class="text-sm text-[#5a7a5c] cursor-pointer leading-relaxed">
+            By creating an account, you agree to Luntiang H.A.P.A.G.'s
+            <a href="terms.php" target="_blank" class="text-[#17611f] font-medium hover:underline">Terms of Service</a> 
             and 
-            <a href="privacy.php" target="_blank" class="text-[#6B4226] font-medium hover:underline">Privacy Policy</a>.
+            <a href="privacy.php" target="_blank" class="text-[#17611f] font-medium hover:underline">Privacy Policy</a>.
             <span class="text-red-500">*</span>
           </label>
         </div>
 
-        <button type="submit" class="w-full rounded-full bg-[#6B4226] text-white text-sm font-medium py-3.5 hover:bg-[#59341C] transition-colors">Create Account</button>
+        <button type="submit" class="w-full rounded-xl bg-[#17611f] text-white text-sm font-medium py-3.5 hover:bg-[#14521a] transition-colors">Create Account</button>
 
         <div class="flex items-center justify-between pt-1">
-          <span class="text-sm text-gray-500">Already have an account?</span>
-          <a href="login.php" class="text-sm text-[#6B4226] hover:text-[#59341C] transition-colors">Sign in →</a>
+          <span class="text-sm text-[#5a7a5c]">Already have an account?</span>
+          <a href="login.php" class="text-sm text-[#17611f] hover:text-[#14521a] transition-colors">Sign in →</a>
         </div>
       </form>
     </div>
@@ -287,9 +285,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         const bullet = element.querySelector('span');
 
         element.classList.toggle('text-green-600', isMet);
-        element.classList.toggle('text-gray-500', !isMet);
+        element.classList.toggle('text-[#5a7a5c]', !isMet);
         bullet.classList.toggle('text-green-600', isMet);
-        bullet.classList.toggle('text-gray-400', !isMet);
+        bullet.classList.toggle('text-[#9e9e9e]', !isMet);
         bullet.textContent = isMet ? '✓' : '•';
       });
     }

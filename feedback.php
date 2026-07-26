@@ -49,30 +49,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Send Feedback | WoodCraft Care</title>
+  <title>Send Feedback | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
+<body class="bg-[#f4faf5] text-[#1a2e1c] min-h-screen flex flex-col">
 
   <!-- Header -->
   <?php include __DIR__ . '/includes/header.php'; ?>
 
   <!-- Main Content -->
   <main class="flex-1 max-w-3xl w-full mx-auto px-6 py-16">
-    <a href="my-profile.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-8">
+    <a href="my-profile.php" class="inline-flex items-center gap-2 text-sm text-[#17611f] hover:text-[#14521a] transition-colors mb-8">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
       Back to Dashboard
     </a>
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-10">
-      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#B5702E] bg-orange-50 rounded-full px-3 py-1 mb-5">QUICK SUPPORT</span>
-      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-4">Send Feedback</h1>
-      <div class="text-gray-600 text-[15px] leading-relaxed space-y-4">
+      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#17611f] bg-[#e8f5e9] rounded-full px-3 py-1 mb-5">QUICK SUPPORT</span>
+      <h1 class="font-black text-3xl font-semibold text-[#1a2e1c] mb-4">Send Feedback</h1>
+      <div class="text-[#5a7a5c] text-[15px] leading-relaxed space-y-4">
         <p>Share your experience and help us improve our products and customer service.</p>
       </div>
 
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <form class="space-y-5 mt-6" method="POST">
           <div>
-            <label class="block text-sm font-medium text-gray-800 mb-2">Overall Rating</label>
+            <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Overall Rating</label>
             <div class="flex flex-row-reverse justify-end gap-1">
               <?php
                 // Star 5 sits first in the DOM (so ~ siblings after it are stars 4,3,2,1),
@@ -104,13 +104,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                        class="cursor-pointer select-none text-4xl leading-none text-gray-300 transition-colors hover:text-amber-300 <?= $peerClassStr ?>">&#9733;</label>
               <?php endfor; ?>
             </div>
-            <p class="text-xs text-gray-400 mt-2">Click a star to rate your experience, 1 (very poor) to 5 (excellent).</p>
+            <p class="text-xs text-[#9e9e9e] mt-2">Click a star to rate your experience, 1 (very poor) to 5 (excellent).</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-800 mb-2">Comments (optional)</label>
-            <textarea rows="4" name="comments" placeholder="Tell us about your experience..." class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors"><?= htmlspecialchars($_POST['comments'] ?? '') ?></textarea>
+            <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Comments (optional)</label>
+            <textarea rows="4" name="comments" placeholder="Tell us about your experience..." class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors"><?= htmlspecialchars($_POST['comments'] ?? '') ?></textarea>
           </div>
-          <button type="submit" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors">Send Feedback</button>
+          <button type="submit" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors">Send Feedback</button>
         </form>
     </div>
   </main>

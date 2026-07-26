@@ -108,16 +108,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Profile | WoodCraft Care</title>
+  <title>Edit Profile | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
+<body class="bg-[#f4faf5] text-[#1a2e1c] min-h-screen flex flex-col">
 
   <!-- Header -->
   <?php include __DIR__ . '/includes/header.php'; ?>
@@ -126,16 +126,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <main class="flex-1 flex items-center justify-center px-6 py-16">
     <div class="w-full max-w-2xl">
 
-        <a href="my-profile.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-6">
+        <a href="my-profile.php" class="inline-flex items-center gap-2 text-sm text-[#17611f] hover:text-[#14521a] transition-colors mb-6">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
             </svg>
             Back to My Profile
         </a>
     <div class="w-full max-w-2xl bg-white rounded-3xl shadow-sm border border-gray-100 p-9">
-      <span class="inline-block text-[11px] font-semibold tracking-wide text-gray-500 bg-gray-100 rounded-full px-3 py-1 mb-5">EDIT PROFILE</span>
-      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-2">Update your information</h1>
-      <p class="text-gray-500 text-sm mb-8">Keep your name and email address up to date.</p>
+      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#5a7a5c] bg-gray-100 rounded-full px-3 py-1 mb-5">EDIT PROFILE</span>
+      <h1 class="font-black text-3xl font-semibold text-[#1a2e1c] mb-2">Update your information</h1>
+      <p class="text-[#5a7a5c] text-sm mb-8">Keep your name and email address up to date.</p>
 
       <?php if (!empty($message)): ?>
 
@@ -200,7 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Close Button -->
     <button type="button"
             onclick="closeAlert()"
-            class="text-gray-400 hover:text-gray-700 transition">
+            class="text-[#9e9e9e] hover:text-[#1a2e1c] transition">
 
         ✕
 
@@ -237,43 +237,43 @@ setTimeout(closeAlert,5000);
       <form class="space-y-5" method="POST">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label for="first_name" class="block text-sm font-medium text-gray-800 mb-2">First Name</label>
+            <label for="first_name" class="block text-sm font-medium text-[#1a2e1c] mb-2">First Name</label>
             <input type="text" id="first_name" name="first_name" placeholder="First Name" required
                    value="<?= htmlspecialchars($_POST['first_name'] ?? $user['first_name']) ?>"
-                   class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
           </div>
           <div>
-            <label for="last_name" class="block text-sm font-medium text-gray-800 mb-2">Last Name</label>
+            <label for="last_name" class="block text-sm font-medium text-[#1a2e1c] mb-2">Last Name</label>
             <input type="text" id="last_name" name="last_name" placeholder="Last Name" required
                    value="<?= htmlspecialchars($_POST['last_name'] ?? $user['last_name']) ?>"
-                   class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
           </div>
         </div>
 
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-800 mb-2">Email Address</label>
+          <label for="email" class="block text-sm font-medium text-[#1a2e1c] mb-2">Email Address</label>
           <input type="email" id="email" name="email" placeholder="your@email.com" required
                  value="<?= htmlspecialchars($_POST['email'] ?? $user['email']) ?>"
-                 class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                 class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
         </div>
 
         <div>
-          <label for="phone" class="block text-sm font-medium text-gray-800 mb-2">Phone Number</label>
+          <label for="phone" class="block text-sm font-medium text-[#1a2e1c] mb-2">Phone Number</label>
           <input type="text" id="phone" name="phone" placeholder="09123456789" required minlength="11" maxlength="11" inputmode="numeric" pattern="[0-9]*"
                  value="<?= htmlspecialchars($_POST['phone'] ?? $user['phone']) ?>"
                  oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)"
-                 class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                 class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
         </div>
 
         <div>
-          <label for="address" class="block text-sm font-medium text-gray-800 mb-2">Address</label>
+          <label for="address" class="block text-sm font-medium text-[#1a2e1c] mb-2">Address</label>
           <textarea id="address" name="address" rows="3" placeholder="Street, City, State, ZIP Code" required
-                    class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors resize-y"><?= htmlspecialchars($_POST['address'] ?? $user['address'] ?? '') ?></textarea>
+                    class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm text-[#1a2e1c] placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors resize-y"><?= htmlspecialchars($_POST['address'] ?? $user['address'] ?? '') ?></textarea>
         </div>
 
         <div class="flex flex-wrap gap-4 pt-1">
-          <button type="submit" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors">Save Changes</button>
-          <a href="my-profile.php" class="px-6 py-3 rounded-full border border-gray-300 text-gray-800 text-sm font-medium hover:bg-gray-100 transition-colors">Cancel</a>
+          <button type="submit" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors">Save Changes</button>
+          <a href="my-profile.php" class="px-6 py-3 rounded-full border border-gray-300 text-[#1a2e1c] text-sm font-medium hover:bg-gray-100 transition-colors">Cancel</a>
         </div>
       </form>
     </div>

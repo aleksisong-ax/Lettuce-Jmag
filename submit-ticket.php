@@ -188,13 +188,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submit a Ticket | WoodCraft Care</title>
+  <title>Submit a Ticket | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
     
     /* Progress bar animation */
     .upload-progress {
@@ -255,21 +255,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
+<body class="bg-[#f4faf5] text-[#1a2e1c] min-h-screen flex flex-col">
 
   <!-- Header -->
   <?php include __DIR__ . '/includes/header.php'; ?>
 
   <!-- Main Content -->
   <main class="flex-1 max-w-3xl w-full mx-auto px-6 py-16">
-    <a href="index.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-8">
+    <a href="<?= isset($_SESSION["user_id"]) ? "my-profile.php?section=support" : "index.php" ?>" class="inline-flex items-center gap-2 text-sm text-[#17611f] hover:text-[#14521a] transition-colors mb-8">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      Back to Home
+      Back to Dashboard
     </a>
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-10">
-      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#B5702E] bg-orange-50 rounded-full px-3 py-1 mb-5">QUICK SUPPORT</span>
-      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-4">Submit a Ticket</h1>
-      <div class="text-gray-600 text-[15px] leading-relaxed space-y-4">
+      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#17611f] bg-[#e8f5e9] rounded-full px-3 py-1 mb-5">QUICK SUPPORT</span>
+      <h1 class="font-black text-3xl font-semibold text-[#1a2e1c] mb-4">Submit a Ticket</h1>
+      <div class="text-[#5a7a5c] text-[15px] leading-relaxed space-y-4">
         <p>Report an issue with your order or product and our team will follow up with you shortly.</p>
       </div>
 
@@ -285,11 +285,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="modal-content bg-white rounded-3xl shadow-2xl p-8">
             <div class="flex items-start justify-between mb-6">
               <div>
-                <span class="inline-block text-[11px] font-semibold tracking-wide text-[#B5702E] bg-orange-50 rounded-full px-3 py-1 mb-3">REVIEW &amp; CONFIRM</span>
-                <h2 class="font-serif text-2xl font-semibold text-gray-900">Review Your Ticket</h2>
-                <p class="text-gray-500 text-sm mt-1">Please verify all details before submitting.</p>
+                <span class="inline-block text-[11px] font-semibold tracking-wide text-[#17611f] bg-[#e8f5e9] rounded-full px-3 py-1 mb-3">REVIEW &amp; CONFIRM</span>
+                <h2 class="font-black text-2xl font-semibold text-[#1a2e1c]">Review Your Ticket</h2>
+                <p class="text-[#5a7a5c] text-sm mt-1">Please verify all details before submitting.</p>
               </div>
-              <a href="submit-ticket.php" class="text-gray-400 hover:text-gray-600 transition-colors text-2xl leading-none">
+              <a href="submit-ticket.php" class="text-[#9e9e9e] hover:text-[#5a7a5c] transition-colors text-2xl leading-none">
                 ✕
               </a>
             </div>
@@ -310,7 +310,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <p class="confirm-value">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
                       <?= $submittedData['priority'] === 'High' ? 'bg-red-100 text-red-700' : 
-                          ($submittedData['priority'] === 'Medium' ? 'bg-amber-100 text-amber-700' : 
+                          ($submittedData['priority'] === 'Medium' ? 'bg-amber-100 text-[#e65100]' : 
                           'bg-green-100 text-green-700') ?>">
                       <?= htmlspecialchars($submittedData['priority']) ?>
                     </span>
@@ -334,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="confirm-field">
                   <span class="confirm-label">Attachment<?= count($submittedData['attachment_names']) > 1 ? 's' : '' ?></span>
                   <?php foreach ($submittedData['attachment_names'] as $attName): ?>
-                    <p class="confirm-value text-[#6B4226]">📎 <?= htmlspecialchars($attName) ?></p>
+                    <p class="confirm-value text-[#17611f]">📎 <?= htmlspecialchars($attName) ?></p>
                   <?php endforeach; ?>
                 </div>
               <?php endif; ?>
@@ -343,16 +343,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-gray-100">
               <form method="POST" class="inline">
                 <input type="hidden" name="confirm_submit" value="1">
-                <button type="submit" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors">
+                <button type="submit" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors">
                   ✅ Confirm &amp; Submit
                 </button>
               </form>
-              <a href="submit-ticket.php" class="px-6 py-3 rounded-full border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">
+              <a href="submit-ticket.php" class="px-6 py-3 rounded-full border border-gray-300 text-[#1a2e1c] text-sm font-medium hover:bg-gray-50 transition-colors">
                 ← Edit Details
               </a>
             </div>
             
-            <p class="text-[12px] text-gray-400 mt-4">
+            <p class="text-[12px] text-[#9e9e9e] mt-4">
               By submitting, you agree to our terms of service. Our team will respond within 24-48 hours.
             </p>
           </div>
@@ -361,15 +361,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <form class="space-y-5 mt-6" method="POST" enctype="multipart/form-data" novalidate id="ticketForm">
           <div>
-            <label class="block text-sm font-medium text-gray-800 mb-2">Subject</label>
+            <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Subject</label>
             <input type="text" name="subject" required placeholder="Brief summary of your issue" 
                    value="<?= htmlspecialchars($formData['subject']) ?>"
-                   class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-800 mb-2">Category</label>
-            <select name="category" required class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors">
+            <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Category</label>
+            <select name="category" required class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors">
               <option value="" disabled <?= empty($formData['category']) ? 'selected' : '' ?>>Select a category</option>
               <?php foreach ($categories as $cat): ?>
                 <option value="<?= htmlspecialchars($cat) ?>" <?= ($formData['category'] === $cat) ? 'selected' : '' ?>>
@@ -380,8 +380,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-800 mb-2">Priority</label>
-            <select name="priority" required class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors">
+            <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Priority</label>
+            <select name="priority" required class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors">
               <?php foreach ($priorities as $p): ?>
                 <option value="<?= $p ?>" <?= ($formData['priority'] === $p) ? 'selected' : '' ?>>
                   <?= $p ?>
@@ -391,56 +391,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-800 mb-2">Order Number <span class="text-gray-400 font-normal">(optional)</span></label>
-            <input type="text" name="order_number" maxlength="7" pattern="WC-\d{4}" placeholder="<?= ORDER_NUMBER_PLACEHOLDER ?>" 
+            <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Order Number <span class="text-[#9e9e9e] font-normal">(optional)</span></label>
+            <input type="text" name="order_number" maxlength="7" pattern="LH-\d{4}" placeholder="<?= ORDER_NUMBER_PLACEHOLDER ?>" 
                    value="<?= htmlspecialchars($formData['order_number']) ?>"
-                   class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-            <p class="mt-1.5 text-[12px] text-gray-400">Format: <?= ORDER_NUMBER_PLACEHOLDER ?></p>
+                   class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+            <p class="mt-1.5 text-[12px] text-[#9e9e9e]">Format: <?= ORDER_NUMBER_PLACEHOLDER ?></p>
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-800 mb-2">Describe the Issue</label>
+            <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Describe the Issue</label>
             <textarea id="issue_description" rows="4" name="issue_description" required maxlength="1000" 
                       placeholder="Tell us what happened..." 
-                      class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors"><?= htmlspecialchars($formData['issue_description']) ?></textarea>
-            <p class="mt-1.5 text-[12px] text-gray-400 text-right">
+                      class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm placeholder-[#9e9e9e] focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors"><?= htmlspecialchars($formData['issue_description']) ?></textarea>
+            <p class="mt-1.5 text-[12px] text-[#9e9e9e] text-right">
               <span id="issue_description_count"><?= mb_strlen($formData['issue_description']) ?></span> / 1000 characters
             </p>
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-800 mb-2">Attachment <span class="text-gray-400 font-normal">(optional)</span></label>
-            <div class="rounded-xl border border-gray-200 px-4 py-3">
+            <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Attachment <span class="text-[#9e9e9e] font-normal">(optional)</span></label>
+            <div class="rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3">
               <div class="flex items-center gap-3 flex-wrap">
-                <label for="fileInput" id="fileInputBtn" class="cursor-pointer inline-flex items-center px-4 py-1.5 rounded-full bg-[#F3F0E4] text-[#6B4226] text-sm font-medium hover:bg-[#e9e3d2] transition-colors whitespace-nowrap focus-within:ring-2 focus-within:ring-[#6B4226]/40">Upload Files</label>
+                <label for="fileInput" id="fileInputBtn" class="cursor-pointer inline-flex items-center px-4 py-1.5 rounded-full bg-[#f4faf5] text-[#17611f] text-sm font-medium hover:bg-[#e9e3d2] transition-colors whitespace-nowrap focus-within:ring-2 focus-within:ring-[#6B4226]/40">Upload Files</label>
                 <input type="file" name="attachment[]" accept=".jpg,.jpeg,.png,.pdf" multiple id="fileInput" class="sr-only" />
-                <span id="fileInputPlaceholder" class="text-sm text-gray-400">No file chosen</span>
+                <span id="fileInputPlaceholder" class="text-sm text-[#9e9e9e]">No file chosen</span>
               </div>
               <!-- Progress Bar -->
               <div id="uploadProgressContainer" class="hidden mt-3">
                 <div class="flex items-center justify-between mb-1">
-                  <span class="text-xs text-gray-500" id="uploadStatus">Uploading...</span>
-                  <span class="text-xs text-gray-500" id="uploadPercentage">0%</span>
+                  <span class="text-xs text-[#5a7a5c]" id="uploadStatus">Uploading...</span>
+                  <span class="text-xs text-[#5a7a5c]" id="uploadPercentage">0%</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                  <div id="uploadProgressBar" class="upload-progress bg-[#6B4226] h-2 rounded-full" style="width: 0%"></div>
+                  <div id="uploadProgressBar" class="upload-progress bg-[#17611f] h-2 rounded-full" style="width: 0%"></div>
                 </div>
               </div>
               <!-- File name display -->
-              <div id="fileNameDisplay" class="hidden mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500 flex items-start gap-2">
+              <div id="fileNameDisplay" class="hidden mt-3 pt-3 border-t border-gray-100 text-xs text-[#5a7a5c] flex items-start gap-2">
                 <span>📎</span>
                 <span id="fileNameText" class="flex-1"></span>
                 <button type="button" id="removeFileBtn" class="text-red-500 hover:text-red-700 text-sm shrink-0">✕</button>
               </div>
             </div>
-            <p class="mt-1.5 text-[12px] text-gray-400">JPG, JPEG, PNG, or PDF. You can attach multiple files — 5 MB total combined.</p>
+            <p class="mt-1.5 text-[12px] text-[#9e9e9e]">JPG, JPEG, PNG, or PDF. You can attach multiple files — 5 MB total combined.</p>
           </div>
 
-          <p class="text-[13px] text-gray-500 bg-[#F8F6F2] rounded-xl px-4 py-3">
+          <p class="text-[13px] text-[#5a7a5c] bg-[#f4faf5] rounded-xl px-4 py-3">
             Our support team typically responds within 24–48 business hours. You can track updates through My Support Tickets.
           </p>
 
-          <button type="submit" id="submitBtn" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+          <button type="submit" id="submitBtn" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
             <svg id="submitSpinner" class="hidden animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -556,11 +556,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             isUploading = true;
             progressContainer.classList.remove('hidden');
             let progress = 0;
-            const interval = setInterval(() => {
+            const interval = setNunitoval(() => {
               progress += Math.random() * 15 + 5;
               if (progress >= 100) {
                 progress = 100;
-                clearInterval(interval);
+                clearNunitoval(interval);
                 isUploading = false;
                 uploadStatus.textContent = '✓ Ready';
                 uploadStatus.className = 'text-xs text-green-600';
@@ -572,7 +572,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             submitBtn.disabled = true;
             uploadStatus.textContent = 'Uploading...';
-            uploadStatus.className = 'text-xs text-gray-500';
+            uploadStatus.className = 'text-xs text-[#5a7a5c]';
 
           } else {
             // If no files selected (user cancelled), don't change anything

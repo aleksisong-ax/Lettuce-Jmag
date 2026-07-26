@@ -28,59 +28,59 @@ function navItem(string $key, string $active, string $href, string $label, strin
 {
     $isActive = ($key === $active);
     $classes = $isActive
-        ? "flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl text-sm font-semibold bg-[#4A2E1D] text-white transition-colors"
-        : "flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl text-sm font-medium text-gray-300 hover:bg-[#3a2416] hover:text-white transition-colors";
+        ? "flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl text-sm font-semibold bg-[#17611f] text-white transition-colors"
+        : "flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl text-sm font-medium text-gray-300 hover:bg-[#14521a] hover:text-white transition-colors";
     echo "<a href=\"$href\" class=\"$classes\">";
     echo "<svg class=\"w-[18px] h-[18px] flex-shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.8\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"$iconPath\"/></svg>";
     echo "<span class=\"flex-1\">$label</span>";
     if ($badge !== null && $badge > 0) {
-        echo "<span class=\"min-w-[20px] h-5 px-1 rounded-full bg-[#B5702E] text-white text-[11px] font-semibold flex items-center justify-center\">$badge</span>";
+        echo "<span class=\"min-w-[20px] h-5 px-1 rounded-full bg-[#17611f] text-white text-[11px] font-semibold flex items-center justify-center\">$badge</span>";
     }
     echo "</a>";
 }
 }
 ?>
   <!-- Sidebar -->
-  <aside class="w-64 flex-shrink-0 bg-gradient-to-b from-[#2B1710] to-[#1B0F09] flex flex-col h-screen sticky top-0">
+  <aside class="w-64 flex-shrink-0 bg-gradient-to-b from-[#0d3311] to-[#091a0b] flex flex-col h-screen sticky top-0">
     <div class="px-5 pt-6 pb-5 flex items-center gap-3 border-b border-white/10">
-      <div class="w-11 h-11 rounded-xl border border-[#8B5E34]/50 bg-[#3a2416] flex items-center justify-center">
-        <span class="text-[#D8B98A] font-serif text-lg">W</span>
+      <div class="w-11 h-11 rounded-xl border border-[#52b788]/50 bg-[#14521a] flex items-center justify-center">
+        <img src="../images/lettuce/logo-cropped.png" class="h-9 w-auto object-contain rounded-lg bg-white p-0.5" alt="LH">
       </div>
       <div>
-        <p class="font-serif text-white text-lg leading-none">WoodCraft</p>
-        <p class="text-[10px] tracking-[0.2em] text-gray-500 mt-1.5">ADMIN PANEL</p>
+        <p class="font-black text-white text-lg leading-none">Luntiang H.A.P.A.G.</p>
+        <p class="text-[10px] tracking-[0.2em] text-[#5a7a5c] mt-1.5">ADMIN PANEL</p>
       </div>
     </div>
 
     <nav class="flex-1 overflow-y-auto py-5">
-      <p class="px-6 text-[11px] tracking-[0.15em] text-gray-500 font-semibold mb-2">MAIN</p>
+      <p class="px-6 text-[11px] tracking-[0.15em] text-[#5a7a5c] font-semibold mb-2">SALES & MARKETING</p>
       <div class="space-y-1 mb-6">
         <?php
         navItem('dashboard', $activePage, 'admin-dashboard.php', 'Dashboard', 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z');
+        navItem('products', $activePage, 'admin-products.php', 'Products', 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4');
+        navItem('orders', $activePage, 'admin-orders.php', 'Orders', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2');
+        navItem('reports', $activePage, 'admin-reports.php', 'Reports', 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z');
         navItem('customers', $activePage, 'admin-customers.php', 'Customers', 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 3a4 4 0 10-8 0');
-        navItem('notifications', $activePage, 'notifications.php', 'Notifications', 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9', $unreadNotifCount);
+        navItem('promotions', $activePage, 'admin-promotions.php', 'Promotions', 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z');
+        navItem('shop', $activePage, '../products.php', 'View Shop', 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z');
         ?>
       </div>
 
-      <p class="px-6 text-[11px] tracking-[0.15em] text-gray-500 font-semibold mb-2">CONTENT</p>
-      <div class="space-y-1 mb-6">
-        <?php navItem('faq', $activePage, 'admin-faq.php', 'FAQ', 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'); ?>
-      </div>
-
-      <p class="px-6 text-[11px] tracking-[0.15em] text-gray-500 font-semibold mb-2">OPERATIONS</p>
+      <p class="px-6 text-[11px] tracking-[0.15em] text-[#5a7a5c] font-semibold mb-2">CUSTOMER SERVICE</p>
       <div class="space-y-1">
         <?php
+        navItem('notifications', $activePage, 'notifications.php', 'Notifications', 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9', $unreadNotifCount);
         navItem('tickets', $activePage, 'admin-tickets.php', 'Tickets', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', $openTicketsCount);
-        navItem('warranty', $activePage, 'admin-warranty.php', 'Warranty', 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', $pendingWarrantyCount);
-        navItem('returns', $activePage, 'admin-returns.php', 'Returns', 'M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 010 8h-1', $pendingReturnsCount);
+        navItem('returns', $activePage, 'admin-returns.php', 'Returns & Refunds', 'M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 010 8h-1', $pendingReturnsCount);
         navItem('live-chat', $activePage, 'admin-live-chat.php', 'Live Chat', 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z');
         navItem('feedback', $activePage, 'admin-feedback.php', 'Feedback', 'M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z');
+        navItem('faq', $activePage, 'admin-faq.php', 'FAQ', 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
         ?>
       </div>
     </nav>
 
     <div class="p-4 border-t border-white/10 space-y-1">
-      <a href="admin-profile.php" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-[#3a2416] hover:text-white transition-colors">
+      <a href="admin-profile.php" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-[#14521a] hover:text-white transition-colors">
         <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
         <span>Profile</span>
       </a>

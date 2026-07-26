@@ -1,50 +1,31 @@
 <?php
 session_start();
-require __DIR__ . '/../config.php';
-
-// This page lives one folder below the project root (/articles),
-// so header.php/footer.php need '../' prepended to every link.
-$baseUrl = '../';
-require __DIR__ . '/../includes/restrict-customer.php';
+require '../config.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assembling Your Bed Frame | WoodCraft Care</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harvest-on-Demand Guide | Luntiang H.A.P.A.G.</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>body{font-family:'Nunito',sans-serif;background:#f4faf5}</style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900 min-h-screen flex flex-col">
-
-  <!-- Header -->
-  <?php include __DIR__ . '/../includes/header.php'; ?>
-
-  <!-- Main Content -->
-  <main class="flex-1 max-w-3xl w-full mx-auto px-6 py-16">
-    <a href="../index.php" class="inline-flex items-center gap-2 text-sm text-[#6B4226] hover:text-[#59341C] transition-colors mb-8">
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      Back to Home
-    </a>
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-10">
-      <span class="inline-block text-[11px] font-semibold tracking-wide text-[#B5702E] bg-orange-50 rounded-full px-3 py-1 mb-5">ASSEMBLY</span>
-      <h1 class="font-serif text-3xl font-semibold text-gray-900 mb-4">Step-by-step guide to assembling your WoodCraft bed frame</h1>
-      <div class="text-gray-600 text-[15px] leading-relaxed space-y-4">
-        <p>Before you begin, lay out all the hardware and panels included in your box and confirm nothing is missing against the included parts list.</p>
-        <p>Start by attaching the headboard to the side rails using the provided bolts, then add the footboard and center support beam. Finish by securing the slats and giving every bolt a final tightening pass.</p>
-      </div>
-      
+<body class="bg-[#f4faf5] text-[#1a2e1c]">
+<?php include __DIR__.'/../includes/header.php'; ?>
+<main class="max-w-3xl mx-auto px-6 py-10">
+  <a href="<?= isset($_SESSION['user_id'])?'../my-profile.php?section=support':'../index.php'?>" class="inline-flex items-center gap-2 text-sm text-[#17611f] font-semibold hover:underline mb-6">← Back</a>
+  <div class="bg-white rounded-xl border border-[rgba(27,94,32,0.08)] p-8">
+    <h1 class="text-2xl font-black mb-4">How Harvest-on-Demand Works</h1>
+    <div class="text-sm text-[#5a7a5c] leading-relaxed space-y-3">
+      <p>At Luntiang H.A.P.A.G., every lettuce stays growing in our hydroponic system until your order is confirmed. Unlike supermarkets where produce sits on shelves for days, ours is harvested only after you order — usually within 1-3 hours before delivery or pick-up.</p>
+      <p><strong>Step 1:</strong> You place your order online. Browse our varieties, add to cart, and check out.</p>
+      <p><strong>Step 2:</strong> Payment is confirmed. Your order enters our harvest queue.</p>
+      <p><strong>Step 3:</strong> We harvest your lettuce — cut fresh, never pre-stored.</p>
+      <p><strong>Step 4:</strong> Quality inspection — every leaf is checked before packing.</p>
+      <p><strong>Step 5:</strong> Packed and ready — same-day delivery or pick-up.</p>
     </div>
-  </main>
-
-  <!-- Footer -->
-  <?php include __DIR__ . '/../includes/footer.php'; ?>
-
+  </div>
+</main>
+<?php include __DIR__.'/../includes/footer.php'; ?>
 </body>
 </html>

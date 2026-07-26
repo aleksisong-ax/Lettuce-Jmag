@@ -88,18 +88,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Profile | WoodCraft Admin</title>
+  <title>My Profile | Luntiang H.A.P.A.G. Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Fraunces', serif; }
+    body { font-family: 'Nunito', sans-serif; }
+    .font-black { font-family: 'Nunito', serif; }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-thumb { background: #d8cfbd; border-radius: 8px; }
   </style>
 </head>
-<body class="bg-[#F3F0E4] text-gray-900">
+<body class="bg-[#f4faf5] text-[#1a2e1c]">
   <div class="flex min-h-screen">
     <?php require_once __DIR__ . '/includes/admin-sidebar.php'; ?>
 
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
       <main class="flex-1 overflow-y-auto p-6"><div class="max-w-3xl mx-auto space-y-5">
 
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <h3 class="text-sm font-semibold text-gray-900 mb-4">Profile Information</h3>
+          <h3 class="text-sm font-semibold text-[#1a2e1c] mb-4">Profile Information</h3>
 
           <?php if ($profileMessage): ?>
             <div class="mb-4 rounded-xl px-4 py-3 text-sm <?= $profileMessageType === 'error' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100' ?>"><?= htmlspecialchars($profileMessage) ?></div>
@@ -118,21 +118,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
           <form method="POST" class="space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-800 mb-2">Name</label>
-                <input type="text" name="name" required value="<?= htmlspecialchars($admin['name']) ?>" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Name</label>
+                <input type="text" name="name" required value="<?= htmlspecialchars($admin['name']) ?>" class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-800 mb-2">Email</label>
-                <input type="email" name="email" required value="<?= htmlspecialchars($admin['email']) ?>" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
+                <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Email</label>
+                <input type="email" name="email" required value="<?= htmlspecialchars($admin['email']) ?>" class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
               </div>
             </div>
-            <div class="text-[13px] text-gray-500">Role: <span class="font-medium text-gray-700"><?= htmlspecialchars($admin['role']) ?></span></div>
-            <button type="submit" name="update_profile" value="1" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors">Save Changes</button>
+            <div class="text-[13px] text-[#5a7a5c]">Role: <span class="font-medium text-[#1a2e1c]"><?= htmlspecialchars($admin['role']) ?></span></div>
+            <button type="submit" name="update_profile" value="1" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors">Save Changes</button>
           </form>
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <h3 class="text-sm font-semibold text-gray-900 mb-4">Change Password</h3>
+          <h3 class="text-sm font-semibold text-[#1a2e1c] mb-4">Change Password</h3>
 
           <?php if ($passwordMessage): ?>
             <div class="mb-4 rounded-xl px-4 py-3 text-sm <?= $passwordMessageType === 'error' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100' ?>"><?= htmlspecialchars($passwordMessage) ?></div>
@@ -140,10 +140,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
 
           <form method="POST" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-800 mb-2">Current Password</label>
+              <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Current Password</label>
               <div class="relative">
-                <input type="password" id="current_password" name="current_password" required class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-                <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="current_password" aria-label="Show password">
+                <input type="password" id="current_password" name="current_password" required class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+                <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9e9e9e] hover:text-[#5a7a5c] transition-colors" data-target="current_password" aria-label="Show password">
                   <svg class="w-4 h-4 icon-eye" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                   <svg class="w-4 h-4 icon-eye-off hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 012.132-3.532m3.32-2.454A9.958 9.958 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.132 5.411M14.121 14.121A3 3 0 019.88 9.88M9.879 9.879l4.242 4.242M9.879 9.879L3 3m6.879 6.879L21 21"/></svg>
                 </button>
@@ -151,27 +151,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-800 mb-2">New Password</label>
+                <label class="block text-sm font-medium text-[#1a2e1c] mb-2">New Password</label>
                 <div class="relative">
-                  <input type="password" id="new_password" name="new_password" required class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-                  <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="new_password" aria-label="Show password">
+                  <input type="password" id="new_password" name="new_password" required class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+                  <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9e9e9e] hover:text-[#5a7a5c] transition-colors" data-target="new_password" aria-label="Show password">
                     <svg class="w-4 h-4 icon-eye" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                     <svg class="w-4 h-4 icon-eye-off hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 012.132-3.532m3.32-2.454A9.958 9.958 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.132 5.411M14.121 14.121A3 3 0 019.88 9.88M9.879 9.879l4.242 4.242M9.879 9.879L3 3m6.879 6.879L21 21"/></svg>
                   </button>
                 </div>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-800 mb-2">Confirm New Password</label>
+                <label class="block text-sm font-medium text-[#1a2e1c] mb-2">Confirm New Password</label>
                 <div class="relative">
-                  <input type="password" id="confirm_password" name="confirm_password" required class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4226]/40 focus:border-[#6B4226] transition-colors" />
-                  <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="confirm_password" aria-label="Show password">
+                  <input type="password" id="confirm_password" name="confirm_password" required class="w-full rounded-xl border border-[rgba(27,94,32,0.12)] px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]/40 focus:border-[#52b788] transition-colors" />
+                  <button type="button" class="password-toggle-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9e9e9e] hover:text-[#5a7a5c] transition-colors" data-target="confirm_password" aria-label="Show password">
                     <svg class="w-4 h-4 icon-eye" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                     <svg class="w-4 h-4 icon-eye-off hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 012.132-3.532m3.32-2.454A9.958 9.958 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.973 9.973 0 01-4.132 5.411M14.121 14.121A3 3 0 019.88 9.88M9.879 9.879l4.242 4.242M9.879 9.879L3 3m6.879 6.879L21 21"/></svg>
                   </button>
                 </div>
               </div>
             </div>
-            <button type="submit" name="update_password" value="1" class="px-6 py-3 rounded-full bg-[#6B4226] text-white text-sm font-medium hover:bg-[#59341C] transition-colors">Update Password</button>
+            <button type="submit" name="update_password" value="1" class="px-6 py-3 rounded-full bg-[#17611f] text-white text-sm font-medium hover:bg-[#14521a] transition-colors">Update Password</button>
           </form>
         </div>
 
